@@ -9,6 +9,7 @@ import io.github.edwinmindcraft.apoli.common.network.C2SUseActivePowers;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -87,6 +88,17 @@ public class ApoliAPI {
 	 */
 	public static Registry<ConfiguredPower<?, ?>> getPowers(@Nullable MinecraftServer server) {
 		return CalioAPI.getDynamicRegistries(server).get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
+	}
+
+	/**
+	 * An accessor for the {@link ConfiguredPower} registry.
+	 * You should probably cache this value if you can.
+	 * @param access The registry access to get the registry for, or null for the client.
+	 *
+	 * @return The ConfiguredPower registry.
+	 */
+	public static Registry<ConfiguredPower<?, ?>> getPowers(@Nullable RegistryAccess access) {
+		return CalioAPI.getDynamicRegistries(access).get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
 	}
 
 	/**
