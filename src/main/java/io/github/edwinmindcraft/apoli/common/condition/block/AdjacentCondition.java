@@ -19,7 +19,7 @@ public class AdjacentCondition extends BlockCondition<AdjacentConfiguration> {
 	@Override
 	protected boolean check(AdjacentConfiguration configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
 		int count = Math.toIntExact(Arrays.stream(Direction.values())
-				.filter(x -> ConfiguredBlockCondition.check(configuration.condition(), reader, position.relative(x), stateGetter)).count());
+				.filter(x -> ConfiguredBlockCondition.check(configuration.condition(), reader, position.relative(x))).count());
 		return configuration.comparison().check(count);
 	}
 }
