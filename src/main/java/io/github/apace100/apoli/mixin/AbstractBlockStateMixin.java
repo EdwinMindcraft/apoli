@@ -35,10 +35,9 @@ public abstract class AbstractBlockStateMixin {
 	@Shadow
 	protected abstract @NotNull BlockState asState();
 
-	@SuppressWarnings("deprecation")
-	@Inject(at = @At("HEAD"), method = "getCollisionShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;", cancellable = true)
+	@Inject(at = @At("RETURN"), method = "getCollisionShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;", cancellable = true)
 	private void phaseThroughBlocks(BlockGetter world, BlockPos pos, CollisionContext context, CallbackInfoReturnable<VoxelShape> info) {
-		VoxelShape blockShape = this.getBlock().getCollisionShape(this.asState(), world, pos, context);
+		VoxelShape blockShape = info.getReturnValue();
 		if (!blockShape.isEmpty() && context instanceof EntityCollisionContext esc) {
 			if (esc.getEntity() != null) {
 				Entity entity = esc.getEntity();
