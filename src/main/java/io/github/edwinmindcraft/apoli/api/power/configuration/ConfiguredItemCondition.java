@@ -12,6 +12,8 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
@@ -28,6 +30,14 @@ public final class ConfiguredItemCondition<C extends IDynamicFeatureConfiguratio
 
 	public static MapCodec<Holder<ConfiguredItemCondition<?, ?>>> optional(String name) {
 		return CalioCodecHelper.registryDefaultedField(HOLDER, name, ApoliDynamicRegistries.CONFIGURED_ITEM_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_ITEM_CONDITIONS);
+	}
+
+	public static MapCodec<Holder<ConfiguredItemCondition<?, ?>>> optional(String name, ResourceKey<ConfiguredItemCondition<?, ?>> value) {
+		return CalioCodecHelper.registryField(HOLDER, name, value, ApoliDynamicRegistries.CONFIGURED_ITEM_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_ITEM_CONDITIONS);
+	}
+
+	public static MapCodec<Holder<ConfiguredItemCondition<?, ?>>> optional(String name, ResourceLocation key) {
+		return CalioCodecHelper.registryField(HOLDER, name, ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_ITEM_CONDITION_KEY, key), ApoliDynamicRegistries.CONFIGURED_ITEM_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_ITEM_CONDITIONS);
 	}
 
 	public static boolean check(Holder<ConfiguredItemCondition<?, ?>> condition, Level level, ItemStack stack) {
