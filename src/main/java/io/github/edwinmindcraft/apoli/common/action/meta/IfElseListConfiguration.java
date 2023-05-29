@@ -48,8 +48,10 @@ public record IfElseListConfiguration<C, A, V>(List<Pair<Holder<C>, Holder<A>>> 
 	@Override
 	public void execute(V parameters) {
 		for (Pair<Holder<C>, Holder<A>> pair : this.entries()) {
-			if (this.predicate().test(pair.getKey().value(), parameters))
+			if (this.predicate().test(pair.getKey().value(), parameters)) {
 				this.consumer().accept(pair.getValue().value(), parameters);
+				break;
+			}
 		}
 	}
 }
