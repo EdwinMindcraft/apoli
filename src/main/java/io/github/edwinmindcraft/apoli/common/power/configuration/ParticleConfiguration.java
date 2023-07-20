@@ -8,17 +8,16 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record ParticleConfiguration(ParticleType<?> particle,
+public record ParticleConfiguration(ParticleOptions particle,
 									int frequency,
 									boolean visibleInFirstPerson) implements IDynamicFeatureConfiguration {
 
 	public static final Codec<ParticleConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			SerializableDataTypes.PARTICLE_TYPE.fieldOf("particle").forGetter(ParticleConfiguration::particle),
+			SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE.fieldOf("particle").forGetter(ParticleConfiguration::particle),
 			Codec.intRange(1, Integer.MAX_VALUE).fieldOf("frequency").forGetter(ParticleConfiguration::frequency),
 			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "visible_in_first_person", false).forGetter(ParticleConfiguration::visibleInFirstPerson)
 	).apply(instance, ParticleConfiguration::new));
