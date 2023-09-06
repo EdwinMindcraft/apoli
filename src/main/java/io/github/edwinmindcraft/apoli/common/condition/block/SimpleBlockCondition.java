@@ -10,9 +10,9 @@ import net.minecraftforge.common.util.NonNullSupplier;
 
 public class SimpleBlockCondition extends BlockCondition<NoConfiguration> {
 
-	public static final BlockPredicate REPLACEABLE = (reader, pos, stateGetter) -> stateGetter.get().getMaterial().isReplaceable();
-	public static final BlockPredicate MOVEMENT_BLOCKING = (reader, pos, stateGetter) -> stateGetter.get().getMaterial().blocksMotion() && !stateGetter.get().getCollisionShape(reader, pos).isEmpty();
-	public static final BlockPredicate LIGHT_BLOCKING = (reader, pos, stateGetter) -> stateGetter.get().getMaterial().isSolidBlocking();
+	public static final BlockPredicate REPLACEABLE = (reader, pos, stateGetter) -> stateGetter.get().canBeReplaced();
+	public static final BlockPredicate MOVEMENT_BLOCKING = (reader, pos, stateGetter) -> stateGetter.get().blocksMotion() && !stateGetter.get().getCollisionShape(reader, pos).isEmpty();
+	public static final BlockPredicate LIGHT_BLOCKING = (reader, pos, stateGetter) -> stateGetter.get().canOcclude();
 	public static final BlockPredicate WATER_LOGGABLE = (reader, pos, stateGetter) -> stateGetter.get().getBlock() instanceof LiquidBlockContainer;
 	public static final BlockPredicate EXPOSED_TO_SKY = (reader, pos, stateGetter) -> reader.canSeeSky(pos);
 	public static final BlockPredicate BLOCK_ENTITY = (reader, pos, stateGetter) -> reader.getBlockEntity(pos) != null;

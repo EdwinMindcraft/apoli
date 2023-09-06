@@ -49,7 +49,7 @@ public record RestrictArmorConfiguration(Map<EquipmentSlot, Holder<ConfiguredIte
 			return;
 		this.conditions().forEach((slot, predicate) -> {
 			ItemStack equippedItem = living.getItemBySlot(slot);
-			if (!equippedItem.isEmpty() && ConfiguredItemCondition.check(predicate, living.level, equippedItem)) {
+			if (!equippedItem.isEmpty() && ConfiguredItemCondition.check(predicate, living.level(), equippedItem)) {
 				if (entity instanceof Player ple) {
 					if (!ple.getInventory().add(equippedItem))
 						ple.drop(equippedItem, true);

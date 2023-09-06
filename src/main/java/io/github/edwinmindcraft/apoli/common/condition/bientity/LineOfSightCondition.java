@@ -16,7 +16,7 @@ public class LineOfSightCondition extends BiEntityCondition<ClipContextConfigura
 
 	@Override
 	protected boolean check(ClipContextConfiguration configuration, Entity actor, Entity target) {
-		if (!Objects.equals(actor.level, target.level)) {
+		if (!Objects.equals(actor.level(), target.level())) {
 			return false;
 		} else {
 			Vec3 vec3d = new Vec3(actor.getX(), actor.getEyeY(), actor.getZ());
@@ -24,7 +24,7 @@ public class LineOfSightCondition extends BiEntityCondition<ClipContextConfigura
 			if (vec3d2.distanceTo(vec3d) > 128.0D) {
 				return false;
 			} else {
-				return actor.level.clip(new ClipContext(vec3d, vec3d2, configuration.block(), configuration.fluid(), actor)).getType() == HitResult.Type.MISS;
+				return actor.level().clip(new ClipContext(vec3d, vec3d2, configuration.block(), configuration.fluid(), actor)).getType() == HitResult.Type.MISS;
 			}
 		}
 	}

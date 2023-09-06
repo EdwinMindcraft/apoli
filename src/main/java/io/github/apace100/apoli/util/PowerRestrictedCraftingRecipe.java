@@ -4,13 +4,12 @@ import com.google.common.collect.Lists;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliRecipeSerializers;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.inventory.CraftingMenu;
-import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -22,25 +21,31 @@ import java.util.Optional;
 
 public class PowerRestrictedCraftingRecipe extends CustomRecipe {
 
-	public PowerRestrictedCraftingRecipe(ResourceLocation id) {
-		super(id);
+	public PowerRestrictedCraftingRecipe(ResourceLocation id, CraftingBookCategory category) {
+		super(id, category);
 	}
 
 	@Override
-	public boolean matches(@NotNull CraftingContainer inv, @NotNull Level world) {
-		return this.getRecipes(inv).stream().anyMatch(r -> r.matches(inv, world));
-	}
+    public boolean matches(CraftingContainer inventory, Level world) {
+        if (inventory instanceof TransientCraftingContainer craftingInventory) {
+            return getRecipes(craftingInventory).stream().anyMatch(r -> r.matches(craftingInventory, world));
+        }
 
-	@Override
-	public @NotNull ItemStack assemble(@NotNull CraftingContainer inv) {
-		Player player = this.getPlayerFromInventory(inv);
-		if (player != null) {
-			Optional<Recipe<CraftingContainer>> optional = this.getRecipes(inv).stream().filter(r -> r.matches(inv, player.level)).findFirst();
-			if (optional.isPresent()) {
-				Recipe<CraftingContainer> recipe = optional.get();
-				return recipe.assemble(inv);
-			}
-		}
+        return false;
+    }
+
+    @Override
+	public @NotNull ItemStack assemble(CraftingContainer inv, RegistryAccess access) {
+        if (inv instanceof TransientCraftingContainer craftingMenu) {
+            Player player = this.getPlayerFromInventory(craftingMenu);
+            if (player != null) {
+                Optional<Recipe<CraftingContainer>> optional = this.getRecipes(craftingMenu).stream().filter(r -> r.matches(inv, player.level())).findFirst();
+                if (optional.isPresent()) {
+                    Recipe<CraftingContainer> recipe = optional.get();
+                    return recipe.assemble(inv, access);
+                }
+            }
+        }
 		return ItemStack.EMPTY;
 	}
 
@@ -54,12 +59,12 @@ public class PowerRestrictedCraftingRecipe extends CustomRecipe {
 		return ApoliRecipeSerializers.POWER_RESTRICTED.get();
 	}
 
-	private Player getPlayerFromInventory(CraftingContainer inv) {
+	private Player getPlayerFromInventory(TransientCraftingContainer inv) {
 		return this.getPlayerFromHandler(inv.menu);
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Recipe<CraftingContainer>> getRecipes(CraftingContainer inv) {
+	private List<Recipe<CraftingContainer>> getRecipes(TransientCraftingContainer inv) {
 		Player player = this.getPlayerFromHandler(inv.menu);
 		if (player != null) {
 			return IPowerContainer.getPowers(player, ApoliPowers.RECIPE.get()).stream().map(x -> (Recipe<CraftingContainer>) x.value().getConfiguration().value()).toList();

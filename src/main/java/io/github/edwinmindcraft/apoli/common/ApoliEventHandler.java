@@ -90,7 +90,7 @@ public class ApoliEventHandler {
 
 	@SubscribeEvent
 	public static void livingTick(LivingEvent.LivingTickEvent event) {
-		if (!event.getEntity().level.isClientSide())
+		if (!event.getEntity().level().isClientSide())
 			IPowerContainer.get(event.getEntity()).ifPresent(IPowerContainer::serverTick);
 	}
 
@@ -105,7 +105,7 @@ public class ApoliEventHandler {
 		}
 		original.ifPresent(x -> x.getPowers().forEach(y -> y.value().onRemoved(event.getOriginal())));
         player.ifPresent(p -> original.ifPresent(o -> p.readFromNbt(o.writeToNbt(new CompoundTag()))));
-		if (!event.getEntity().level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
+		if (!event.getEntity().level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
 			IPowerContainer.getPowers(event.getEntity(), ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.value().getFactory().restoreItems(power.value(), event.getEntity()));
 
 		event.getOriginal().invalidateCaps(); // Unload capabilities.

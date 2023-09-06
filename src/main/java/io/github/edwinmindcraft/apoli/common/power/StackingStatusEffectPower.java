@@ -58,7 +58,7 @@ public class StackingStatusEffectPower extends PowerFactory<StackingStatusEffect
 	}
 
 	public void applyEffects(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, Entity entity) {
-		if (!(entity instanceof LivingEntity living) || entity.getLevel().isClientSide())
+		if (!(entity instanceof LivingEntity living) || entity.level().isClientSide())
 			return;
 		configuration.getConfiguration().effects().getContent().forEach(sei -> {
 			int duration = configuration.getConfiguration().duration() * this.getCurrentStacks(configuration, living).get();

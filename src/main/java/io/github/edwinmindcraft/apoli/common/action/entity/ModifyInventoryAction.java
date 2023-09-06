@@ -18,6 +18,8 @@ public class ModifyInventoryAction extends EntityAction<ModifyInventoryConfigura
                 configuration.itemCondition(),
                 configuration.itemAction(),
                 entity,
-                configuration.power());
+                configuration.power(),
+                configuration.processMode().getProcessor(),
+                configuration.limit());
     }
 }

@@ -35,7 +35,7 @@ public class KeepInventoryPower extends PowerFactory<KeepInventoryConfiguration>
 		Inventory inventory = player.getInventory();
 		for (int i = 0; i < inventory.getContainerSize(); i++) {
 			ItemStack stack = inventory.getItem(i);
-			if (config.isApplicableTo(i, player.level, stack) && !EnchantmentHelper.hasVanishingCurse(stack)) {
+			if (config.isApplicableTo(i, player.level(), stack) && !EnchantmentHelper.hasVanishingCurse(stack)) {
 				access.add(stack);
 				inventory.setItem(i, ItemStack.EMPTY);
 			} else

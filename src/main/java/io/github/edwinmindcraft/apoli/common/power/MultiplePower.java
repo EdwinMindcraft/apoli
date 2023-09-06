@@ -13,6 +13,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.power.configuration.MultipleConfiguration;
 import net.minecraft.core.Holder;
+import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -47,11 +48,11 @@ public class MultiplePower extends PowerFactory<MultipleConfiguration<Configured
 	@Override
 	public MultipleConfiguration<ConfiguredPower<?, ?>> complete(ResourceLocation identifier, MultipleConfiguration<ConfiguredPower<?, ?>> configuration) {
 		ImmutableMap.Builder<String, Holder<ConfiguredPower<?, ?>>> builder = ImmutableMap.builder();
-		Registry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers();
+        MappedRegistry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers();
 		for (String entry : configuration.children().keySet()) {
 			ResourceLocation powerName = new ResourceLocation(identifier.getNamespace(), identifier.getPath() + entry);
-			DataResult<Holder<ConfiguredPower<?, ?>>> holder = powers.getOrCreateHolder(ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, powerName));
-			builder.put(entry, holder.result().orElseThrow());
+			Holder<ConfiguredPower<?, ?>> holder = powers.createRegistrationLookup().getOrThrow(ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, powerName));
+			builder.put(entry, holder);
 		}
 		return new MultipleConfiguration<>(builder.build());
 	}

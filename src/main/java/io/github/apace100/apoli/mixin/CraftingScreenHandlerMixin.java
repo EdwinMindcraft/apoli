@@ -42,11 +42,11 @@ public class CraftingScreenHandlerMixin {
 	 */
 	@ModifyVariable(method = "quickMoveStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;copy()Lnet/minecraft/world/item/ItemStack;"), ordinal = 1)
 	private ItemStack modifyOutputItems(ItemStack stack) {
-		if (!this.player.level.isClientSide && this.craftSlots instanceof PowerCraftingInventory pci && pci.getPower() != null && pci.getPower().getConfiguration() instanceof ModifyCraftingConfiguration config) {
-			Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(this.craftSlots);
+		if (this.craftSlots instanceof TransientCraftingContainer craftingContainer && !this.player.level().isClientSide && this.craftSlots instanceof PowerCraftingInventory pci && pci.getPower() != null && pci.getPower().getConfiguration() instanceof ModifyCraftingConfiguration config) {
+			Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(craftingContainer);
 			Mutable<ItemStack> newStack = new MutableObject<>(stack);
 			config.execute(player, blockPos.orElse(null));
-			config.executeAfterCraftingAction(player.level, newStack);
+			config.executeAfterCraftingAction(player.level(), newStack);
 			return newStack.getValue();
 		}
 		return stack;

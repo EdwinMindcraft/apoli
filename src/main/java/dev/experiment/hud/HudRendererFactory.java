@@ -6,6 +6,7 @@ import io.github.apace100.apoli.util.HudRender;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.IFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -51,7 +52,7 @@ public abstract class HudRendererFactory<T extends IDynamicFeatureConfiguration>
 	 * @param fill     The amount of the bar filled ([0,1])
 	 */
 	@OnlyIn(Dist.CLIENT)
-	public abstract void drawBar(ConfiguredHudRenderer<T, ?> renderer, Entity player, PoseStack matrices, int x, int y, int width, float fill);
+	public abstract void drawBar(ConfiguredHudRenderer<T, ?> renderer, Entity player, GuiGraphics graphics, int x, int y, int width, float fill);
 
 	/**
 	 * Draws an icon on the players screen, at the given position.<br/>
@@ -65,7 +66,7 @@ public abstract class HudRendererFactory<T extends IDynamicFeatureConfiguration>
 	 * @param fill     The amount of the bar filled ([0,1])
 	 */
 	@OnlyIn(Dist.CLIENT)
-	public abstract void drawIcon(ConfiguredHudRenderer<T, ?> renderer, Entity player, PoseStack matrices, int x, int y, float fill);
+	public abstract void drawIcon(ConfiguredHudRenderer<T, ?> renderer, Entity player, GuiGraphics graphics, int x, int y, float fill);
 
 	/**
 	 * Return the state of the drawer.

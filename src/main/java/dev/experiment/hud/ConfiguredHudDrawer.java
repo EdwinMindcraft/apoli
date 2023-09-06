@@ -1,14 +1,13 @@
 package dev.experiment.hud;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.apace100.apoli.screen.GameHudRender;
 import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -21,7 +20,7 @@ public enum ConfiguredHudDrawer implements GameHudRender {
 	private static final int BAR_WIDTH = 71;
 
 	@Override
-	public void render(PoseStack matrixStack, float tickDelta) {
+	public void render(GuiGraphics matrixStack, float tickDelta) {
 		Minecraft client = Minecraft.getInstance();
 		LocalPlayer player = client.player;
 		LazyOptional<IPowerContainer> containerOptional = IPowerContainer.get(player);

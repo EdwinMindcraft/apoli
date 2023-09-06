@@ -1,5 +1,7 @@
 package io.github.apace100.apoli.data;
 
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
 import io.github.apace100.apoli.util.*;
 import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.SerializationHelper;
@@ -9,7 +11,9 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.apace100.calio.util.ArgumentWrapper;
 import io.github.edwinmindcraft.calio.api.ability.PlayerAbility;
 import io.github.edwinmindcraft.calio.api.registry.PlayerAbilities;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.SlotArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stat;
@@ -17,8 +21,10 @@ import net.minecraft.stats.StatType;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Explosion;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.EnumSet;
 import java.util.List;
 
 //FIXME Reintroduce
@@ -97,6 +103,12 @@ public class ApoliDataTypes {
 	public static final SerializableDataType<Space> SPACE = SerializableDataType.enumValue(Space.class);
 
 	public static final SerializableDataType<ResourceOperation> RESOURCE_OPERATION = SerializableDataType.enumValue(ResourceOperation.class);
+
+    public static final SerializableDataType<InventoryUtil.InventoryType> INVENTORY_TYPE = SerializableDataType.enumValue(InventoryUtil.InventoryType.class);
+
+    public static final SerializableDataType<EnumSet<InventoryUtil.InventoryType>> INVENTORY_TYPE_SET = SerializableDataType.enumSet(InventoryUtil.InventoryType.class, INVENTORY_TYPE);
+
+    public static final SerializableDataType<InventoryUtil.ProcessMode> PROCESS_MODE = SerializableDataType.enumValue(InventoryUtil.ProcessMode.class);
 
 	public static final SerializableDataType<AttributedEntityAttributeModifier> ATTRIBUTED_ATTRIBUTE_MODIFIER = new SerializableDataType<>(AttributedEntityAttributeModifier.class, AttributedEntityAttributeModifier.CODEC);
 
@@ -178,6 +190,24 @@ public class ApoliDataTypes {
 	public static final SerializableDataType<ArgumentWrapper<Integer>> ITEM_SLOT = SerializableDataType.argumentType(SlotArgument.slot());
 
 	public static final SerializableDataType<List<ArgumentWrapper<Integer>>> ITEM_SLOTS = SerializableDataType.list(ITEM_SLOT);
+
+    public static final SerializableDataType<Explosion.BlockInteraction> BACKWARDS_COMPATIBLE_DESTRUCTION_TYPE = SerializableDataType.mapped(Explosion.BlockInteraction.class,
+            HashBiMap.create(ImmutableBiMap.of(
+                    "none", Explosion.BlockInteraction.KEEP,
+                    "break", Explosion.BlockInteraction.DESTROY,
+                    "destroy", Explosion.BlockInteraction.DESTROY_WITH_DECAY)
+            ));
+
+    public static final SerializableDataType<ArgumentWrapper<EntitySelector>> ENTITIES_SELECTOR = SerializableDataType.argumentType(EntityArgument.entities());
+
+    public static final SerializableDataType<DamageSourceDescription> DAMAGE_SOURCE_DESCRIPTION = new SerializableDataType<>(DamageSourceDescription.class, DamageSourceDescription.CODEC);
+
+    public static final SerializableDataType<LegacyMaterial> LEGACY_MATERIAL = SerializableDataType.wrap(
+            LegacyMaterial.class, SerializableDataTypes.STRING,
+            LegacyMaterial::getMaterial, LegacyMaterial::new
+    );
+
+    public static final SerializableDataType<List<LegacyMaterial>> LEGACY_MATERIALS = SerializableDataType.list(LEGACY_MATERIAL);
 
 	public static final SerializableDataType<Stat<?>> STAT = SerializableDataType.compound(ClassUtil.castClass(Stat.class),
 			new SerializableData()

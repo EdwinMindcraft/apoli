@@ -16,7 +16,7 @@ public class CreativeFlightPower extends PowerFactory<NoConfiguration> {
 
 	@Override
 	public void tick(ConfiguredPower<NoConfiguration, ?> configuration, Entity entity) {
-		if (!entity.level.isClientSide) {
+		if (!entity.level().isClientSide) {
 			boolean isActive = configuration.isActive(entity);
 			boolean hasAbility = this.hasAbility(entity);
 			if (isActive && !hasAbility)
@@ -28,13 +28,13 @@ public class CreativeFlightPower extends PowerFactory<NoConfiguration> {
 
 	@Override
 	public void onGained(ConfiguredPower<NoConfiguration, ?> configuration, Entity entity) {
-		if (!entity.level.isClientSide && configuration.isActive(entity) && !this.hasAbility(entity))
+		if (!entity.level().isClientSide && configuration.isActive(entity) && !this.hasAbility(entity))
 			this.grantAbility(entity);
 	}
 
 	@Override
 	public void onLost(ConfiguredPower<NoConfiguration, ?> configuration, Entity entity) {
-		if (!entity.level.isClientSide && this.hasAbility(entity))
+		if (!entity.level().isClientSide && this.hasAbility(entity))
 			this.revokeAbility(entity);
 	}
 

@@ -19,7 +19,7 @@ public class GainedPowerCriterion extends SimpleCriterionTrigger<GainedPowerCrit
 	private static final ResourceLocation ID = Apoli.identifier("gained_power");
 
 	@Override
-	protected @NotNull Conditions createInstance(@NotNull JsonObject obj, @NotNull EntityPredicate.Composite composite, @NotNull DeserializationContext context) {
+	protected @NotNull Conditions createInstance(@NotNull JsonObject obj, @NotNull ContextAwarePredicate composite, @NotNull DeserializationContext context) {
 		ResourceLocation id = ResourceLocation.tryParse(GsonHelper.getAsString(obj, "power"));
 		return new Conditions(composite, id);
 	}
@@ -36,7 +36,7 @@ public class GainedPowerCriterion extends SimpleCriterionTrigger<GainedPowerCrit
 	public static class Conditions extends AbstractCriterionTriggerInstance {
 		private final ResourceLocation powerId;
 
-		public Conditions(EntityPredicate.Composite player, ResourceLocation powerId) {
+		public Conditions(ContextAwarePredicate player, ResourceLocation powerId) {
 			super(GainedPowerCriterion.ID, player);
 			this.powerId = powerId;
 		}

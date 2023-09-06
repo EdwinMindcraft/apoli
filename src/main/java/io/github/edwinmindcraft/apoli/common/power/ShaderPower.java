@@ -21,7 +21,7 @@ public class ShaderPower extends PowerFactory<ShaderConfiguration> {
 		boolean active = this.isActive(configuration, entity);
 		if (powerData.booleanValue() != active) {
 			powerData.setValue(active);
-			if (entity.getLevel().isClientSide())
+			if (entity.level().isClientSide())
 				this.statusChanged();
 		}
 	}

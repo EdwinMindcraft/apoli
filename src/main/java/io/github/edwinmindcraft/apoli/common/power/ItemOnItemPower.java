@@ -26,7 +26,7 @@ public class ItemOnItemPower extends PowerFactory<ItemOnItemConfiguration> {
 	}
 
 	public boolean check(ConfiguredPower<ItemOnItemConfiguration, ?> power, Entity entity, ItemStack self, ItemStack other) {
-		return power.getConfiguration().check(entity.level, other, self);
+		return power.getConfiguration().check(entity.level(), other, self);
 	}
 
 	public void apply(ConfiguredPower<ItemOnItemConfiguration, ?> power, Entity entity, Slot self, SlotAccess other) {

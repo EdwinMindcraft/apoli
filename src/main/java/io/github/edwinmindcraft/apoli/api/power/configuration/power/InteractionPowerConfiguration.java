@@ -62,11 +62,11 @@ public record InteractionPowerConfiguration(EnumSet<InteractionHand> hands, Inte
 
 	public void performActorItemStuff(LivingEntity actor, InteractionHand hand) {
 		Mutable<ItemStack> heldStack = VariableAccess.hand(actor, hand);
-		ConfiguredItemAction.execute(this.heldItemAction(), actor.level, heldStack);
+		ConfiguredItemAction.execute(this.heldItemAction(), actor.level(), heldStack);
 		Mutable<ItemStack> resultingStack = this.itemResult() == null ? heldStack : new MutableObject<>(this.itemResult().copy());
 		boolean modified = this.itemResult() != null;
 		if (this.resultItemAction().isBound()) {
-			this.resultItemAction().value().execute(actor.level, resultingStack);
+			this.resultItemAction().value().execute(actor.level(), resultingStack);
 			modified = true;
 		}
 		if (modified) {

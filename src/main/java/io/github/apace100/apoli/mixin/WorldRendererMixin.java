@@ -1,7 +1,6 @@
 package io.github.apace100.apoli.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
 import io.github.apace100.apoli.ApoliClient;
 import io.github.apace100.apoli.util.MiscUtil;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
@@ -13,6 +12,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

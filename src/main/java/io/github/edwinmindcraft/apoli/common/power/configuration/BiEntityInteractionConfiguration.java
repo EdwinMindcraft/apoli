@@ -39,7 +39,7 @@ public record BiEntityInteractionConfiguration(Holder<ConfiguredBiEntityConditio
 	}
 
 	public boolean check(Entity actor, Entity target, InteractionHand hand, ItemStack held) {
-		return this.interaction().appliesTo(actor.level, hand, held) && ConfiguredBiEntityCondition.check(this.biEntityCondition(), actor, target);
+		return this.interaction().appliesTo(actor.level(), hand, held) && ConfiguredBiEntityCondition.check(this.biEntityCondition(), actor, target);
 	}
 
 	public InteractionResult executeAction(Entity actor, Entity target, InteractionHand hand) {

@@ -17,7 +17,7 @@ public class SimpleBiEntityAction extends BiEntityAction<NoConfiguration> {
 
 	public static void mount(Entity actor, Entity target) {
 		actor.startRiding(target, true);
-		if (!actor.level.isClientSide() && target instanceof ServerPlayer player) {
+		if (!actor.level().isClientSide() && target instanceof ServerPlayer player) {
 			ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CPlayerMount(actor.getId(), target.getId()));
 		}
 	}

@@ -12,6 +12,6 @@ public class DistanceFromPointEntityCondition extends EntityCondition<DistanceFr
 
 	@Override
 	protected boolean check(DistanceFromPointConfiguration configuration, Entity entity) {
-		return configuration.test(null, entity.position(), entity.getLevel());
+		return configuration.test(null, entity.position(), entity.level());
 	}
 }

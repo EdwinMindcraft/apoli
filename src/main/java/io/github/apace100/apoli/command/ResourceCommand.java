@@ -65,7 +65,7 @@ public class ResourceCommand {
 	}
 
 	private static int extract(OptionalInt optional, CommandContext<CommandSourceStack> command, IntFunction<Component> success, Supplier<Component> failure, boolean flatten) {
-		optional.ifPresentOrElse(i -> command.getSource().sendSuccess(success.apply(i), true), () -> command.getSource().sendFailure(failure.get()));
+		optional.ifPresentOrElse(i -> command.getSource().sendSuccess(() -> success.apply(i), true), () -> command.getSource().sendFailure(failure.get()));
 		return flatten ? optional.isPresent() ? 1 : 0 : optional.orElse(0);
 	}
 

@@ -17,6 +17,7 @@ import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
@@ -90,7 +91,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 
 	@Inject(method = "setLastHurtByMob", at = @At("TAIL"))
 	private void syncAttacker(LivingEntity attacker, CallbackInfo ci) {
-		if (!this.level.isClientSide()) {
+		if (!this.level().isClientSide()) {
 			ApoliCommon.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new S2CSyncAttacker(this.getId(), attacker != null ? OptionalInt.of(attacker.getId()) : OptionalInt.empty()));
 		}
 	}
@@ -169,7 +170,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 				cir.setReturnValue(amount);
 			}
 		} else {
-			if (this.apoli$shouldDamageArmor > 0 && source.isBypassArmor()) this.hurtArmor(source, amount);
+			if (this.apoli$shouldDamageArmor > 0 && source.is(DamageTypeTags.BYPASSES_ARMOR)) this.hurtArmor(source, amount);
 		}
 	}
 
@@ -237,7 +238,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		}
 	}
 
-	@Inject(method = "getAttributeValue", at = @At("RETURN"), cancellable = true)
+	@Inject(method = "getAttributeValue(Lnet/minecraft/world/entity/ai/attributes/Attribute;)D", at = @At("RETURN"), cancellable = true)
 	private void modifyAttributeValue(Attribute attribute, CallbackInfoReturnable<Double> cir) {
 		double originalValue = this.getAttributes().getValue(attribute);
 		double modified = IPowerContainer.modify(this, ApoliPowers.MODIFY_ATTRIBUTE.get(), (float) originalValue, p -> p.get().getConfiguration().attribute() == attribute);
@@ -271,7 +272,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		}
 		List<ConfiguredPower<ModifyFoodConfiguration, ModifyFoodPower>> mfps = ModifyFoodPower.getValidPowers(this, original);
 		MutableObject<ItemStack> stack = new MutableObject<>(original.copy());
-		ModifyFoodPower.modifyStack(mfps, this.level, stack);
+		ModifyFoodPower.modifyStack(mfps, this.level(), stack);
 		((ModifiableFoodEntity) this).setCurrentModifyFoodPowers(mfps);
 		((ModifiableFoodEntity) this).setOriginalFoodStack(original);
 		return stack.getValue();
@@ -303,9 +304,6 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 	protected abstract void addEatEffect(ItemStack p_21064_, Level p_21065_, LivingEntity p_21066_);
 
 	@Shadow
-	public float flyingSpeed;
-
-	@Shadow
 	protected abstract void hurtArmor(DamageSource pDamageSource, float pDamageAmount);
 
 	@Shadow
@@ -317,10 +315,12 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 	@Shadow
 	public abstract AttributeMap getAttributes();
 
-	@Inject(method = "getFrictionInfluencedSpeed(F)F", at = @At("RETURN"), cancellable = true)
+    @Shadow protected abstract float getFlyingSpeed();
+
+    @Inject(method = "getFrictionInfluencedSpeed(F)F", at = @At("RETURN"), cancellable = true)
 	private void modifyFlySpeed(float slipperiness, CallbackInfoReturnable<Float> cir) {
-		if (!this.onGround)
-			cir.setReturnValue(IPowerContainer.modify(this, ApoliPowers.MODIFY_AIR_SPEED.get(), this.flyingSpeed));
+		if (!this.onGround())
+			cir.setReturnValue(IPowerContainer.modify(this, ApoliPowers.MODIFY_AIR_SPEED.get(), this.getFlyingSpeed()));
 	}
 
 	@Unique

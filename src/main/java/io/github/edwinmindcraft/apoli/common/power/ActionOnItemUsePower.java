@@ -28,12 +28,12 @@ public class ActionOnItemUsePower extends PowerFactory<ActionOnItemUseConfigurat
 
 	public boolean doesApply(ConfiguredPower<ActionOnItemUseConfiguration, ?> factory, Entity player, ItemStack stack) {
 		ActionOnItemUseConfiguration configuration = factory.getConfiguration();
-		return ConfiguredItemCondition.check(configuration.itemCondition(), player.level, stack);
+		return ConfiguredItemCondition.check(configuration.itemCondition(), player.level(), stack);
 	}
 
 	public void executeActions(ConfiguredPower<ActionOnItemUseConfiguration, ?> factory, Entity player, Mutable<ItemStack> stack) {
 		ActionOnItemUseConfiguration configuration = factory.getConfiguration();
-		ConfiguredItemAction.execute(configuration.itemAction(), player.level, stack);
+		ConfiguredItemAction.execute(configuration.itemAction(), player.level(), stack);
 		ConfiguredEntityAction.execute(configuration.entityAction(), player);
 	}
 }

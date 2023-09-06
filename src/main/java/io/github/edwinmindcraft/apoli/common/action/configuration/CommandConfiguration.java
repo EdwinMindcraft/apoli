@@ -32,13 +32,13 @@ public record CommandConfiguration(String command) implements IDynamicFeatureCon
 	}
 
 	public static OptionalInt executeAt(Entity entity, Vec3 position, String command) {
-		MinecraftServer server = entity.level.getServer();
+		MinecraftServer server = entity.level().getServer();
 		if (server != null) {
 			CommandSourceStack source = new CommandSourceStack(
 					getSource(entity),
 					position,
 					entity.getRotationVector(),
-					entity.level instanceof ServerLevel sl ? sl : null,
+					entity.level() instanceof ServerLevel sl ? sl : null,
 					ApoliConfigs.SERVER.executeCommand.permissionLevel.get(),
 					entity.getName().getString(),
 					entity.getDisplayName(),

@@ -107,11 +107,6 @@ public abstract class GameRendererMixin {
 		}
 	}
 
-	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getMainRenderTarget()Lcom/mojang/blaze3d/pipeline/RenderTarget;"), method = "render")
-	private void fixHudWithShaderEnabled(float tickDelta, long nanoTime, boolean renderLevel, CallbackInfo info) {
-		RenderSystem.enableTexture();
-	}
-
 	@Inject(at = @At("HEAD"), method = "togglePostEffect", cancellable = true)
 	private void disableShaderToggle(CallbackInfo ci) {
 		if (IPowerContainer.getPowers(this.getMinecraft().cameraEntity, ApoliPowers.SHADER.get()).stream()

@@ -10,6 +10,7 @@ import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfigurat
 import io.github.edwinmindcraft.apoli.common.power.configuration.OverlayConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.Holder;
 import net.minecraft.util.Mth;
@@ -26,7 +27,7 @@ public class ApoliPowerOverlay implements IGuiOverlay {
 		this.shouldDraw = shouldDraw;
 	}
 
-	private void renderPower(ConfiguredPower<OverlayConfiguration, ?> power, PoseStack stack, int width, int height, float partialTick) {
+	private void renderPower(ConfiguredPower<OverlayConfiguration, ?> power, GuiGraphics graphics, int width, int height, float partialTick) {
 		OverlayConfiguration configuration = power.getConfiguration();
 		ColorConfiguration color = configuration.color();
 
@@ -82,7 +83,7 @@ public class ApoliPowerOverlay implements IGuiOverlay {
 	}
 
 	@Override
-	public void render(ForgeGui gui, PoseStack poseStack, float partialTick, int width, int height) {
+	public void render(ForgeGui gui, GuiGraphics graphics, float partialTick, int width, int height) {
 		boolean hideGui = Minecraft.getInstance().options.hideGui;
 		boolean isFirstPerson = Minecraft.getInstance().options.getCameraType().isFirstPerson();
 		List<ConfiguredPower<OverlayConfiguration, OverlayPower>> powers = IPowerContainer.getPowers(Minecraft.getInstance().getCameraEntity(), ApoliPowers.OVERLAY.get()).stream()
@@ -90,7 +91,7 @@ public class ApoliPowerOverlay implements IGuiOverlay {
 				.filter(x -> this.shouldDraw.test(x.getConfiguration()) && (!x.getConfiguration().hideWithHud() || !hideGui) && (x.getConfiguration().visibleInThirdPerson() || isFirstPerson))
 				.toList();
 		for (ConfiguredPower<OverlayConfiguration, OverlayPower> power : powers) {
-			this.renderPower(power, poseStack, width, height, partialTick);
+			this.renderPower(power, graphics, width, height, partialTick);
 		}
 	}
 }

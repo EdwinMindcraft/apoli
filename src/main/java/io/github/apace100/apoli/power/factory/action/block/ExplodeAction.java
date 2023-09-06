@@ -2,10 +2,14 @@ package io.github.apace100.apoli.power.factory.action.block;
 
 import io.github.apace100.apoli.action.configuration.ExplodeConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockAction;
+import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
+import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -21,9 +25,15 @@ public class ExplodeAction extends BlockAction<ExplodeConfiguration> {
 	public void execute(@NotNull ExplodeConfiguration configuration, @NotNull Level world, @NotNull BlockPos pos, @NotNull Direction direction) {
 		if (world.isClientSide())
 			return;
-		ExplosionDamageCalculator calculator = configuration.calculator();
-		world.explode(null, DamageSource.explosion((LivingEntity) null), calculator, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, configuration.power(), configuration.createFire(), configuration.destructionType());
-	}
+		ExplosionDamageCalculator calculator = configuration.indestructible() != ApoliDefaultConditions.BLOCK_DEFAULT.getHolder().get() ? configuration.calculator() : null;
+        explode(world, null, world.damageSources().explosion(null), calculator, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, configuration.power(), configuration.createFire(), configuration.destructionType());
+    }
+
+    private static void explode(Level world, Entity entity, DamageSource damageSource, ExplosionDamageCalculator behavior, double x, double y, double z, float power, boolean createFire, Explosion.BlockInteraction destructionType) {
+        Explosion explosion = new Explosion(world, entity, damageSource, behavior, x, y, z, power, createFire, destructionType);
+        explosion.explode();
+        explosion.finalizeExplosion(true);
+    }
 
 	/*public static ActionFactory<Triple<World, BlockPos, Direction>> getFactory() {
 		return new ActionFactory<>(Apoli.identifier("explode"),

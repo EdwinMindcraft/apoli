@@ -9,6 +9,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerConfiguration;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -60,7 +61,7 @@ public class PowerFactory<P extends Power> {
 
 		public void write(FriendlyByteBuf buf) {
 			buf.writeResourceLocation(PowerFactory.this.id);
-			buf.writeWithCodec(ConfiguredPower.CODEC, this.power);
+			buf.writeWithCodec(NbtOps.INSTANCE, ConfiguredPower.CODEC, this.power);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -90,6 +91,6 @@ public class PowerFactory<P extends Power> {
 	}
 
 	public Instance read(FriendlyByteBuf buffer) {
-		return new Instance(buffer.readWithCodec(ConfiguredPower.CODEC));
+		return new Instance(buffer.readWithCodec(NbtOps.INSTANCE, ConfiguredPower.CODEC));
 	}
 }

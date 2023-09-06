@@ -6,9 +6,11 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "AbstractBlockStateMixin",
+    "BiomeBuilderMixin",
+    "BiomeMixin",
     "BlockItemMixin",
-    "CraftingInventoryMixin",
     "CraftingScreenHandlerMixin",
+    "DamageSourceMixin",
     "EntityAccessor",
     "EntityMixin",
     "ExperienceOrbEntityMixin",
@@ -20,7 +22,8 @@
     "LivingEntityMixin",
     "LootContextBuilderMixin",
     "LootContextMixin",
-    "LootManagerMixin",
+    "LootContextParameterSetBuilderMixin",
+    "LootContextParameterSetMixin",
     "LootTableMixin",
     "PhantomSpawnerMixin",
     "PlayerEntityMixin",
@@ -33,7 +36,8 @@
     "forge.ForgeHooksMixin",
     "forge.GrindstoneMenuResultSlotAccessor",
     "forge.InventoryMenuMixin",
-    "forge.ResultSlotAccessor"
+    "forge.ResultSlotAccessor",
+    "forge.TransientCraftingContainerMixin"
   ],
   "client": [
     "BackgroundRendererMixin",
@@ -50,7 +54,8 @@
     "PlayerEntityRendererMixin",
     "WorldRendererMixin",
     "forge.ChangeGlowColorMixin",
-    "forge.EarsCompatMixin"
+    "forge.EarsCompatMixin",
+    "forge.ForgeGuiMixin"
   ],
   "refmap": "apoli.refmap.json",
   "injectors": {

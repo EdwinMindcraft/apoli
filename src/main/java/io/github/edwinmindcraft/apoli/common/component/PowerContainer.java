@@ -99,7 +99,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 	@Override
 	public boolean addPower(ResourceKey<ConfiguredPower<?, ?>> power, ResourceLocation source) {
 		Registry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers(this.owner.getServer());
-		Optional<Holder<ConfiguredPower<?, ?>>> optionalInstance = powers.getHolder(power);
+		Optional<Holder.Reference<ConfiguredPower<?, ?>>> optionalInstance = powers.getHolder(power);
 		if (optionalInstance.isEmpty() || !optionalInstance.get().isBound()) {
 			Apoli.LOGGER.error("Trying to add unregistered power {} to entity {}", power, this.owner);
 			return false;
@@ -251,7 +251,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 					this.powerSources.put(identifier, list);
 					try {
 						CompoundTag data = powerTag.getCompound("Data");
-						Optional<Holder<ConfiguredPower<?, ?>>> optionalPower = powers.getHolder(identifier).filter(Holder::isBound);
+						Optional<Holder.Reference<ConfiguredPower<?, ?>>> optionalPower = powers.getHolder(identifier).filter(Holder::isBound);
 						if (optionalPower.isEmpty()) {
 							Apoli.LOGGER.warn("Power data of unregistered power \"" + identifier + "\" found on entity, skipping...");
 							continue;
@@ -301,7 +301,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 		ImmutableSet<ResourceKey<ConfiguredPower<?, ?>>> powers = ImmutableSet.copyOf(this.powers.keySet());
 		Registry<ConfiguredPower<?, ?>> registry = ApoliAPI.getPowers();
 		for (ResourceKey<ConfiguredPower<?, ?>> power : powers) {
-			Optional<Holder<ConfiguredPower<?, ?>>> holder = registry.getHolder(power).filter(Holder::isBound);
+			Optional<Holder.Reference<ConfiguredPower<?, ?>>> holder = registry.getHolder(power).filter(Holder::isBound);
 			if (holder.isPresent()) {
 				this.powers.put(power, holder.get());
 			} else {
@@ -320,7 +320,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 		Registry<ConfiguredPower<?, ?>> powerRegistry = CalioAPI.getDynamicRegistries(this.owner.getServer()).get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
 		for (Map.Entry<ResourceLocation, Collection<ResourceLocation>> powerEntry : powerSources.asMap().entrySet()) {
 			ResourceKey<ConfiguredPower<?, ?>> power = ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, powerEntry.getKey());
-			Optional<Holder<ConfiguredPower<?, ?>>> configuredPower = powerRegistry.getHolder(power).filter(Holder::isBound);
+			Optional<Holder.Reference<ConfiguredPower<?, ?>>> configuredPower = powerRegistry.getHolder(power).filter(Holder::isBound);
 			if (configuredPower.isEmpty()) {
 				Apoli.LOGGER.warn("Received missing power {} from server for entity {}", power, this.owner.getScoreboardName());
 				continue;

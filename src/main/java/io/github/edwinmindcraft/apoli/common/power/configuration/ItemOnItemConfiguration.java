@@ -60,9 +60,9 @@ public record ItemOnItemConfiguration(Holder<ConfiguredItemCondition<?, ?>> usin
 			stack.setValue(on.getValue().split(this.resultFromOnStack()));
 		else
 			stack.setValue(on.getValue());
-		ConfiguredItemAction.execute(this.resultItemAction(), entity.level, stack);
-		ConfiguredItemAction.execute(this.usingItemAction(), entity.level, using);
-		ConfiguredItemAction.execute(this.onItemAction(), entity.level, on);
+		ConfiguredItemAction.execute(this.resultItemAction(), entity.level(), stack);
+		ConfiguredItemAction.execute(this.usingItemAction(), entity.level(), using);
+		ConfiguredItemAction.execute(this.onItemAction(), entity.level(), on);
 		if (this.newStack() != null || this.resultItemAction().isBound()) {
 			if (slot.getItem().isEmpty())
 				slot.set(stack.getValue());

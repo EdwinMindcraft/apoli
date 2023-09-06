@@ -6,6 +6,7 @@ import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.BiomeCondition;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 
@@ -14,7 +15,7 @@ public class CategoryBiomeCondition extends BiomeCondition<FieldConfiguration<Ta
 
     public CategoryBiomeCondition() {
         super(FieldConfiguration.codec(SerializableDataTypes.STRING.xmap(s ->
-                TagKey.create(Registry.BIOME_REGISTRY, Apoli.identifier("category/" + s)),
+                TagKey.create(Registries.BIOME, Apoli.identifier("category/" + s)),
                 (TagKey<Biome> tagKey) -> tagKey.location().getPath().replaceFirst("category/", "")), "category"));
     }
 

@@ -1,5 +1,6 @@
 package io.github.apace100.apoli.util;
 
+import com.google.common.collect.Sets;
 import io.github.apace100.apoli.mixin.ItemSlotArgumentTypeAccessor;
 import io.github.apace100.calio.util.ArgumentWrapper;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
@@ -10,6 +11,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCond
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.InventoryPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.InventoryConfiguration;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -23,22 +25,41 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class InventoryUtil {
+
+    private static final SlotArgument SLOT_ARGUMENT = new SlotArgument();
 
     public enum InventoryType {
         INVENTORY,
         POWER
     }
 
+    public enum ProcessMode {
+        STACKS(stack -> 1),
+        ITEMS(ItemStack::getCount);
+
+        private final Function<ItemStack, Integer> processor;
+
+        ProcessMode(Function<ItemStack, Integer> processor) {
+            this.processor = processor;
+        }
+
+        public Function<ItemStack, Integer> getProcessor() {
+            return processor;
+        }
+    }
+
     public static Set<Integer> getSlots(ListConfiguration<ArgumentWrapper<Integer>> slotArgumentTypes) {
         Set<Integer> slots = new HashSet<>();
 
         if (slotArgumentTypes.entries().isEmpty()) {
-            SlotArgument itemSlotArgumentType = new SlotArgument();
-            Map<String, Integer> slotNamesWithId = ((ItemSlotArgumentTypeAccessor) itemSlotArgumentType).getSlotNamesToSlotCommandId();
+            Map<String, Integer> slotNamesWithId = ((ItemSlotArgumentTypeAccessor) SLOT_ARGUMENT).getSlotNamesToSlotCommandId();
             slots.addAll(slotNamesWithId.values());
         } else {
             for (ArgumentWrapper<Integer> slotArgumentType : slotArgumentTypes.entries()) {
@@ -49,25 +70,80 @@ public class InventoryUtil {
         return slots;
     }
 
+
+    public static int checkInventory(Optional<Holder<ConfiguredItemCondition<?, ?>>> itemCondition, ListConfiguration<ArgumentWrapper<Integer>> slotArgumentTypes, Entity entity, ConfiguredPower<InventoryConfiguration, InventoryPower> inventoryPower, Function<ItemStack, Integer> processor) {
+        Set<Integer> slots = getSlots(slotArgumentTypes);
+        deduplicateSlots(entity, slots);
+        int matches = 0;
+
+        if (inventoryPower == null) {
+            for (int slot : slots) {
+
+                SlotAccess slotAccess = entity.getSlot(slot);
+                if (slotAccess == SlotAccess.NULL) {
+                    continue;
+                }
+
+                ItemStack stack = slotAccess.get();
+                if ((itemCondition.isEmpty() && !stack.isEmpty()) || ConfiguredItemCondition.check(itemCondition.get(), entity.level(), stack)) {
+                    matches += processor.apply(stack);
+                }
+            }
+        } else {
+            for (int slot : slots) {
+
+                if (slot < 0 || slot >= inventoryPower.getFactory().getInventory(inventoryPower, entity).getContainerSize()) {
+                    continue;
+                }
+
+                ItemStack stack = inventoryPower.getFactory().getInventory(inventoryPower, entity).getItem(slot);
+                if ((itemCondition.isEmpty() && !stack.isEmpty()) || ConfiguredItemCondition.check(itemCondition.get(), entity.level(), stack)) {
+                    matches += processor.apply(stack);
+                }
+            }
+        }
+
+        return matches;
+    }
+
     public static void modifyInventory(ListConfiguration<ArgumentWrapper<Integer>> slotArgumentTypes,
                                        Holder<ConfiguredEntityAction<?, ?>> entityAction,
                                        Holder<ConfiguredItemCondition<?, ?>> itemCondition,
                                        Holder<ConfiguredItemAction<?, ?>> itemAction,
-                                       Entity entity, Optional<ResourceLocation> powerId) {
+                                       Entity entity, Optional<ResourceLocation> powerId,
+                                       Function<ItemStack, Integer> processor, int limit) {
+        if(limit <= 0) {
+            limit = Integer.MAX_VALUE;
+        }
 
         Set<Integer> slots = getSlots(slotArgumentTypes);
+        deduplicateSlots(entity, slots);
+        int counter = 0;
 
         if (powerId.isEmpty()) {
-            for (Integer slot : slots) {
+            for (int slot : slots) {
                 SlotAccess stackReference = entity.getSlot(slot);
                 if (stackReference != SlotAccess.NULL) {
                     ItemStack currentItemStack = stackReference.get();
                     if (!currentItemStack.isEmpty()) {
-                        if (ConfiguredItemCondition.check(itemCondition, entity.level, currentItemStack)) {
+                        if (ConfiguredItemCondition.check(itemCondition, entity.level(), currentItemStack)) {
                             ConfiguredEntityAction.execute(entityAction, entity);
-                            Mutable<ItemStack> newStack = new MutableObject<>(currentItemStack);
-                            ConfiguredItemAction.execute(itemAction, entity.level, newStack);
-                            stackReference.set(newStack.getValue());
+                            int amount = processor.apply(currentItemStack);
+                            for(int i = 0; i < amount; i++) {
+                                Mutable<ItemStack> newStack = new MutableObject<>(currentItemStack);
+                                ConfiguredItemAction.execute(itemAction, entity.level(), newStack);
+                                stackReference.set(newStack.getValue());
+
+                                counter += 1;
+
+                                if(counter >= limit) {
+                                    break;
+                                }
+                            }
+
+                            if(counter >= limit) {
+                                break;
+                            }
                         }
                     }
                 }
@@ -79,16 +155,17 @@ public class InventoryUtil {
                     .map(x -> x.getPower(powerId.get())).map(Holder::value).orElse(null);
             if (power == null || !(power.getFactory() instanceof InventoryPower)) return;
             ConfiguredPower<InventoryConfiguration, InventoryPower> inventoryPower = (ConfiguredPower<InventoryConfiguration, InventoryPower>)power;
-            slots.removeIf(slot -> slot > inventoryPower.getFactory().getSize());
-            for (int i = 0; i < inventoryPower.getFactory().getSize(); i++) {
+            int inventorySize = inventoryPower.getFactory().getSize(inventoryPower, entity);
+            slots.removeIf(slot -> slot > inventorySize);
+            for (int i = 0; i < inventorySize; i++) {
                 if (!slots.isEmpty() && !slots.contains(i)) continue;
                 Container container = inventoryPower.getFactory().getInventory(inventoryPower, entity);
                 ItemStack currentItemStack = container.getItem(i);
                 if (!currentItemStack.isEmpty()) {
-                    if (ConfiguredItemCondition.check(itemCondition, entity.level, currentItemStack)) {
+                    if (ConfiguredItemCondition.check(itemCondition, entity.level(), currentItemStack)) {
                         ConfiguredEntityAction.execute(entityAction, entity);
                         Mutable<ItemStack> newStack = new MutableObject<>(currentItemStack);
-                        ConfiguredItemAction.execute(itemAction, entity.level, newStack);
+                        ConfiguredItemAction.execute(itemAction, entity.level(), newStack);
                         container.setItem(i, newStack.getValue());
                     }
                 }
@@ -111,10 +188,10 @@ public class InventoryUtil {
                 SlotAccess stackReference = entity.getSlot(slot);
                 if (stackReference != SlotAccess.NULL) {
                     ItemStack currentItemStack = stackReference.get();
-                    if (ConfiguredItemCondition.check(itemCondition, entity.level, currentItemStack)) {
+                    if (ConfiguredItemCondition.check(itemCondition, entity.level(), currentItemStack)) {
                         ConfiguredEntityAction.execute(entityAction, entity);
                         Mutable<ItemStack> newStack = new MutableObject<>(replacementStack.copy());
-                        ConfiguredItemAction.execute(itemAction, entity.level, newStack);
+                        ConfiguredItemAction.execute(itemAction, entity.level(), newStack);
                         stackReference.set(newStack.getValue());
                     }
                 }
@@ -126,15 +203,16 @@ public class InventoryUtil {
                     .map(x -> x.getPower(powerId.get())).map(Holder::value).orElse(null);
             if (power == null || !(power.getFactory() instanceof InventoryPower)) return;
             ConfiguredPower<InventoryConfiguration, InventoryPower> inventoryPower = (ConfiguredPower<InventoryConfiguration, InventoryPower>)power;
-            slots.removeIf(slot -> slot > inventoryPower.getFactory().getSize());
-            for (int i = 0; i < inventoryPower.getFactory().getSize(); i++) {
+            int inventorySize = inventoryPower.getFactory().getSize(inventoryPower, entity);
+            slots.removeIf(slot -> slot > inventorySize);
+            for (int i = 0; i < inventorySize; i++) {
                 if (!slots.isEmpty() && !slots.contains(i)) continue;
                 Container container = inventoryPower.getFactory().getInventory(inventoryPower, entity);
                 ItemStack currentItemStack = container.getItem(i);
-                if (ConfiguredItemCondition.check(itemCondition, entity.level, currentItemStack)) {
+                if (ConfiguredItemCondition.check(itemCondition, entity.level(), currentItemStack)) {
                     ConfiguredEntityAction.execute(entityAction, entity);
                     Mutable<ItemStack> newStack = new MutableObject<>(replacementStack.copy());
-                    ConfiguredItemAction.execute(itemAction, entity.level, newStack);
+                    ConfiguredItemAction.execute(itemAction, entity.level(), newStack);
                     container.setItem(i, newStack.getValue());
                 }
             }
@@ -157,10 +235,10 @@ public class InventoryUtil {
                 if (stackReference != SlotAccess.NULL) {
                     ItemStack currentItemStack = stackReference.get();
                     if (!currentItemStack.isEmpty()) {
-                        if (ConfiguredItemCondition.check(itemCondition, entity.level, currentItemStack)) {
+                        if (ConfiguredItemCondition.check(itemCondition, entity.level(), currentItemStack)) {
                             ConfiguredEntityAction.execute(entityAction, entity);
                             Mutable<ItemStack> newStack = new MutableObject<>(currentItemStack.copy());
-                            ConfiguredItemAction.execute(itemAction, entity.level, newStack);
+                            ConfiguredItemAction.execute(itemAction, entity.level(), newStack);
                             throwItem(entity, currentItemStack, throwRandomly, retainOwnership);
                             stackReference.set(ItemStack.EMPTY);
                         }
@@ -174,16 +252,17 @@ public class InventoryUtil {
                     .map(x -> x.getPower(powerId.get())).map(Holder::value).orElse(null);
             if (power == null || !(power.getFactory() instanceof InventoryPower)) return;
             ConfiguredPower<InventoryConfiguration, InventoryPower> inventoryPower = (ConfiguredPower<InventoryConfiguration, InventoryPower>)power;
-            slots.removeIf(slot -> slot > inventoryPower.getFactory().getSize());
-            for (int i = 0; i < inventoryPower.getFactory().getSize(); i++) {
+            int containerSize = inventoryPower.getFactory().getSize(inventoryPower, entity);
+            slots.removeIf(slot -> slot > containerSize);
+            for (int i = 0; i < containerSize; i++) {
                 if (!slots.isEmpty() && !slots.contains(i)) continue;
                 Container container = inventoryPower.getFactory().getInventory(inventoryPower, entity);
                 ItemStack currentItemStack = container.getItem(i);
                 if (!currentItemStack.isEmpty()) {
-                    if (ConfiguredItemCondition.check(itemCondition, entity.level, currentItemStack)) {
+                    if (ConfiguredItemCondition.check(itemCondition, entity.level(), currentItemStack)) {
                         ConfiguredEntityAction.execute(entityAction, entity);
                         Mutable<ItemStack> newStack = new MutableObject<>(currentItemStack.copy());
-                        ConfiguredItemAction.execute(itemAction, entity.level, newStack);
+                        ConfiguredItemAction.execute(itemAction, entity.level(), newStack);
                         throwItem(entity, currentItemStack, throwRandomly, retainOwnership);
                         container.setItem(i, ItemStack.EMPTY);
                     }
@@ -196,10 +275,10 @@ public class InventoryUtil {
     public static void throwItem(Entity thrower, ItemStack itemStack, boolean throwRandomly, boolean retainOwnership) {
 
         if (itemStack.isEmpty()) return;
-        if (thrower instanceof Player playerEntity && playerEntity.level.isClientSide) playerEntity.swing(InteractionHand.MAIN_HAND);
+        if (thrower instanceof Player playerEntity && playerEntity.level().isClientSide) playerEntity.swing(InteractionHand.MAIN_HAND);
 
         double yOffset = thrower.getEyeY() - 0.30000001192092896D;
-        ItemEntity itemEntity = new ItemEntity(thrower.level, thrower.getX(), yOffset, thrower.getZ(), itemStack);
+        ItemEntity itemEntity = new ItemEntity(thrower.level(), thrower.getX(), yOffset, thrower.getZ(), itemStack);
         itemEntity.setPickUpDelay(40);
 
         Random random = new Random();
@@ -228,8 +307,69 @@ public class InventoryUtil {
             );
         }
 
-        thrower.level.addFreshEntity(itemEntity);
+        thrower.level().addFreshEntity(itemEntity);
 
     }
 
+    /*
+    Includes the optimisations done in https://github.com/apace100/apoli/pull/132 prior to it releasing in Origins Fabric.
+    There's no way I would've let the unoptimised version of this be present...
+     */
+    public static void forEachStack(Entity entity, Consumer<Mutable<ItemStack>> itemStackConsumer) {
+        int skip = getDuplicatedSlotIndex(entity);
+
+        for(int slot : ((ItemSlotArgumentTypeAccessor) SLOT_ARGUMENT).getSlotNamesToSlotCommandId().values()) {
+            if (slot == skip) {
+                skip = Integer.MIN_VALUE;
+                continue;
+            }
+            SlotAccess stackReference = entity.getSlot(slot);
+            if (stackReference == SlotAccess.NULL) continue;
+
+            ItemStack itemStack = stackReference.get();
+            if (itemStack.isEmpty()) continue;
+            Mutable<ItemStack> mutable = new MutableObject<>(itemStack);
+            itemStackConsumer.accept(mutable);
+            stackReference.set(mutable.getValue());
+        }
+
+        Optional<IPowerContainer> optionalPowerContainer = IPowerContainer.get(entity).resolve();
+        if(optionalPowerContainer.isPresent()) {
+            IPowerContainer phc = optionalPowerContainer.get();
+            List<ConfiguredPower<InventoryConfiguration, InventoryPower>> inventoryPowers = phc.getPowers(ApoliPowers.INVENTORY.get()).stream().filter(Holder::isBound).map(Holder::value).toList();
+            for(ConfiguredPower<InventoryConfiguration, InventoryPower> inventoryPower : inventoryPowers) {
+                int inventorySize = inventoryPower.getFactory().getSize(inventoryPower, entity);
+                for(int index = 0; index < inventorySize; index++) {
+                    ItemStack stack = inventoryPower.getFactory().getInventory(inventoryPower, entity).getItem(index);
+                    if(stack.isEmpty()) {
+                        continue;
+                    }
+                    Mutable<ItemStack> mutable = new MutableObject<>(stack);
+                    itemStackConsumer.accept(mutable);
+                    inventoryPower.getFactory().getInventory(inventoryPower, entity).setItem(index, mutable.getValue());
+                }
+            }
+        }
+    }
+
+
+    /*
+    Includes the optimisations done in https://github.com/apace100/apoli/pull/132 prior to it releasing in Origins Fabric.
+    There's no way I would've let the unoptimised version of this be present...
+     */
+    private static void deduplicateSlots(Entity entity, Set<Integer> slots) {
+        int hotbarSlot = getDuplicatedSlotIndex(entity);
+        if(hotbarSlot != Integer.MIN_VALUE && slots.contains(hotbarSlot)) {
+            Integer mainHandSlot = ((ItemSlotArgumentTypeAccessor) SLOT_ARGUMENT).getSlotNamesToSlotCommandId().get("weapon.mainhand");
+            slots.remove(mainHandSlot);
+        }
+    }
+
+    private static int getDuplicatedSlotIndex(Entity entity) {
+        if(entity instanceof Player player) {
+            int selectedSlot = player.getInventory().selected;
+            return ((ItemSlotArgumentTypeAccessor) SLOT_ARGUMENT).getSlotNamesToSlotCommandId().get("hotbar." + selectedSlot);
+        }
+        return Integer.MIN_VALUE;
+    }
 }

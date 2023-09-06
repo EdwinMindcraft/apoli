@@ -26,7 +26,7 @@ public class TooltipPower extends PowerFactory<TooltipConfiguration> {
 
 	public void tryAdd(ConfiguredPower<TooltipConfiguration, ?> config, Entity entity, ItemStack stack, List<Component> tooltips) {
 		TooltipConfiguration configuration = config.getConfiguration();
-		if (ConfiguredItemCondition.check(configuration.itemCondition(), entity.level, stack))
+		if (ConfiguredItemCondition.check(configuration.itemCondition(), entity.level(), stack))
 			tooltips.addAll(configuration.components().entries());
 	}
 }

@@ -16,6 +16,6 @@ public class PlaySoundAction extends EntityAction<PlaySoundConfiguration> {
 	@Override
 	public void execute(PlaySoundConfiguration configuration, Entity entity) {
 		SoundSource source = entity instanceof Player ? SoundSource.PLAYERS : entity instanceof Monster ? SoundSource.HOSTILE : SoundSource.NEUTRAL;
-		entity.level.playSound(null, (entity).getX(), (entity).getY(), (entity).getZ(), configuration.sound(), source, configuration.volume(), configuration.pitch());
+		entity.level().playSound(null, (entity).getX(), (entity).getY(), (entity).getZ(), configuration.sound(), source, configuration.volume(), configuration.pitch());
 	}
 }

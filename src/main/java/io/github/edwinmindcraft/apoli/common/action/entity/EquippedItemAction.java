@@ -16,6 +16,6 @@ public class EquippedItemAction extends EntityAction<EquippedItemConfiguration> 
 	@Override
 	public void execute(EquippedItemConfiguration configuration, Entity entity) {
 		if (entity instanceof LivingEntity living)
-			ConfiguredItemAction.execute(configuration.action(), entity.level, VariableAccess.slot(living, configuration.slot()));
+			ConfiguredItemAction.execute(configuration.action(), entity.level(), VariableAccess.slot(living, configuration.slot()));
 	}
 }

@@ -1,6 +1,6 @@
 package io.github.apace100.apoli.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -12,5 +12,5 @@ public interface GameHudRender {
 
 	List<GameHudRender> HUD_RENDERS = new ArrayList<>();
 
-	void render(PoseStack matrixStack, float tickDelta);
+	void render(GuiGraphics matrixStack, float tickDelta);
 }

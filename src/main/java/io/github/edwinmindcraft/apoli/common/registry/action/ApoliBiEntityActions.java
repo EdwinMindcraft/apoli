@@ -22,7 +22,7 @@ import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.BIEN
 public class ApoliBiEntityActions {
 	public static final BiConsumer<ConfiguredBiEntityAction<?, ?>, Pair<Entity, Entity>> EXECUTOR = (action, pair) -> action.execute(pair.getKey(), pair.getValue());
 	public static final BiPredicate<ConfiguredBiEntityCondition<?, ?>, Pair<Entity, Entity>> PREDICATE = (condition, pair) -> condition.check(pair.getKey(), pair.getValue());
-	public static final Predicate<Pair<Entity, Entity>> SERVERSIDE_PREDICATE = (pair) -> !pair.getLeft().level.isClientSide;
+	public static final Predicate<Pair<Entity, Entity>> SERVERSIDE_PREDICATE = (pair) -> !pair.getLeft().level().isClientSide;
 
 	private static <U extends BiEntityAction<?>> RegistryObject<U> of(String name) {
 		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.BIENTITY_ACTION_KEY.location(), Apoli.MODID);

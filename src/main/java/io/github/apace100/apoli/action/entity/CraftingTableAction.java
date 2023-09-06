@@ -15,7 +15,7 @@ public class CraftingTableAction extends SimpleEntityAction {
 	public static void action(Entity entity) {
 		if (!(entity instanceof Player player)) return;
 
-		player.openMenu(new SimpleMenuProvider((syncId, inventory, _player) -> new CraftingMenu(syncId, inventory, ContainerLevelAccess.create(_player.level, _player.blockPosition())), TITLE));
+		player.openMenu(new SimpleMenuProvider((syncId, inventory, _player) -> new CraftingMenu(syncId, inventory, ContainerLevelAccess.create(_player.level(), _player.blockPosition())), TITLE));
 		player.awardStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
 	}
 

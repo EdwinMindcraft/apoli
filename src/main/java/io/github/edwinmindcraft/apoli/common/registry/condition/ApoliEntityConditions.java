@@ -55,7 +55,7 @@ public class ApoliEntityConditions {
 	public static final RegistryObject<DelegatedEntityCondition<ConditionStreamConfiguration<ConfiguredEntityCondition<?, ?>, Entity>>> AND = of("and");
 	public static final RegistryObject<DelegatedEntityCondition<ConditionStreamConfiguration<ConfiguredEntityCondition<?, ?>, Entity>>> OR = of("or");
 
-	public static final RegistryObject<SimpleEntityCondition> DAYTIME = register("daytime", entity -> entity.level.getDayTime() % 24000L < 13000L);
+	public static final RegistryObject<SimpleEntityCondition> DAYTIME = register("daytime", entity -> entity.level().getDayTime() % 24000L < 13000L);
 	public static final RegistryObject<SimpleEntityCondition> FALL_FLYING = registerLiving("fall_flying", LivingEntity::isFallFlying);
 	public static final RegistryObject<SimpleEntityCondition> EXPOSED_TO_SUN = register("exposed_to_sun", SimpleEntityCondition::isExposedToSun);
 	public static final RegistryObject<SimpleEntityCondition> IN_RAIN = register("in_rain", x -> ((EntityAccessor) x).callIsBeingRainedOn());
@@ -74,7 +74,7 @@ public class ApoliEntityConditions {
 	public static final RegistryObject<FloatComparingEntityCondition> HEALTH = registerFloatLiving("health", LivingEntity::getHealth);
 	public static final RegistryObject<FloatComparingEntityCondition> RELATIVE_HEALTH = registerFloatLiving("relative_health", t -> t.getHealth() / t.getMaxHealth());
 	public static final RegistryObject<FloatComparingEntityCondition> FALL_DISTANCE = registerFloat("fall_distance", t -> t.fallDistance);
-	public static final RegistryObject<IntComparingEntityCondition> TIME_OF_DAY = registerInt("time_of_day", t -> Math.toIntExact(t.level.getDayTime() % 24000L));
+	public static final RegistryObject<IntComparingEntityCondition> TIME_OF_DAY = registerInt("time_of_day", t -> Math.toIntExact(t.level().getDayTime() % 24000L));
 	public static final RegistryObject<IntComparingEntityCondition> AIR = registerInt("air", Entity::getAirSupply);
 	public static final RegistryObject<IntComparingEntityCondition> FOOD_LEVEL = registerIntPlayer("food_level", x -> x.getFoodData().getFoodLevel());
 	public static final RegistryObject<IntComparingEntityCondition> XP_LEVELS = registerIntPlayer("xp_levels", x -> x.experienceLevel);
@@ -89,11 +89,11 @@ public class ApoliEntityConditions {
 	public static final RegistryObject<PowerCondition> POWER = register("power", PowerCondition::new);
 	public static final RegistryObject<FluidHeightCondition> FLUID_HEIGHT = register("fluid_height", FluidHeightCondition::new);
 	public static final RegistryObject<OnBlockCondition> ON_BLOCK = register("on_block", OnBlockCondition::new);
-	public static final RegistryObject<HolderBasedEntityCondition<ConfiguredBlockCondition<?, ?>>> IN_BLOCK = register("in_block", () -> HolderBasedEntityCondition.required(ConfiguredBlockCondition.required("block_condition"), (entity, configuration) -> ConfiguredBlockCondition.check(configuration, entity.level, entity.blockPosition())));
+	public static final RegistryObject<HolderBasedEntityCondition<ConfiguredBlockCondition<?, ?>>> IN_BLOCK = register("in_block", () -> HolderBasedEntityCondition.required(ConfiguredBlockCondition.required("block_condition"), (entity, configuration) -> ConfiguredBlockCondition.check(configuration, entity.level(), entity.blockPosition())));
 	public static final RegistryObject<ResourceCondition> RESOURCE = register("resource", ResourceCondition::new);
 	public static final RegistryObject<SingleFieldEntityCondition<ResourceKey<Level>>> DIMENSION = register("dimension", SerializableDataTypes.DIMENSION.fieldOf("dimension"), (entity, dimension) -> entity.getCommandSenderWorld().dimension().equals(dimension));
 	public static final RegistryObject<SingleFieldEntityCondition<MobType>> ENTITY_GROUP = register("entity_group", SerializableDataTypes.ENTITY_GROUP.fieldOf("group"), (entity, group) -> entity instanceof LivingEntity living && living.getMobType().equals(group));
-	public static final RegistryObject<HolderBasedEntityCondition<ConfiguredItemCondition<?, ?>>> USING_ITEM = register("using_item", () -> HolderBasedEntityCondition.optional(ConfiguredItemCondition.optional("item_condition"), (entity, configuration) -> entity instanceof LivingEntity living && living.isUsingItem() && ConfiguredItemCondition.check(configuration, living.level, living.getItemInHand(living.getUsedItemHand()))));
+	public static final RegistryObject<HolderBasedEntityCondition<ConfiguredItemCondition<?, ?>>> USING_ITEM = register("using_item", () -> HolderBasedEntityCondition.optional(ConfiguredItemCondition.optional("item_condition"), (entity, configuration) -> entity instanceof LivingEntity living && living.isUsingItem() && ConfiguredItemCondition.check(configuration, living.level(), living.getItemInHand(living.getUsedItemHand()))));
 	public static final RegistryObject<SingleFieldEntityCondition<ResourceLocation>> PREDICATE_CONDITION = register("predicate", ResourceLocation.CODEC.fieldOf("predicate"), SingleFieldEntityCondition::checkPredicate);
 	public static final RegistryObject<EquippedItemCondition> EQUIPPED_ITEM = register("equipped_item", EquippedItemCondition::new);
 	public static final RegistryObject<CommandCondition> COMMAND = register("command", CommandCondition::new);

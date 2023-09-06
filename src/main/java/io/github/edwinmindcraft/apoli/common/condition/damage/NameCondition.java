@@ -13,6 +13,6 @@ public class NameCondition extends DamageCondition<FieldConfiguration<String>> {
 
 	@Override
 	public boolean check(FieldConfiguration<String> configuration, DamageSource source, float amount) {
-		return configuration.value().equals(source.msgId);
+		return configuration.value().equals(source.getMsgId());
 	}
 }

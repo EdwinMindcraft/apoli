@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class ModifyFoodPower extends PowerFactory<ModifyFoodConfiguration> {
 
 	public static List<ConfiguredPower<ModifyFoodConfiguration, ModifyFoodPower>> getValidPowers(Entity source, ItemStack stack) {
-		return getValidPowers(source, source.level, stack);
+		return getValidPowers(source, source.level(), stack);
 	}
 
 	public static List<ConfiguredPower<ModifyFoodConfiguration, ModifyFoodPower>> getValidPowers(Entity source, Level level, ItemStack stack) {

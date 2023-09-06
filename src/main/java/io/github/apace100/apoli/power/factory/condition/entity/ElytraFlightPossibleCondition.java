@@ -31,7 +31,7 @@ public class ElytraFlightPossibleCondition extends EntityCondition<ElytraFlightP
 		*/
 		boolean state = true;
 		if (config.checkState())
-			state = !livingEntity.isOnGround() && !livingEntity.isFallFlying() && !livingEntity.isInWater() && !livingEntity.hasEffect(MobEffects.LEVITATION);
+			state = !livingEntity.onGround() && !livingEntity.isFallFlying() && !livingEntity.isInWater() && !livingEntity.hasEffect(MobEffects.LEVITATION);
 		return ability && state;
 	}
 

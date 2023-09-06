@@ -26,7 +26,7 @@ public class ActionOnBlockUsePower extends PowerFactory<BlockInteractionConfigur
 	}
 
 	public Optional<InteractionResult> tryExecute(ConfiguredPower<BlockInteractionConfiguration, ?> configuration, Entity entity, BlockPos pos, Direction direction, InteractionHand hand) {
-		if (entity instanceof LivingEntity living && configuration.getConfiguration().check(entity.level, pos, direction, hand, living.getItemInHand(hand)))
+		if (entity instanceof LivingEntity living && configuration.getConfiguration().check(entity.level(), pos, direction, hand, living.getItemInHand(hand)))
 			return Optional.of(configuration.getConfiguration().executeAction(entity, pos, direction, hand));
 		return Optional.empty();
 	}

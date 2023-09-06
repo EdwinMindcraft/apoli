@@ -10,17 +10,12 @@ import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliRecipeSerializers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.inventory.CraftingMenu;
-import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.CustomRecipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeHooks;
 import org.jetbrains.annotations.NotNull;
@@ -32,21 +27,24 @@ import java.util.stream.Collectors;
 
 public class ModifiedCraftingRecipe extends CustomRecipe {
 
-	public ModifiedCraftingRecipe(ResourceLocation id) {
-		super(id);
-	}
+    public ModifiedCraftingRecipe(ResourceLocation id, CraftingBookCategory category) {
+        super(id, category);
+    }
 
 	@Override
 	public boolean matches(@NotNull CraftingContainer inv, @NotNull Level world) {
-		Player player = getCraftingPlayer(inv);
-		List<ConfiguredPower<ModifyCraftingConfiguration, ModifyCraftingPower>> recipes = this.getRecipes(player);
-		if (recipes.isEmpty())
-			return false;
-		Optional<CraftingRecipe> original = this.getOriginalMatch(inv, player);
-		return original.isPresent() && recipes.stream().anyMatch(r -> r.getConfiguration().doesApply(inv, original.get(), world));
+        if (inv instanceof TransientCraftingContainer craftingMenu) {
+            Player player = getCraftingPlayer(craftingMenu);
+            List<ConfiguredPower<ModifyCraftingConfiguration, ModifyCraftingPower>> recipes = this.getRecipes(player);
+            if (!recipes.isEmpty()) {
+                Optional<CraftingRecipe> original = this.getOriginalMatch(inv, player, world.registryAccess());
+                return original.isPresent() && recipes.stream().anyMatch(r -> r.getConfiguration().doesApply(inv, original.get(), world));
+            }
+        }
+        return false;
 	}
 
-	private static Player getCraftingPlayer(@NotNull CraftingContainer inv) {
+	private static Player getCraftingPlayer(@NotNull TransientCraftingContainer inv) {
 		Player player = ForgeHooks.getCraftingPlayer();
 		if (player != null)
 			return player;
@@ -54,19 +52,21 @@ public class ModifiedCraftingRecipe extends CustomRecipe {
 	}
 
 	@Override
-	public @NotNull ItemStack assemble(@NotNull CraftingContainer inv) {
-		Player player = getCraftingPlayer(inv);
-		if (player != null) {
-			Optional<CraftingRecipe> original = this.getOriginalMatch(inv, player);
-			if (original.isPresent()) {
-				Optional<ConfiguredPower<ModifyCraftingConfiguration, ModifyCraftingPower>> optional = this.getRecipes(player).stream().filter(r -> r.getConfiguration().doesApply(inv, original.get(), player.level)).findFirst();
-				if (optional.isPresent()) {
-					ItemStack result = optional.get().getConfiguration().createResult(inv, original.get(), player.level);
-					((PowerCraftingInventory) inv).setPower(optional.get());
-					return result;
-				}
-			}
-		}
+	public @NotNull ItemStack assemble(@NotNull CraftingContainer inv, @NotNull RegistryAccess access) {
+        if (inv instanceof TransientCraftingContainer craftingMenu) {
+            Player player = getCraftingPlayer(craftingMenu);
+            if (player != null) {
+                Optional<CraftingRecipe> original = this.getOriginalMatch(inv, player, access);
+                if (original.isPresent()) {
+                    Optional<ConfiguredPower<ModifyCraftingConfiguration, ModifyCraftingPower>> optional = this.getRecipes(player).stream().filter(r -> r.getConfiguration().doesApply(inv, original.get(), player.level())).findFirst();
+                    if (optional.isPresent()) {
+                        ItemStack result = optional.get().getConfiguration().createResult(inv, original.get(), player.level());
+                        ((PowerCraftingInventory) inv).setPower(optional.get());
+                        return result;
+                    }
+                }
+            }
+        }
 		return ItemStack.EMPTY;
 	}
 
@@ -80,12 +80,12 @@ public class ModifiedCraftingRecipe extends CustomRecipe {
 		return ApoliRecipeSerializers.MODIFIED.get();
 	}
 
-	public static Player getPlayerFromInventory(CraftingContainer inv) {
+	public static Player getPlayerFromInventory(TransientCraftingContainer inv) {
 		AbstractContainerMenu handler = inv.menu;
 		return getPlayerFromHandler(handler);
 	}
 
-	public static Optional<BlockPos> getBlockFromInventory(CraftingContainer inv) {
+	public static Optional<BlockPos> getBlockFromInventory(TransientCraftingContainer inv) {
 		AbstractContainerMenu handler = inv.menu;
 		if (handler instanceof CraftingMenu menu) {
 			return menu.access.evaluate((world, blockPos) -> blockPos);
@@ -99,12 +99,12 @@ public class ModifiedCraftingRecipe extends CustomRecipe {
 		return Lists.newArrayList();
 	}
 
-	private Optional<CraftingRecipe> getOriginalMatch(CraftingContainer inv, Player player) {
+	private Optional<CraftingRecipe> getOriginalMatch(CraftingContainer inv, Player player, RegistryAccess access) {
 		if (player != null && player.getServer() != null) {
-			final Level level = player.level;
+			final Level level = player.level();
 			return player.getServer().getRecipeManager().byType(RecipeType.CRAFTING).values().stream()
 					.filter((cr) -> !(cr instanceof ModifiedCraftingRecipe) && cr.matches(inv, level))
-					.min(Comparator.comparing((p_220247_) -> p_220247_.getResultItem().getDescriptionId()));
+					.min(Comparator.comparing((p_220247_) -> p_220247_.getResultItem(access).getDescriptionId()));
 		}
 		return Optional.empty();
 	}

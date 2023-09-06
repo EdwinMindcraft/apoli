@@ -25,8 +25,8 @@ public class HungerManagerMixin {
 	@Inject(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/food/FoodData;eat(IF)V", shift = At.Shift.AFTER))
 	private void executeAdditionalEatAction(Item item, ItemStack stack, LivingEntity living, CallbackInfo ci) {
 		if (living instanceof ModifiableFoodEntity mfe) {
-			ModifyFoodPower.execute(mfe.getCurrentModifyFoodPowers(), living, living.level, stack);
-			if (mfe.shouldSyncFood() && !living.level.isClientSide() && living instanceof ServerPlayer sp) {
+			ModifyFoodPower.execute(mfe.getCurrentModifyFoodPowers(), living, living.level(), stack);
+			if (mfe.shouldSyncFood() && !living.level().isClientSide() && living instanceof ServerPlayer sp) {
 				sp.connection.send(new ClientboundSetHealthPacket(living.getHealth(), this.foodLevel, this.saturationLevel));
 				mfe.resetFoodSync();
 			}

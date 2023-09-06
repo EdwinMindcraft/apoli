@@ -59,7 +59,7 @@ public class RaycastAction extends EntityAction<RaycastConfiguration> {
 				executeStepCommands(entity, origin, hitResult.getLocation(), commandInfo.commandAlongRay(), commandInfo.commandStep());
 			}
 			if (hitResult instanceof BlockHitResult bhr)
-				ConfiguredBlockAction.execute(actions.blockAction(), entity.level, bhr.getBlockPos(), bhr.getDirection());
+				ConfiguredBlockAction.execute(actions.blockAction(), entity.level(), bhr.getBlockPos(), bhr.getDirection());
 			if (hitResult instanceof EntityHitResult ehr)
 				ConfiguredBiEntityAction.execute(actions.biEntityAction(), entity, ehr.getEntity());
 			ConfiguredEntityAction.execute(actions.hitAction(), entity);
@@ -84,7 +84,7 @@ public class RaycastAction extends EntityAction<RaycastConfiguration> {
 
 	private static BlockHitResult performBlockRaycast(Entity source, Vec3 origin, Vec3 target, ClipContext.Block shapeType, ClipContext.Fluid fluidHandling) {
 		ClipContext context = new ClipContext(origin, target, shapeType, fluidHandling, source);
-		return source.level.clip(context);
+		return source.level().clip(context);
 	}
 
 	private static EntityHitResult performEntityRaycast(Entity source, Vec3 origin, Vec3 target, Holder<ConfiguredBiEntityCondition<?, ?>> biEntityCondition) {

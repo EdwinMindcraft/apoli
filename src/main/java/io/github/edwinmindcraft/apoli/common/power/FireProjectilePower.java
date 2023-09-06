@@ -61,17 +61,17 @@ public class FireProjectilePower extends ActiveCooldownPowerFactory<FireProjecti
 				return;
 			if (config.interval() == 0) {
 				config.playSound(entity);
-				if (!entity.level.isClientSide()) {
+				if (!entity.level().isClientSide()) {
 					for (; dataContainer.shotProjectiles < config.projectileCount(); dataContainer.shotProjectiles++) {
 						config.fireProjectile(entity);
 					}
 				}
 				dataContainer.reset();
-			} else if ((entity.getLevel().getGameTime() - this.getLastUseTime(configuration, entity)) % config.interval() == 0) {
+			} else if ((entity.level().getGameTime() - this.getLastUseTime(configuration, entity)) % config.interval() == 0) {
 				dataContainer.shotProjectiles += 1;
 				if (dataContainer.shotProjectiles <= config.projectileCount()) {
 					config.playSound(entity);
-					if (!entity.level.isClientSide())
+					if (!entity.level().isClientSide())
 						config.fireProjectile(entity);
 				} else
 					dataContainer.reset();

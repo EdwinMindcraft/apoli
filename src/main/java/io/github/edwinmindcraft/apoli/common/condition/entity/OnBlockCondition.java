@@ -14,6 +14,6 @@ public class OnBlockCondition extends EntityCondition<HolderConfiguration<Config
 
 	@Override
 	public boolean check(HolderConfiguration<ConfiguredBlockCondition<?, ?>> configuration, Entity entity) {
-		return entity.isOnGround() && ConfiguredBlockCondition.check(configuration.holder(), entity.level, new BlockPos(entity.getX(), entity.getBoundingBox().minY - 0.5000001D, entity.getZ()));
+		return entity.onGround() && ConfiguredBlockCondition.check(configuration.holder(), entity.level(), new BlockPos((int)entity.getX(), (int)(entity.getBoundingBox().minY - 0.5000001D), (int)entity.getZ()));
 	}
 }

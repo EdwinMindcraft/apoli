@@ -19,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
@@ -91,7 +92,8 @@ public record ReplaceLootTableConfiguration(Map<String, ResourceLocation> replac
             return false;
         }
         if(lootContext.hasParam(LootContextParams.ORIGIN)) {
-            BlockPos blockPos = new BlockPos(lootContext.getParam(LootContextParams.ORIGIN));
+            Vec3 origin = lootContext.getParam(LootContextParams.ORIGIN);
+            BlockPos blockPos = new BlockPos((int) origin.x(), (int) origin.y(), (int) origin.z());
             return ConfiguredBlockCondition.check(blockCondition(), lootContext.getLevel(), blockPos);
         }
         return true;

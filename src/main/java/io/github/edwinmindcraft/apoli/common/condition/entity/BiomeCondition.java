@@ -15,7 +15,7 @@ public class BiomeCondition extends EntityCondition<BiomeConfiguration> {
 
 	@Override
 	public boolean check(BiomeConfiguration configuration, Entity entity) {
-		Holder<Biome> biome = entity.level.getBiome(entity.blockPosition());
+		Holder<Biome> biome = entity.level().getBiome(entity.blockPosition());
 		if (!ConfiguredBiomeCondition.check(configuration.condition(), biome))
 			return false;
 		if (configuration.biomes().getContent().isEmpty()) //No biome

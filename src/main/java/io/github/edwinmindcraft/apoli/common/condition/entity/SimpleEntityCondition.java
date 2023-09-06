@@ -16,13 +16,13 @@ public class SimpleEntityCondition extends EntityCondition<NoConfiguration> {
 	}
 
 	public static boolean isExposedToSky(Entity entity) {
-		BlockPos bp = new BlockPos(entity.getX(), (double) Math.round(entity.getY()), entity.getZ());
+		BlockPos bp = new BlockPos((int)entity.getX(), (int) Math.round(entity.getY()), (int)entity.getZ());
 		if (entity.getVehicle() instanceof Boat) bp = bp.above();
-		return entity.level.canSeeSky(bp);
+		return entity.level().canSeeSky(bp);
 	}
 
 	public static boolean isExposedToSun(Entity entity) {
-		return entity.getLightLevelDependentMagicValue() > 0.5F && entity.getLevel().isDay() && !((EntityAccessor) entity).callIsBeingRainedOn() && isExposedToSky(entity);
+		return entity.getLightLevelDependentMagicValue() > 0.5F && entity.level().isDay() && !((EntityAccessor) entity).callIsBeingRainedOn() && isExposedToSky(entity);
 	}
 
 	private final Predicate<Entity> predicate;

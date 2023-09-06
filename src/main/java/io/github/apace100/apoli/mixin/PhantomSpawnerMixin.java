@@ -4,6 +4,7 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.levelgen.PhantomSpawner;
@@ -24,7 +25,7 @@ public class PhantomSpawnerMixin {
     private Player apoli$cachedPlayer;
 
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/dimension/DimensionType;hasSkyLight()Z", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void cachePlayerEntity(ServerLevel world, boolean spawnMonsters, boolean spawnAnimals, CallbackInfoReturnable<Integer> cir, RandomSource random, int i, Iterator var6, Player player, BlockPos blockpos) {
+    private void cachePlayerEntity(ServerLevel world, boolean spawnMonsters, boolean spawnAnimals, CallbackInfoReturnable<Integer> cir, RandomSource random, int i, Iterator var6, ServerPlayer player, BlockPos blockpos) {
         apoli$cachedPlayer = player;
     }
 

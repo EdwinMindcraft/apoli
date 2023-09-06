@@ -9,6 +9,7 @@ import io.github.edwinmindcraft.apoli.common.condition.damage.*;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
 import net.minecraft.core.HolderSet;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.tuple.Pair;
@@ -31,14 +32,14 @@ public class ApoliDamageConditions {
 
 	public static final RegistryObject<AmountCondition> AMOUNT = DAMAGE_CONDITIONS.register("amount", AmountCondition::new);
 	public static final RegistryObject<NameCondition> NAME = DAMAGE_CONDITIONS.register("name", NameCondition::new);
-	public static final RegistryObject<SimpleDamageCondition> FIRE = DAMAGE_CONDITIONS.register("fire", () -> new SimpleDamageCondition(DamageSource::isFire));
+	public static final RegistryObject<SimpleDamageCondition> FIRE = DAMAGE_CONDITIONS.register("fire", () -> new SimpleTagCondition(DamageTypeTags.IS_FIRE));
 	public static final RegistryObject<ProjectileCondition> PROJECTILE = DAMAGE_CONDITIONS.register("projectile", ProjectileCondition::new);
 	public static final RegistryObject<AttackerCondition> ATTACKER = DAMAGE_CONDITIONS.register("attacker", AttackerCondition::new);
-	public static final RegistryObject<SimpleDamageCondition> BYPASSES_ARMOR = DAMAGE_CONDITIONS.register("bypasses_armor", () -> new SimpleDamageCondition(DamageSource::isBypassArmor));
-	public static final RegistryObject<SimpleDamageCondition> EXPLOSIVE = DAMAGE_CONDITIONS.register("explosive", () -> new SimpleDamageCondition(DamageSource::isExplosion));
-	public static final RegistryObject<SimpleDamageCondition> FROM_FALLING = DAMAGE_CONDITIONS.register("from_falling", () -> new SimpleDamageCondition(DamageSource::isFall));
-	public static final RegistryObject<SimpleDamageCondition> UNBLOCKABLE = DAMAGE_CONDITIONS.register("unblockable", () -> new SimpleDamageCondition(DamageSource::isBypassMagic));
-	public static final RegistryObject<SimpleDamageCondition> OUT_OF_WORLD = DAMAGE_CONDITIONS.register("out_of_world", () -> new SimpleDamageCondition(DamageSource::isBypassInvul));
+	public static final RegistryObject<SimpleDamageCondition> BYPASSES_ARMOR = DAMAGE_CONDITIONS.register("bypasses_armor", () -> new SimpleTagCondition(DamageTypeTags.BYPASSES_ARMOR));
+	public static final RegistryObject<SimpleDamageCondition> EXPLOSIVE = DAMAGE_CONDITIONS.register("explosive", () -> new SimpleTagCondition(DamageTypeTags.IS_EXPLOSION));
+	public static final RegistryObject<SimpleDamageCondition> FROM_FALLING = DAMAGE_CONDITIONS.register("from_falling", () -> new SimpleTagCondition(DamageTypeTags.IS_FALL));
+	public static final RegistryObject<SimpleDamageCondition> UNBLOCKABLE = DAMAGE_CONDITIONS.register("unblockable", () -> new SimpleTagCondition(DamageTypeTags.BYPASSES_SHIELD));
+	public static final RegistryObject<SimpleDamageCondition> OUT_OF_WORLD = DAMAGE_CONDITIONS.register("out_of_world", () -> new SimpleTagCondition(DamageTypeTags.BYPASSES_INVULNERABILITY));
 
 	public static ConfiguredDamageCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 

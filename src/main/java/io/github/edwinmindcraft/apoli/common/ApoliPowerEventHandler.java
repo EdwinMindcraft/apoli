@@ -24,6 +24,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -68,7 +69,7 @@ public class ApoliPowerEventHandler {
 			return;
 		float speed = event.getNewSpeed();
 		//This is less than ideal since it fires two hooks, but hey, I do what I can.
-		boolean stateCheck = state.canHarvestBlock(event.getEntity().getLevel(), position.get(), event.getEntity());
+		boolean stateCheck = state.canHarvestBlock(event.getEntity().level(), position.get(), event.getEntity());
 		boolean forgeCheck = ForgeHooks.isCorrectToolForDrops(state, event.getEntity());
 		int toolFactor = forgeCheck ? 30 : 100;
 		float factor = hardness * toolFactor;
@@ -123,7 +124,7 @@ public class ApoliPowerEventHandler {
 			Consumer<Holder<ConfiguredPower<ModifyDamageDealtConfiguration, ModifyDamageDealtPower>>> otherConsumer = exec ?
 					x -> x.value().getFactory().execute(x.value(), sourceEntity, target) :
 					x -> { };
-			ModifyDamageDealtPower factory = source.isProjectile() ? ApoliPowers.MODIFY_PROJECTILE_DAMAGE.get() : ApoliPowers.MODIFY_DAMAGE_DEALT.get();
+			ModifyDamageDealtPower factory = source.is(DamageTypeTags.IS_PROJECTILE) ? ApoliPowers.MODIFY_PROJECTILE_DAMAGE.get() : ApoliPowers.MODIFY_DAMAGE_DEALT.get();
 			if (target instanceof LivingDamageCache pdc && pdc.getModifyDamageDealtPowers() != null)
 				amount = (float) IPowerContainer.modify(sourceEntity, factory, pdc.getModifyDamageDealtPowers(), amount, otherConsumer);
 			else {
@@ -223,7 +224,7 @@ public class ApoliPowerEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onPlayerDeath(LivingDeathEvent event) {
-		if (event.getEntity() instanceof Player player && !player.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
+		if (event.getEntity() instanceof Player player && !player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
 			IPowerContainer.getPowers(player, ApoliPowers.INVENTORY.get()).stream().map(Holder::value).forEach(inventory -> {
 				InventoryPower.tryDropItemsOnDeath(inventory, player);
 			});

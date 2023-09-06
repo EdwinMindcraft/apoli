@@ -9,6 +9,7 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.*;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,16 +41,16 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 	public static final Codec<ModifyPlayerSpawnConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.DIMENSION.fieldOf("dimension").forGetter(ModifyPlayerSpawnConfiguration::dimension),
 			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "dimension_distance_multiplier", 0F).forGetter(ModifyPlayerSpawnConfiguration::distanceMultiplier),
-			CalioCodecHelper.resourceKey(Registry.BIOME_REGISTRY).optionalFieldOf("biome").forGetter(x -> Optional.ofNullable(x.biome())),
+			CalioCodecHelper.resourceKey(Registries.BIOME).optionalFieldOf("biome").forGetter(x -> Optional.ofNullable(x.biome())),
 			CalioCodecHelper.optionalField(Codec.STRING, "spawn_strategy", "default").forGetter(ModifyPlayerSpawnConfiguration::strategy),
-			CalioCodecHelper.optionalField(SerializableDataType.registryKey(Registry.STRUCTURE_REGISTRY), "structure").forGetter(x -> Optional.ofNullable(x.structure())),
+			CalioCodecHelper.optionalField(SerializableDataType.registryKey(Registries.STRUCTURE), "structure").forGetter(x -> Optional.ofNullable(x.structure())),
 			CalioCodecHelper.optionalField(SerializableDataTypes.SOUND_EVENT, "respawn_sound").forGetter(x -> Optional.ofNullable(x.sound()))
 	).apply(instance, (t1, t2, t3, t4, t5, t6) -> new ModifyPlayerSpawnConfiguration(t1, t2, t3.orElse(null), t4, t5.orElse(null), t6.orElse(null))));
 
 
 	@Nullable
 	private static Pair<BlockPos, Holder<Structure>> getStructureLocation(Level world, @Nullable ResourceKey<Structure> structure, @Nullable TagKey<Structure> structureTag, ResourceKey<Level> dimension) {
-		Registry<Structure> registry = world.registryAccess().registryOrThrow(Registry.STRUCTURE_REGISTRY);
+		Registry<Structure> registry = world.registryAccess().registryOrThrow(Registries.STRUCTURE);
 		HolderSet<Structure> entryList = null;
 		String structureOrTagName = "";
 		if (structure != null) {
@@ -172,7 +173,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 
 				case "default":
 					if (this.distanceMultiplier() != 0) {
-						spawnToDimPos = new BlockPos(regularSpawn.getX() * this.distanceMultiplier(), regularSpawn.getY(), regularSpawn.getZ() * this.distanceMultiplier());
+						spawnToDimPos = new BlockPos((int) (regularSpawn.getX() * this.distanceMultiplier()), regularSpawn.getY(), (int) (regularSpawn.getZ() * this.distanceMultiplier()));
 					} else {
 						spawnToDimPos = new BlockPos(regularSpawn.getX(), regularSpawn.getY(), regularSpawn.getZ());
 					}
@@ -181,7 +182,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 				default:
 					Apoli.LOGGER.warn("This case does nothing. The game crashes if there is no spawn strategy set");
 					if (this.distanceMultiplier() != 0) {
-						spawnToDimPos = new BlockPos(regularSpawn.getX() * this.distanceMultiplier(), regularSpawn.getY(), regularSpawn.getZ() * this.distanceMultiplier());
+						spawnToDimPos = new BlockPos((int) (regularSpawn.getX() * this.distanceMultiplier()), regularSpawn.getY(), (int) (regularSpawn.getZ() * this.distanceMultiplier()));
 					} else {
 						spawnToDimPos = new BlockPos(regularSpawn.getX(), regularSpawn.getY(), regularSpawn.getZ());
 					}
@@ -216,7 +217,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 			}
 
 			if (tpPos != null) {
-				mutable = new BlockPos(tpPos.x, tpPos.y, tpPos.z).mutable();
+				mutable = new BlockPos((int) tpPos.x, (int) tpPos.y, (int) tpPos.z).mutable();
 				BlockPos spawnLocation = mutable;
 				world.getChunkSource().addRegionTicket(TicketType.START, new ChunkPos(spawnLocation), 11, Unit.INSTANCE);
 				return new Tuple<>(world, spawnLocation);

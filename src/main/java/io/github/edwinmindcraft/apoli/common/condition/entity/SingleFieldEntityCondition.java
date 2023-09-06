@@ -10,6 +10,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootDataType;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
@@ -18,14 +20,15 @@ import java.util.function.BiPredicate;
 
 public class SingleFieldEntityCondition<T> extends EntityCondition<FieldConfiguration<T>> {
 	public static boolean checkPredicate(Entity entity, ResourceLocation identifier) {
-		MinecraftServer server = entity.level.getServer();
+		MinecraftServer server = entity.level().getServer();
 		if (server != null) {
-			LootItemCondition lootCondition = server.getPredicateManager().get(identifier);
+			LootItemCondition lootCondition = server.getLootData().getElement(LootDataType.PREDICATE, identifier);
 			if (lootCondition != null) {
-				LootContext.Builder lootBuilder = (new LootContext.Builder((ServerLevel) entity.level))
+                LootParams lootBuilder = (new LootParams.Builder((ServerLevel) entity.level()))
 						.withParameter(LootContextParams.ORIGIN, entity.position())
-						.withOptionalParameter(LootContextParams.THIS_ENTITY, entity);
-				return lootCondition.test(lootBuilder.create(LootContextParamSets.COMMAND));
+						.withOptionalParameter(LootContextParams.THIS_ENTITY, entity)
+                        .create(LootContextParamSets.COMMAND);
+				return lootCondition.test(new LootContext.Builder(lootBuilder).create(null));
 			}
 		}
 		return false;

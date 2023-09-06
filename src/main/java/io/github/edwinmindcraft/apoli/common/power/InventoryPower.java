@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import org.apache.commons.compress.utils.CharsetNames;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
@@ -42,42 +43,13 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 		}
 	}
 
-	private int size;
-	private Function<Container, MenuConstructor> handler;
-
 	public InventoryPower() {
 		super(InventoryConfiguration.CODEC);
 	}
 
-	public void createHandler(ConfiguredPower<InventoryConfiguration, ?> configuration) {
-		if (size > 0 || handler != null) return;
-		switch (configuration.getConfiguration().containerType()) {
-			case DOUBLE_CHEST:
-				this.size = 54;
-				this.handler = inventory -> (i, playerInv, invPlayer) -> new ChestMenu(MenuType.GENERIC_9x6, i,
-						playerInv, inventory, 6);
-				break;
-			case CHEST:
-				this.size = 27;
-				this.handler = inventory -> (i, playerInv, invPlayer) -> new ChestMenu(MenuType.GENERIC_9x3, i,
-						playerInv, inventory, 3);
-				break;
-			case HOPPER:
-				this.size = 5;
-				this.handler = inventory -> (i, playerInv, invPlayer) -> new HopperMenu(i,
-						playerInv, inventory);
-				break;
-			case DISPENSER, DROPPER:
-			default:
-				this.size = 9;
-				this.handler = inventory -> (i, playerInv, invPlayer) -> new DispenserMenu(i, playerInv, inventory);
-				break;
-		}
-	}
-
 	@Override
 	public void activate(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
-		if (!player.level.isClientSide() && player instanceof Player ple && configuration.isActive(player))
+		if (!player.level().isClientSide() && player instanceof Player ple && configuration.isActive(player))
 			ple.openMenu(new SimpleMenuProvider(this.getMenuCreator(configuration, player), Component.translatable(configuration.getConfiguration().inventoryName())));
 	}
 
@@ -88,7 +60,7 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 
 	@Override
 	public boolean shouldDropOnDeath(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player, ItemStack stack) {
-		return this.shouldDropOnDeath(configuration, player) && ConfiguredItemCondition.check(configuration.getConfiguration().dropFilter(), player.level, stack);
+		return this.shouldDropOnDeath(configuration, player) && ConfiguredItemCondition.check(configuration.getConfiguration().dropFilter(), player.level(), stack);
 	}
 
 	@Override
@@ -98,53 +70,43 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 
 	@Override
 	public Container getInventory(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
-		return this.getData(configuration, player);
+		return this.getData(configuration, player).container;
 	}
 
 	@Override
 	public MenuConstructor getMenuCreator(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
-		return this.handler.apply(this.getData(configuration, player));
+		return this.getData(configuration, player).getMenuCreator();
 	}
 
-	public int getSize() {
-		return this.size;
+	public int getSize(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
+		return this.getData(configuration, player).size;
 	}
 
 	public void tryDropItemsOnLost(ConfiguredPower<InventoryConfiguration, InventoryPower> configured, Entity entity) {
 		if (!(entity instanceof Player player)) return;
-		for (int i = 0; i < size; ++i) {
+		for (int i = 0; i < getSize(configured, entity); ++i) {
 			ItemStack currentItemStack = configured.getFactory().getInventory(configured, player).getItem(i);
 			player.getInventory().placeItemBackInInventory(currentItemStack);
 		}
 	}
 
 
-	protected SimpleContainer getData(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer player) {
-		createHandler(configuration);
-		return configuration.getPowerData(player, () -> new SimpleContainer(this.size));
+	protected DataContainer getData(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer player) {
+        return configuration.getPowerData(player, () -> new DataContainer(configuration.getConfiguration()));
 	}
 
-	protected SimpleContainer getData(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
-		createHandler(configuration);
-		return configuration.getPowerData(player, () -> new SimpleContainer(this.size));
+	protected DataContainer getData(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
+		return configuration.getPowerData(player, () -> new DataContainer(configuration.getConfiguration()));
 	}
 
 	@Override
 	public void serialize(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
-		SimpleContainer data = this.getData(configuration, container);
-		NonNullList<ItemStack> stacks = NonNullList.withSize(data.getContainerSize(), ItemStack.EMPTY);
-		for (int i = 0; i < data.getContainerSize(); i++)
-			stacks.set(i, data.getItem(i));
-		ContainerHelper.saveAllItems(tag, stacks);
+		this.getData(configuration, container).serialize(tag);
 	}
 
 	@Override
 	public void deserialize(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
-		SimpleContainer data = this.getData(configuration, container);
-		NonNullList<ItemStack> stacks = NonNullList.withSize(data.getContainerSize(), ItemStack.EMPTY);
-		ContainerHelper.loadAllItems(tag, stacks);
-		for (int i = 0; i < data.getContainerSize(); i++)
-			data.setItem(i, stacks.get(i));
+        this.getData(configuration, container).deserialize(tag);
 	}
 
 	@Override
@@ -160,4 +122,57 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 		DISPENSER,
 		HOPPER
 	}
+
+    public static class DataContainer {
+        private final int size;
+        private final Function<Container, MenuConstructor> handler;
+        private final SimpleContainer container;
+
+        public DataContainer(InventoryConfiguration configuration) {
+            switch (configuration.containerType()) {
+                case DOUBLE_CHEST -> {
+                    this.size = 54;
+                    this.handler = inventory -> (i, playerInv, invPlayer) -> new ChestMenu(MenuType.GENERIC_9x6, i,
+                            playerInv, inventory, 6);
+                }
+                case CHEST -> {
+                    this.size = 27;
+                    this.handler = inventory -> (i, playerInv, invPlayer) -> new ChestMenu(MenuType.GENERIC_9x3, i,
+                            playerInv, inventory, 3);
+                }
+                case HOPPER -> {
+                    this.size = 5;
+                    this.handler = inventory -> (i, playerInv, invPlayer) -> new HopperMenu(i,
+                            playerInv, inventory);
+                }
+                default -> {
+                    this.size = 9;
+                    this.handler = inventory -> (i, playerInv, invPlayer) -> new DispenserMenu(i, playerInv, inventory);
+                }
+            }
+            this.container = new SimpleContainer(size);
+        }
+
+        public MenuConstructor getMenuCreator() {
+            return this.handler.apply(this.container);
+        }
+
+        public void serialize(CompoundTag tag) {
+            NonNullList<ItemStack> stacks = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
+            for (int i = 0; i < container.getContainerSize(); i++)
+                stacks.set(i, container.getItem(i));
+            ContainerHelper.saveAllItems(tag, stacks);
+        }
+
+        public void deserialize(CompoundTag tag) {
+            NonNullList<ItemStack> stacks = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
+            ContainerHelper.loadAllItems(tag, stacks);
+            for (int i = 0; i < container.getContainerSize(); i++)
+                container.setItem(i, stacks.get(i));
+        }
+
+        public void createHandler(InventoryConfiguration configuration) {
+
+        }
+    }
 }

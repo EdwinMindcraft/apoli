@@ -50,13 +50,13 @@ public record RaycastSettingsConfiguration(double distance, boolean block, boole
 			}
 		}
 		if (result == null)
-			return BlockHitResult.miss(origin, Direction.getNearest(direction.x, direction.y, direction.z), new BlockPos(target));
+			return BlockHitResult.miss(origin, Direction.getNearest(direction.x, direction.y, direction.z), new BlockPos((int) target.x(), (int) target.y(), (int) target.z()));
 		return result;
 	}
 
 	private BlockHitResult performBlockRaycast(Entity source, Vec3 origin, Vec3 target) {
 		ClipContext context = new ClipContext(origin, target, this.shapeType(), this.fluidHandling(), source);
-		return source.level.clip(context);
+		return source.level().clip(context);
 	}
 
 	private EntityHitResult performEntityRaycast(Entity source, Vec3 origin, Vec3 target, Holder<ConfiguredBiEntityCondition<?, ?>> biEntityCondition) {

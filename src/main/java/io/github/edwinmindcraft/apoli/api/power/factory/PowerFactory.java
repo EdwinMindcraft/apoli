@@ -57,8 +57,10 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 			val = val.substring("io.github.apace100.apoli.power.".length());
 		ResourceLocation temp = ALIASES.get(val);
 		ResourceLocation id = temp != null ? temp : ResourceLocation.tryParse(val);
-		if (id == null)
-			return DataResult.error("Failed to convert \"" + val + "\" to a resource location");
+		if (id == null) {
+            String failedString = val;
+            return DataResult.error(() -> "Failed to convert \"" + failedString + "\" to a resource location");
+        }
 		PowerFactory<?> value = ApoliRegistries.POWER_FACTORY.get().getValue(id);
 		if (value != null)
 			return DataResult.success(value); //Avoid the slow code if we can.
@@ -66,7 +68,7 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 				.filter(entry -> entry.getKey().location().getPath().equals(id.getPath()))
 				.findFirst().map(Map.Entry::getValue)
 				.map(DataResult::success)
-				.orElseGet(() -> DataResult.error("Failed to find power factory with path: " + id.getPath()));
+				.orElseGet(() -> DataResult.error(() -> "Failed to find power factory with path: " + id.getPath()));
 	}, x -> ApoliRegistries.POWER_FACTORY.get().getKey(x).toString());
 
 	private final Codec<ConfiguredPower<T, ?>> codec;

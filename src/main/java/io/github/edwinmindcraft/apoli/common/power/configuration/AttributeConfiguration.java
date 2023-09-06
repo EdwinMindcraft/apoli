@@ -28,7 +28,7 @@ public record AttributeConfiguration(ListConfiguration<AttributedEntityAttribute
 
 
 	public void add(Entity entity) {
-		if (!(entity instanceof LivingEntity living) || entity.level.isClientSide())
+		if (!(entity instanceof LivingEntity living) || entity.level().isClientSide())
 			return;
 		float previousMaxHealth = living.getMaxHealth();
 		float previousHealthPercent = living.getHealth() / previousMaxHealth;
@@ -43,7 +43,7 @@ public record AttributeConfiguration(ListConfiguration<AttributedEntityAttribute
 	}
 
 	public void remove(Entity entity) {
-		if (!(entity instanceof LivingEntity living) || entity.level.isClientSide())
+		if (!(entity instanceof LivingEntity living) || entity.level().isClientSide())
 			return;
 		float previousMaxHealth = living.getMaxHealth();
 		float previousHealthPercent = living.getHealth() / previousMaxHealth;

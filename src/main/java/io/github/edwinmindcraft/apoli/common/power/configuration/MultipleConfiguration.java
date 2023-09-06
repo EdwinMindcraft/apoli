@@ -66,7 +66,7 @@ public record MultipleConfiguration<V>(Map<String, Holder<V>> children) implemen
 				ImmutableSet<String> build = failures.build();
 				MultipleConfiguration<V> configuration = new MultipleConfiguration<>(successes.build());
 				if (!build.isEmpty())
-					return DataResult.error("Failed to read fields: " + String.join(", ", build), configuration);
+					return DataResult.error(() -> "Failed to read fields: " + String.join(", ", build), configuration);
 				return DataResult.success(configuration);
 			});
 		}

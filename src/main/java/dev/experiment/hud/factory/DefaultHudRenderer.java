@@ -1,13 +1,11 @@
 package dev.experiment.hud.factory;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.serialization.Codec;
 import dev.experiment.hud.ConfiguredHudRenderer;
 import dev.experiment.hud.DrawType;
 import dev.experiment.hud.HudRendererFactory;
 import io.github.apace100.apoli.util.HudRender;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
@@ -21,7 +19,7 @@ public class DefaultHudRenderer extends HudRendererFactory<HudRender> {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void drawBar(ConfiguredHudRenderer<HudRender, ?> renderer, Entity player, PoseStack matrices, int x, int y, int width, float fill) {
+	public void drawBar(ConfiguredHudRenderer<HudRender, ?> renderer, Entity player, GuiGraphics graphics, int x, int y, int width, float fill) {
 		HudRender render = renderer.getConfiguration();
 		ResourceLocation currentLocation = render.spriteLocation();
 		RenderSystem.setShaderTexture(0, currentLocation);
@@ -29,16 +27,16 @@ public class DefaultHudRenderer extends HudRendererFactory<HudRender> {
 		if (render.isInverted())
 			fill = 1f - fill;
 		int w = (int) (fill * width);
-		Gui.blit(matrices, x, y, 0, 0, 0, width, 5, 256, 256);
-		Gui.blit(matrices, x, y, 0, 0, v, w, 8, 256, 256);
+		graphics.blit(currentLocation, x, y, 0, 0, 0, width, 5, 256, 256);
+		graphics.blit(currentLocation, x, y, 0, 0, v, w, 8, 256, 256);
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void drawIcon(ConfiguredHudRenderer<HudRender, ?> renderer, Entity player, PoseStack matrices, int x, int y, float fill) {
+	public void drawIcon(ConfiguredHudRenderer<HudRender, ?> renderer, Entity player, GuiGraphics graphics, int x, int y, float fill) {
 		HudRender render = renderer.getConfiguration();
 		int v = 8 + render.barIndex() * 10;
-		Gui.blit(matrices, x, y, 1, 73, v, 8, 8, 256, 256);
+		graphics.blit(render.spriteLocation(), x, y, 1, 73, v, 8, 8, 256, 256);
 	}
 
 	@Override

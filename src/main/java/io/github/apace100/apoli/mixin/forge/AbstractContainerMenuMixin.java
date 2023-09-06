@@ -9,10 +9,7 @@ import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyCraftingC
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.inventory.ResultSlot;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -54,17 +51,19 @@ public class AbstractContainerMenuMixin {
 				Mutable<ItemStack> newStack = new MutableObject<>(original.get().copy());
 				ModifyGrindstonePower.tryLateExecute(pmg.getAppliedPowers(), pmg.getPlayer(), newStack, pmg.getPos());
 				return Optional.of(newStack.getValue());
-			} else if (!this.apoli$cachedPlayer.level.isClientSide && this.slots.stream().anyMatch(slot -> slot instanceof ResultSlot)) {
+			} else if (!this.apoli$cachedPlayer.level().isClientSide && this.slots.stream().anyMatch(slot -> slot instanceof ResultSlot)) {
 				ResultSlot slot = (ResultSlot) this.slots.stream().filter(s -> s instanceof ResultSlot).findFirst().get();
-				PowerCraftingInventory pci = (PowerCraftingInventory) ((ResultSlotAccessor) slot).getCraftSlots();
-				ConfiguredPower<?, ?> power = pci.getPower();
-				if (power != null && power.getConfiguration() instanceof ModifyCraftingConfiguration config) {
-					Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(((ResultSlotAccessor) slot).getCraftSlots());
-					config.execute(apoli$cachedPlayer, blockPos.orElse(null));
-					Mutable<ItemStack> newStack = new MutableObject<>(original.get().copy());
-					config.executeAfterCraftingAction(apoli$cachedPlayer.level, newStack);
-					return Optional.of(newStack.getValue());
-				}
+                if (((ResultSlotAccessor) slot).getCraftSlots() instanceof TransientCraftingContainer craftingContainer) {
+                    PowerCraftingInventory pci = (PowerCraftingInventory) ((ResultSlotAccessor) slot).getCraftSlots();
+                    ConfiguredPower<?, ?> power = pci.getPower();
+                    if (power != null && power.getConfiguration() instanceof ModifyCraftingConfiguration config) {
+                        Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(craftingContainer);
+                        config.execute(apoli$cachedPlayer, blockPos.orElse(null));
+                        Mutable<ItemStack> newStack = new MutableObject<>(original.get().copy());
+                        config.executeAfterCraftingAction(apoli$cachedPlayer.level(), newStack);
+                        return Optional.of(newStack.getValue());
+                    }
+                }
 			}
 		}
 		return original;
@@ -77,17 +76,19 @@ public class AbstractContainerMenuMixin {
 			Mutable<ItemStack> newStack = new MutableObject<>(original.get().copy());
 			ModifyGrindstonePower.tryLateExecute(pmg.getAppliedPowers(), pmg.getPlayer(), newStack, pmg.getPos());
 			return Optional.of(newStack.getValue());
-		} else if (!this.apoli$cachedPlayer.level.isClientSide && this.slots.stream().anyMatch(slot -> slot instanceof ResultSlot)) {
+		} else if (!this.apoli$cachedPlayer.level().isClientSide && this.slots.stream().anyMatch(slot -> slot instanceof ResultSlot)) {
 			ResultSlot slot = (ResultSlot) this.slots.stream().filter(s -> s instanceof ResultSlot).findFirst().get();
-			PowerCraftingInventory pci = (PowerCraftingInventory) ((ResultSlotAccessor) slot).getCraftSlots();
-			ConfiguredPower<?, ?> power = pci.getPower();
-			if (power != null && power.getConfiguration() instanceof ModifyCraftingConfiguration config) {
-				Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(((ResultSlotAccessor) slot).getCraftSlots());
-				config.execute(apoli$cachedPlayer, blockPos.orElse(null));
-				Mutable<ItemStack> newStack = new MutableObject<>(original.get().copy());
-				config.executeAfterCraftingAction(apoli$cachedPlayer.level, newStack);
-				return Optional.of(newStack.getValue());
-			}
+            if (((ResultSlotAccessor) slot).getCraftSlots() instanceof TransientCraftingContainer craftingContainer) {
+                PowerCraftingInventory pci = (PowerCraftingInventory) ((ResultSlotAccessor) slot).getCraftSlots();
+                ConfiguredPower<?, ?> power = pci.getPower();
+                if (power != null && power.getConfiguration() instanceof ModifyCraftingConfiguration config) {
+                    Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(craftingContainer);
+                    config.execute(apoli$cachedPlayer, blockPos.orElse(null));
+                    Mutable<ItemStack> newStack = new MutableObject<>(original.get().copy());
+                    config.executeAfterCraftingAction(apoli$cachedPlayer.level(), newStack);
+                    return Optional.of(newStack.getValue());
+                }
+            }
 		}
 		return original;
 	}
@@ -98,17 +99,19 @@ public class AbstractContainerMenuMixin {
 			Mutable<ItemStack> newStack = new MutableObject<>(original.copy());
 			ModifyGrindstonePower.tryLateExecute(pmg.getAppliedPowers(), pmg.getPlayer(), newStack, pmg.getPos());
 			return newStack.getValue();
-		} else if (!this.apoli$cachedPlayer.level.isClientSide && this.slots.stream().anyMatch(slot -> slot instanceof ResultSlot)) {
+		} else if (!this.apoli$cachedPlayer.level().isClientSide && this.slots.stream().anyMatch(slot -> slot instanceof ResultSlot)) {
 			ResultSlot slot = (ResultSlot) this.slots.stream().filter(s -> s instanceof ResultSlot).findFirst().get();
-			PowerCraftingInventory pci = (PowerCraftingInventory) ((ResultSlotAccessor) slot).getCraftSlots();
-			ConfiguredPower<?, ?> power = pci.getPower();
-			if (power != null && power.getConfiguration() instanceof ModifyCraftingConfiguration config) {
-				Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(((ResultSlotAccessor) slot).getCraftSlots());
-				config.execute(apoli$cachedPlayer, blockPos.orElse(null));
-				Mutable<ItemStack> newStack = new MutableObject<>(original.copy());
-				config.executeAfterCraftingAction(apoli$cachedPlayer.level, newStack);
-				return newStack.getValue();
-			}
+            if (((ResultSlotAccessor) slot).getCraftSlots() instanceof TransientCraftingContainer craftingContainer) {
+                PowerCraftingInventory pci = (PowerCraftingInventory) ((ResultSlotAccessor) slot).getCraftSlots();
+                ConfiguredPower<?, ?> power = pci.getPower();
+                if (power != null && power.getConfiguration() instanceof ModifyCraftingConfiguration config) {
+                    Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(craftingContainer);
+                    config.execute(apoli$cachedPlayer, blockPos.orElse(null));
+                    Mutable<ItemStack> newStack = new MutableObject<>(original.copy());
+                    config.executeAfterCraftingAction(apoli$cachedPlayer.level(), newStack);
+                    return newStack.getValue();
+                }
+            }
 		}
 		return original;
 	}
@@ -119,17 +122,19 @@ public class AbstractContainerMenuMixin {
 			Mutable<ItemStack> newStack = new MutableObject<>(original.copy());
 			ModifyGrindstonePower.tryLateExecute(pmg.getAppliedPowers(), pmg.getPlayer(), newStack, pmg.getPos());
 			return newStack.getValue();
-		} else if (!this.apoli$cachedPlayer.level.isClientSide && this.slots.stream().anyMatch(slot -> slot instanceof ResultSlot)) {
+		} else if (!this.apoli$cachedPlayer.level().isClientSide && this.slots.stream().anyMatch(slot -> slot instanceof ResultSlot)) {
 			ResultSlot slot = (ResultSlot) this.slots.stream().filter(s -> s instanceof ResultSlot).findFirst().get();
-			PowerCraftingInventory pci = (PowerCraftingInventory) ((ResultSlotAccessor) slot).getCraftSlots();
-			ConfiguredPower<?, ?> power = pci.getPower();
-			if (power != null && power.getConfiguration() instanceof ModifyCraftingConfiguration config) {
-				Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(((ResultSlotAccessor) slot).getCraftSlots());
-				config.execute(apoli$cachedPlayer, blockPos.orElse(null));
-				Mutable<ItemStack> newStack = new MutableObject<>(original.copy());
-				config.executeAfterCraftingAction(apoli$cachedPlayer.level, newStack);
-				return newStack.getValue();
-			}
+            if (((ResultSlotAccessor) slot).getCraftSlots() instanceof TransientCraftingContainer craftingContainer) {
+                PowerCraftingInventory pci = (PowerCraftingInventory) ((ResultSlotAccessor) slot).getCraftSlots();
+                ConfiguredPower<?, ?> power = pci.getPower();
+                if (power != null && power.getConfiguration() instanceof ModifyCraftingConfiguration config) {
+                    Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(craftingContainer);
+                    config.execute(apoli$cachedPlayer, blockPos.orElse(null));
+                    Mutable<ItemStack> newStack = new MutableObject<>(original.copy());
+                    config.executeAfterCraftingAction(apoli$cachedPlayer.level(), newStack);
+                    return newStack.getValue();
+                }
+            }
 		}
 		return original;
 	}
@@ -140,17 +145,19 @@ public class AbstractContainerMenuMixin {
 			Mutable<ItemStack> newStack = new MutableObject<>(original.copy());
 			ModifyGrindstonePower.tryLateExecute(pmg.getAppliedPowers(), pmg.getPlayer(), newStack, pmg.getPos());
 			return newStack.getValue();
-		} else if (!this.apoli$cachedPlayer.level.isClientSide && this.slots.stream().anyMatch(slot -> slot instanceof ResultSlot)) {
+		} else if (!this.apoli$cachedPlayer.level().isClientSide && this.slots.stream().anyMatch(slot -> slot instanceof ResultSlot)) {
 			ResultSlot slot = (ResultSlot) this.slots.stream().filter(s -> s instanceof ResultSlot).findFirst().get();
-			PowerCraftingInventory pci = (PowerCraftingInventory) ((ResultSlotAccessor) slot).getCraftSlots();
-			ConfiguredPower<?, ?> power = pci.getPower();
-			if (power != null && power.getConfiguration() instanceof ModifyCraftingConfiguration config) {
-				Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(((ResultSlotAccessor) slot).getCraftSlots());
-				config.execute(apoli$cachedPlayer, blockPos.orElse(null));
-				Mutable<ItemStack> newStack = new MutableObject<>(original.copy());
-				config.executeAfterCraftingAction(apoli$cachedPlayer.level, newStack);
-				return newStack.getValue();
-			}
+            if (((ResultSlotAccessor) slot).getCraftSlots() instanceof TransientCraftingContainer craftingContainer) {
+                PowerCraftingInventory pci = (PowerCraftingInventory) ((ResultSlotAccessor) slot).getCraftSlots();
+                ConfiguredPower<?, ?> power = pci.getPower();
+                if (power != null && power.getConfiguration() instanceof ModifyCraftingConfiguration config) {
+                    Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(craftingContainer);
+                    config.execute(apoli$cachedPlayer, blockPos.orElse(null));
+                    Mutable<ItemStack> newStack = new MutableObject<>(original.copy());
+                    config.executeAfterCraftingAction(apoli$cachedPlayer.level(), newStack);
+                    return newStack.getValue();
+                }
+            }
 		}
 		return original;
 	}

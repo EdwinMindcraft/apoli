@@ -14,11 +14,11 @@ import net.minecraftforge.common.util.NonNullSupplier;
 
 public class PreventBlockActionPower extends PowerFactory<HolderConfiguration<ConfiguredBlockCondition<?, ?>>> {
 	public static boolean isSelectionPrevented(Entity entity, BlockPos pos, NonNullSupplier<BlockState> stateGetter) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_BLOCK_SELECTION.get()).stream().anyMatch(x -> x.value().getFactory().doesPrevent(x.value(), entity.level, pos, stateGetter));
+		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_BLOCK_SELECTION.get()).stream().anyMatch(x -> x.value().getFactory().doesPrevent(x.value(), entity.level(), pos, stateGetter));
 	}
 
 	public static boolean isUsagePrevented(Entity entity, BlockPos pos) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_BLOCK_USAGE.get()).stream().anyMatch(x -> x.value().getFactory().doesPrevent(x.value(), entity.level, pos, () -> entity.level.getBlockState(pos)));
+		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_BLOCK_USAGE.get()).stream().anyMatch(x -> x.value().getFactory().doesPrevent(x.value(), entity.level(), pos, () -> entity.level().getBlockState(pos)));
 	}
 
 	public PreventBlockActionPower() {

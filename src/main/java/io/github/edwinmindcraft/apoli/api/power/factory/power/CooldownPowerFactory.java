@@ -84,7 +84,7 @@ public abstract class CooldownPowerFactory<T extends ICooldownPowerConfiguration
 
 	@Override
 	public int getValue(ConfiguredPower<T, ?> configuration, Entity entity) {
-		return Math.toIntExact(Mth.clamp(this.getRemainingDuration(configuration, entity), this.getMinimum(configuration, entity), this.getMaximum(configuration, entity)));
+		return Math.toIntExact((long) Mth.clamp(this.getRemainingDuration(configuration, entity), this.getMinimum(configuration, entity), this.getMaximum(configuration, entity)));
 	}
 
 	@Override

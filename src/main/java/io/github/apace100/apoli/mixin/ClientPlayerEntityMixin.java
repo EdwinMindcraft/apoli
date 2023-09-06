@@ -24,8 +24,8 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer imple
 
 	private boolean isMoving = false;
 
-	public ClientPlayerEntityMixin(ClientLevel world, GameProfile profile, @Nullable ProfilePublicKey key) {
-		super(world, profile, key);
+	public ClientPlayerEntityMixin(ClientLevel world, GameProfile profile) {
+		super(world, profile);
 	}
 
 	@Inject(at = @At("HEAD"), method = "isUnderWater", cancellable = true)
@@ -59,7 +59,7 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer imple
 		return IPowerContainer.modify(this, ApoliPowers.MODIFY_AIR_SPEED.get(), playerAbilities.getFlyingSpeed());
 	}
 
-	@ModifyVariable(method = "aiStep", at = @At(value = "FIELD", target = "Lnet/minecraft/client/player/LocalPlayer;onGround:Z", ordinal = 0), ordinal = 4)
+	@ModifyVariable(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;onGround()Z"), ordinal = 4)
 	private boolean modifySprintAbility(boolean original) {
 		boolean prevent = IPowerContainer.hasPower(this, ApoliPowers.PREVENT_SPRINTING.get());
 		return !prevent && original;

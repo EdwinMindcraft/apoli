@@ -26,7 +26,7 @@ public class UsingEffectiveToolCondition extends EntityCondition<NoConfiguration
 		if (entity instanceof ServerPlayer spe) {
 			ServerPlayerGameMode interactionMngr = spe.gameMode;
 			if (interactionMngr.isDestroyingBlock) {
-				return spe.hasCorrectToolForDrops(entity.level.getBlockState(interactionMngr.destroyPos));
+				return spe.hasCorrectToolForDrops(entity.level().getBlockState(interactionMngr.destroyPos));
 			}
 		}
 		return this.checkClient(entity);
@@ -39,7 +39,7 @@ public class UsingEffectiveToolCondition extends EntityCondition<NoConfiguration
 			if (entity instanceof AbstractClientPlayer cpe) {
 				MultiPlayerGameMode interactionMngr = Minecraft.getInstance().gameMode;
 				if (interactionMngr != null && interactionMngr.isDestroying())
-					return cpe.hasCorrectToolForDrops(entity.level.getBlockState(interactionMngr.destroyBlockPos));
+					return cpe.hasCorrectToolForDrops(entity.level().getBlockState(interactionMngr.destroyBlockPos));
 			}
 			return false;
 		}

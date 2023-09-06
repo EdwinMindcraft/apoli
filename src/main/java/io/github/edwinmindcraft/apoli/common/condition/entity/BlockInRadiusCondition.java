@@ -40,7 +40,7 @@ public class BlockInRadiusCondition extends EntityCondition<BlockInRadiusConfigu
 		LevelChunkSection[] sections = new LevelChunkSection[xSize * ySize * zSize];
 		for (int x = xStart; x <= xEnd; ++x) {
 			for (int z = zStart; z <= zEnd; ++z) {
-				ChunkAccess chunk = entity.getLevel().getChunk(x, z); //Chunk Will be force loaded.
+				ChunkAccess chunk = entity.level().getChunk(x, z); //Chunk Will be force loaded.
 				LevelChunkSection[] chunkSections = chunk.getSections();
 				for (int y = yStart; y <= yEnd; ++y) {
 					int sectionIndex = chunk.getSectionIndex(y << 4);//16 y
@@ -57,7 +57,7 @@ public class BlockInRadiusCondition extends EntityCondition<BlockInRadiusConfigu
 			int y = pos.getY() >> 4;
 			int z = pos.getZ() >> 4;
 			LevelChunkSection section = sections[y - yStart + (x - xStart + xSize * (z - zStart)) * ySize];
-			if (ConfiguredBlockCondition.check(configuration.blockCondition(), entity.level, pos, () -> section == null ? Blocks.VOID_AIR.defaultBlockState() : section.getBlockState(pos.getX() & 15, pos.getY() & 15, pos.getZ() & 15)))
+			if (ConfiguredBlockCondition.check(configuration.blockCondition(), entity.level(), pos, () -> section == null ? Blocks.VOID_AIR.defaultBlockState() : section.getBlockState(pos.getX() & 15, pos.getY() & 15, pos.getZ() & 15)))
 				count.increment();
 		}, stopping);
 		return configuration.comparison().check(count.intValue());

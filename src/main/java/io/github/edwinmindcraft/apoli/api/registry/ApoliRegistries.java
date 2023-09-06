@@ -62,12 +62,12 @@ public class ApoliRegistries {
 			public <U> DataResult<Pair<T, U>> decode(DynamicOps<U> dynamicOps, U input) {
 				return dynamicOps.compressMaps() ? dynamicOps.getNumberValue(input).flatMap((number) -> {
 					T object = supplier.get().getValue(number.intValue());
-					return object == null ? DataResult.error("Unknown registry id: " + number) : DataResult.success(object);
+					return object == null ? DataResult.error(() -> "Unknown registry id: " + number) : DataResult.success(object);
 				}).map((obj) -> Pair.of(obj, dynamicOps.empty())) : ResourceLocation.CODEC.decode(dynamicOps, input).flatMap((pair) -> {
 					T object = supplier.get().getValue(pair.getFirst());
 					if (object == null && NamespaceAlias.hasAlias(pair.getFirst()))
 						object = supplier.get().getValue(NamespaceAlias.resolveAlias(pair.getFirst()));
-					return object == null ? DataResult.error("Unknown registry key: " + pair.getFirst()) : DataResult.success(Pair.of(object, pair.getSecond()));
+					return object == null ? DataResult.error(() -> "Unknown registry key: " + pair.getFirst()) : DataResult.success(Pair.of(object, pair.getSecond()));
 				});
 			}
 
@@ -75,7 +75,7 @@ public class ApoliRegistries {
 			public <T1> DataResult<T1> encode(T input, DynamicOps<T1> ops, T1 prefix) {
 				ResourceLocation identifier = supplier.get().getKey(input);
 				if (identifier == null) {
-					return DataResult.error("Unknown registry element " + input);
+					return DataResult.error(() -> "Unknown registry element " + input);
 				} else {
 					return ops.compressMaps() ?
 							ops.mergeToPrimitive(prefix, ops.createInt(supplier.get().getID(input))) :

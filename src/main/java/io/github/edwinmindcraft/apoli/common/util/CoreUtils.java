@@ -1,5 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.util;
 
+import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.access.IdentifiedLootTable;
 import io.github.apace100.apoli.access.ModifiableFoodEntity;
 import io.github.apace100.apoli.util.AttributeUtil;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
@@ -7,10 +9,12 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCon
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.ModifyFoodPower;
 import io.github.edwinmindcraft.apoli.common.power.ModifyHarvestPower;
+import io.github.edwinmindcraft.apoli.common.power.ReplaceLootTablePower;
 import io.github.edwinmindcraft.apoli.common.power.RestrictArmorPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,11 +27,16 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.storage.loot.LootDataManager;
+import net.minecraft.world.level.storage.loot.LootDataResolver;
+import net.minecraft.world.level.storage.loot.LootDataType;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraftforge.common.ForgeMod;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 public class CoreUtils {
 	/**
@@ -98,5 +107,23 @@ public class CoreUtils {
 
     public static boolean shouldIgnoreWater(LivingEntity living, FluidState state) {
         return IPowerContainer.hasPower(living, ApoliPowers.IGNORE_WATER.get()) && state.getFluidType() == ForgeMod.WATER_TYPE.get();
+    }
+
+    public static LootTable setLootTableId(LootTable original, LootDataResolver resolver, ResourceLocation id) {
+        if (id.equals(ReplaceLootTablePower.REPLACED_TABLE_UTIL_ID)) {
+            LootTable replace = ReplaceLootTablePower.peek();
+            Apoli.LOGGER.info("Replacing " + id + " with " + ((IdentifiedLootTable)replace).getId());
+            return replace;
+            //cir.setReturnValue(getTable(ReplaceLootTablePower.LAST_REPLACED_TABLE_ID));
+        } else {
+            Optional<LootTable> tableOptional = resolver.getElementOptional(LootDataType.TABLE, id);
+            if(tableOptional.isPresent()) {
+                LootTable table = tableOptional.get();
+                if(table instanceof IdentifiedLootTable identifiedLootTable) {
+                    identifiedLootTable.setId(id, (LootDataManager)resolver);
+                }
+            }
+        }
+        return original;
     }
 }

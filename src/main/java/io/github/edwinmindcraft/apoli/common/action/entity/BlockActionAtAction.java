@@ -14,6 +14,6 @@ public class BlockActionAtAction extends EntityAction<HolderConfiguration<Config
 
 	@Override
 	public void execute(HolderConfiguration<ConfiguredBlockAction<?, ?>> configuration, Entity entity) {
-		ConfiguredBlockAction.execute(configuration.holder(), entity.level, entity.blockPosition(), Direction.UP);
+		ConfiguredBlockAction.execute(configuration.holder(), entity.level(), entity.blockPosition(), Direction.UP);
 	}
 }

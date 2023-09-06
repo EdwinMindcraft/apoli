@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import io.github.edwinmindcraft.apoli.common.network.C2SUseActivePowers;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
+import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
@@ -52,7 +53,7 @@ public class ApoliAPI {
 
 	public static void synchronizePowerContainer(Entity living) {
 		S2CSynchronizePowerContainer packet = S2CSynchronizePowerContainer.forEntity(living);
-		if (packet != null && !living.getLevel().isClientSide())
+		if (packet != null && !living.level().isClientSide())
 			ApoliCommon.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> living), packet);
 	}
 
@@ -86,7 +87,7 @@ public class ApoliAPI {
 	 *
 	 * @return The ConfiguredPower registry.
 	 */
-	public static Registry<ConfiguredPower<?, ?>> getPowers(@Nullable MinecraftServer server) {
+	public static MappedRegistry<ConfiguredPower<?, ?>> getPowers(@Nullable MinecraftServer server) {
 		return CalioAPI.getDynamicRegistries(server).get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
 	}
 
@@ -98,7 +99,7 @@ public class ApoliAPI {
 	 *
 	 * @return The ConfiguredPower registry.
 	 */
-	public static Registry<ConfiguredPower<?, ?>> getPowers(@Nullable RegistryAccess access) {
+	public static MappedRegistry<ConfiguredPower<?, ?>> getPowers(@Nullable RegistryAccess access) {
 		return CalioAPI.getDynamicRegistries(access).get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
 	}
 
@@ -108,7 +109,7 @@ public class ApoliAPI {
 	 *
 	 * @return The ConfiguredPower registry.
 	 */
-	public static Registry<ConfiguredPower<?, ?>> getPowers() {
+	public static MappedRegistry<ConfiguredPower<?, ?>> getPowers() {
 		return CalioAPI.getDynamicRegistries().get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
 	}
 }

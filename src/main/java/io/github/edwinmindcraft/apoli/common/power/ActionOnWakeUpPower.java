@@ -16,7 +16,7 @@ import net.minecraft.world.level.LevelReader;
 public class ActionOnWakeUpPower extends PowerFactory<ActionOnWakeUpConfiguration> {
 	public static void execute(Entity player, BlockPos pos) {
 		IPowerContainer.getPowers(player, ApoliPowers.ACTION_ON_WAKE_UP.get()).stream()
-				.filter(power -> power.value().getFactory().doesApply(power.value(), player, player.level, pos))
+				.filter(power -> power.value().getFactory().doesApply(power.value(), player, player.level(), pos))
 				.forEach(aobbp -> aobbp.value().getFactory().executeActions(aobbp.value(), player, pos, Direction.DOWN));
 	}
 
@@ -30,7 +30,7 @@ public class ActionOnWakeUpPower extends PowerFactory<ActionOnWakeUpConfiguratio
 
 	public void executeActions(ConfiguredPower<ActionOnWakeUpConfiguration, ?> config, Entity player, BlockPos pos, Direction dir) {
 		ActionOnWakeUpConfiguration configuration = config.getConfiguration();
-		ConfiguredBlockAction.execute(configuration.blockAction(), player.level, pos, dir);
+		ConfiguredBlockAction.execute(configuration.blockAction(), player.level(), pos, dir);
 		ConfiguredEntityAction.execute(configuration.entityAction(), player);
 	}
 }

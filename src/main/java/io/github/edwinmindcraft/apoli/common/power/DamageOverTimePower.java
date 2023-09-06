@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
+import io.github.apace100.apoli.util.MiscUtil;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
@@ -44,7 +45,7 @@ public class DamageOverTimePower extends PowerFactory<DamageOverTimeConfiguratio
 		dataContainer.outOfDamageTicks = 0;
 		if (dataContainer.inDamageTicks <= 0) {
 			dataContainer.inDamageTicks = configuration.getConfiguration().interval();
-			player.hurt(configuration.getConfiguration().damageSource(), player.level.getDifficulty() == Difficulty.EASY ? configuration.getConfiguration().damageEasy() : configuration.getConfiguration().damage());
+			player.hurt(MiscUtil.createDamageSource(player.damageSources(), configuration.getConfiguration().damageSource(), configuration.getConfiguration().damageType()), player.level().getDifficulty() == Difficulty.EASY ? configuration.getConfiguration().damageEasy() : configuration.getConfiguration().damage());
 		} else {
 			--dataContainer.inDamageTicks;
 		}

@@ -31,7 +31,7 @@ public class PowerTypeRegistry {
 	@Deprecated
 	protected static <T extends Power> PowerType<T> update(ResourceLocation id, PowerType<T> powerType) {
 		CalioAPI.getDynamicRegistries().get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY)
-				.registerOrOverride(OptionalInt.empty(), ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, id), powerType.getConfiguredPower(), Lifecycle.experimental());
+				.register(ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, id), powerType.getConfiguredPower(), Lifecycle.experimental());
 		return powerType;
 	}
 

@@ -33,7 +33,7 @@ public class ActionOnBlockBreakPower extends PowerFactory<ActionOnBlockBreakConf
 	public void executeActions(ConfiguredPower<ActionOnBlockBreakConfiguration, ?> config, Entity player, boolean successfulHarvest, BlockPos pos, Direction dir) {
 		ActionOnBlockBreakConfiguration configuration = config.getConfiguration();
 		if (successfulHarvest || !configuration.onlyWhenHarvested()) {
-			ConfiguredBlockAction.execute(configuration.blockAction(), player.level, pos, dir);
+			ConfiguredBlockAction.execute(configuration.blockAction(), player.level(), pos, dir);
 			ConfiguredEntityAction.execute(configuration.entityAction(), player);
 		}
 	}

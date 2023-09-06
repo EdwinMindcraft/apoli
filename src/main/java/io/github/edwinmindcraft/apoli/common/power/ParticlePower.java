@@ -15,7 +15,7 @@ public class ParticlePower extends PowerFactory<ParticleConfiguration> {
 	public static void renderParticles(Entity entity, Entity camera, boolean firstPerson) {
 		IPowerContainer.getPowers(entity, ApoliPowers.PARTICLE.get()).stream()
 				.filter(x -> entity.tickCount % x.value().getConfiguration().frequency() == 0 && (x.value().getConfiguration().visibleInFirstPerson() || entity != camera || !firstPerson))
-				.forEach(power -> entity.level.addParticle((ParticleOptions) power.value().getConfiguration().particle(), entity.getRandomX(0.5), entity.getRandomY(), entity.getRandomZ(0.5), 0, 0, 0));
+				.forEach(power -> entity.level().addParticle((ParticleOptions) power.value().getConfiguration().particle(), entity.getRandomX(0.5), entity.getRandomY(), entity.getRandomZ(0.5), 0, 0, 0));
 	}
 
 	public ParticlePower() {

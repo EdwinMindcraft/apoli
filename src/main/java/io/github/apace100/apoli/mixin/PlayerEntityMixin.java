@@ -81,7 +81,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 	private ItemStack modifyEatenItemStack(ItemStack original) {
 		List<ConfiguredPower<ModifyFoodConfiguration, ModifyFoodPower>> mfps = ModifyFoodPower.getValidPowers(this, original);
 		MutableObject<ItemStack> stack = new MutableObject<>(original.copy());
-		ModifyFoodPower.modifyStack(mfps, this.level, stack);
+		ModifyFoodPower.modifyStack(mfps, this.level(), stack);
 		((ModifiableFoodEntity) this).setCurrentModifyFoodPowers(mfps);
 		((ModifiableFoodEntity) this).setOriginalFoodStack(original);
 		return stack.getValue();
@@ -89,7 +89,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 
 	@Inject(method = "removeVehicle", at = @At("HEAD"))
 	private void sendPlayerDismountPacket(CallbackInfo ci) {
-		if (!this.level.isClientSide() && this.getVehicle() instanceof ServerPlayer player) {
+		if (!this.level().isClientSide() && this.getVehicle() instanceof ServerPlayer player) {
 			ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CPlayerDismount(this.getId()));
 		}
 	}

@@ -18,11 +18,11 @@ import java.util.Optional;
 public class PreventItemActionPower extends PowerFactory<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>> {
 
 	public static boolean isUsagePrevented(Entity entity, ItemStack stack) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_ITEM_USAGE.get()).stream().map(Holder::value).anyMatch(x -> x.getFactory().doesPrevent(x, entity.level, stack));
+		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_ITEM_USAGE.get()).stream().map(Holder::value).anyMatch(x -> x.getFactory().doesPrevent(x, entity.level(), stack));
 	}
 
 	public static List<ConfiguredPower<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>, PreventItemActionPower>> getPreventingForDisplay(Entity entity, ItemStack stack) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_ITEM_USAGE.get()).stream().map(Holder::value).filter(x -> x.getFactory().doesPrevent(x, entity.level, stack)).toList();
+		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_ITEM_USAGE.get()).stream().map(Holder::value).filter(x -> x.getFactory().doesPrevent(x, entity.level(), stack)).toList();
 	}
 
 	public PreventItemActionPower() {

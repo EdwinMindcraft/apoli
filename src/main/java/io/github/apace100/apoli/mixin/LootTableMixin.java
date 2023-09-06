@@ -14,8 +14,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootDataManager;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.LootTables;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -36,10 +36,10 @@ public class LootTableMixin implements IdentifiedLootTable {
     @Unique
     private ResourceLocation apoli$id;
     @Unique
-    private LootTables apoli$lootManager;
+    private LootDataManager apoli$lootManager;
 
     @Override
-    public void setId(ResourceLocation id, LootTables lootManager) {
+    public void setId(ResourceLocation id, LootDataManager lootManager) {
         apoli$id = id;
         apoli$lootManager = lootManager;
     }
@@ -49,7 +49,7 @@ public class LootTableMixin implements IdentifiedLootTable {
         return apoli$id;
     }
 
-    @Inject(method = "getRandomItemsRaw", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getRandomItemsRaw(Lnet/minecraft/world/level/storage/loot/LootContext;Ljava/util/function/Consumer;)V", at = @At("HEAD"), cancellable = true)
     private void modifyLootTable(LootContext context, Consumer<ItemStack> lootConsumer, CallbackInfo ci) {
         if(((ReplacingLootContext)context).isReplaced((LootTable)(Object)this)) {
             return;
@@ -86,7 +86,7 @@ public class LootTableMixin implements IdentifiedLootTable {
             LootTable replacement = null;
             for (ReplaceLootTableConfiguration power : powers) {
                 ResourceLocation id = power.getReplacement(apoli$id);
-                replacement = apoli$lootManager.get(id);
+                replacement = apoli$lootManager.getLootTable(id);
                 ReplaceLootTablePower.addToStack(replacement);
             }
             ((ReplacingLootContext)context).setReplaced((LootTable)(Object)this);
@@ -96,12 +96,12 @@ public class LootTableMixin implements IdentifiedLootTable {
         }
     }
 
-    @Inject(method = "getRandomItemsRaw", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/loot/LootContext;addVisitedTable(Lnet/minecraft/world/level/storage/loot/LootTable;)Z"))
+    @Inject(method = "getRandomItemsRaw(Lnet/minecraft/world/level/storage/loot/LootContext;Ljava/util/function/Consumer;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/loot/LootContext;pushVisitedElement(Lnet/minecraft/world/level/storage/loot/LootContext$VisitedEntry;)Z"))
     private void popReplacementStack(LootContext context, Consumer<ItemStack> lootConsumer, CallbackInfo ci) {
         ReplaceLootTablePower.pop();
     }
 
-    @Inject(method = "getRandomItemsRaw", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/loot/LootContext;removeVisitedTable(Lnet/minecraft/world/level/storage/loot/LootTable;)V"))
+    @Inject(method = "getRandomItemsRaw(Lnet/minecraft/world/level/storage/loot/LootContext;Ljava/util/function/Consumer;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/loot/LootContext;popVisitedElement(Lnet/minecraft/world/level/storage/loot/LootContext$VisitedEntry;)V"))
     private void restoreReplacementStack(LootContext context, Consumer<ItemStack> lootConsumer, CallbackInfo ci) {
         ReplaceLootTablePower.restore();
     }

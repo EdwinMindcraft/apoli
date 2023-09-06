@@ -15,7 +15,7 @@ public class SpawnParticlesAction extends EntityAction<SpawnParticlesConfigurati
 
 	@Override
 	public void execute(@NotNull SpawnParticlesConfiguration configuration, @NotNull Entity entity) {
-		if (entity.level.isClientSide() || !(entity.level instanceof ServerLevel level)) {
+		if (entity.level().isClientSide() || !(entity.level() instanceof ServerLevel level)) {
 			return;
 		}
 		if (configuration.count() <= 0)

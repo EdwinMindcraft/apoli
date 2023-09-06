@@ -18,14 +18,14 @@ public class InBlockAnywhereCondition extends EntityCondition<InBlockAnywhereCon
 		int stopAt = configuration.comparison().getOptimalStoppingPoint();
 		int count = 0;
 		AABB box = entity.getBoundingBox();
-		BlockPos blockPos = new BlockPos(box.minX + 0.001D, box.minY + 0.001D, box.minZ + 0.001D);
-		BlockPos blockPos2 = new BlockPos(box.maxX - 0.001D, Math.min(box.maxY - 0.001D, entity.level.getHeight()), box.maxZ - 0.001D);
+		BlockPos blockPos = new BlockPos((int)(box.minX + 0.001D), (int)(box.minY + 0.001D), (int)(box.minZ + 0.001D));
+		BlockPos blockPos2 = new BlockPos((int)(box.maxX - 0.001D), (int)Math.min(box.maxY - 0.001D, entity.level().getHeight()), (int)(box.maxZ - 0.001D));
 		BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
 		for (int i = blockPos.getX(); i <= blockPos2.getX() && count < stopAt; ++i) {
 			for (int j = blockPos.getY(); j <= blockPos2.getY() && count < stopAt; ++j) {
 				for (int k = blockPos.getZ(); k <= blockPos2.getZ() && count < stopAt; ++k) {
 					mutable.set(i, j, k);
-					if (ConfiguredBlockCondition.check(configuration.blockCondition(), entity.level, mutable))
+					if (ConfiguredBlockCondition.check(configuration.blockCondition(), entity.level(), mutable))
 						count++;
 				}
 			}

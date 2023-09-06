@@ -22,7 +22,7 @@ public class PhasingPower extends PowerFactory<PhasingConfiguration> {
 	}
 
 	public static boolean shouldPhaseThrough(Entity entity, BlockPos pos) {
-		return shouldPhaseThrough(entity, entity.level, pos, () -> entity.getLevel().getBlockState(pos));
+		return shouldPhaseThrough(entity, entity.level(), pos, () -> entity.level().getBlockState(pos));
 	}
 
 	public static boolean hasRenderMethod(Entity entity, PhasingConfiguration.RenderType renderType) {

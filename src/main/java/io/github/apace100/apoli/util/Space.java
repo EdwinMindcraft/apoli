@@ -1,10 +1,10 @@
 package io.github.apace100.apoli.util;
 
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Vector3f;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix3f;
+import org.joml.Vector3f;
 
 public enum Space {
 	WORLD,
@@ -77,7 +77,7 @@ public enum Space {
 
 		double baseScaleD = baseForwardVector.length();
 		if (baseScaleD <= 0.007D) { // tweak value if too high, may be a bit too aggressive
-			vector.load(Vector3f.ZERO);
+			vector.zero();
 		} else {
 			float baseScale = (float) baseScaleD;
 
@@ -85,8 +85,8 @@ public enum Space {
 
 			Matrix3f transformMatrix = getBaseTransformMatrixFromNormalizedDirectionVector(normalizedBase, baseYaw);
 			if (!normalizeBase) // if the base wasn't supposed to get normalized, re-scale to compensate for the prior normalization
-				transformMatrix.mul(Matrix3f.createScaleMatrix(baseScale, baseScale, baseScale));
-			vector.transform(transformMatrix); // matrix multiplication, vector is now in the new base :D
+                transformMatrix.scale(baseScale, baseScale, baseScale);
+            vector.mulTranspose(transformMatrix); // matrix multiplication, vector is now in the new base :D
 		}
 	}
 

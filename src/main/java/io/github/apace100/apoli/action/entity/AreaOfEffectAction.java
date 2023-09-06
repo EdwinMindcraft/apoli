@@ -17,7 +17,7 @@ public class AreaOfEffectAction extends EntityAction<AreaOfEffectConfiguration> 
 	public void execute(@NotNull AreaOfEffectConfiguration configuration, @NotNull Entity entity) {
 		double diameter = configuration.radius() * 2;
 
-		for (Entity check : entity.level.getEntitiesOfClass(Entity.class, AABB.ofSize(entity.getPosition(1F), diameter, diameter, diameter))) {
+		for (Entity check : entity.level().getEntitiesOfClass(Entity.class, AABB.ofSize(entity.getPosition(1F), diameter, diameter, diameter))) {
 			if (check == entity && !configuration.includeTarget())
 				continue;
 			if (ConfiguredBiEntityCondition.check(configuration.condition(), entity, check) && check.distanceToSqr(entity) < Mth.square(configuration.radius()))

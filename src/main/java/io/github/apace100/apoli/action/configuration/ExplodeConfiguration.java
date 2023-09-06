@@ -3,6 +3,7 @@ package io.github.apace100.apoli.action.configuration;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
@@ -24,7 +25,7 @@ import java.util.Optional;
 public final class ExplodeConfiguration implements IDynamicFeatureConfiguration {
 	public static final Codec<ExplodeConfiguration> CODEC = RecordCodecBuilder.create(instance -> /*, t6*/ instance.group(
 			CalioCodecHelper.FLOAT.fieldOf("power").forGetter(ExplodeConfiguration::power),
-			CalioCodecHelper.optionalField(SerializableDataTypes.DESTRUCTION_TYPE, "destruction_type", Explosion.BlockInteraction.BREAK).forGetter(ExplodeConfiguration::destructionType),
+			CalioCodecHelper.optionalField(ApoliDataTypes.BACKWARDS_COMPATIBLE_DESTRUCTION_TYPE, "destruction_type", Explosion.BlockInteraction.DESTROY).forGetter(ExplodeConfiguration::destructionType),
 			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "damage_self", true).forGetter(ExplodeConfiguration::damageSelf),
 			ConfiguredBlockCondition.optional("indestructible", Apoli.identifier("deny")).forGetter(ExplodeConfiguration::indestructible),
 			ConfiguredBlockCondition.optional("destructible", Apoli.identifier("deny")).forGetter(ExplodeConfiguration::destructible),

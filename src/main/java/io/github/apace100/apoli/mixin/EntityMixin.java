@@ -97,7 +97,7 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 
 	@Inject(at = @At(value = "HEAD"), method = "moveTowardsClosestSpace", cancellable = true)
 	protected void pushOutOfBlocks(double x, double y, double z, CallbackInfo info) {
-		if (PhasingPower.shouldPhaseThrough((Entity) (Object) this, new BlockPos(x, y, z)))
+		if (PhasingPower.shouldPhaseThrough((Entity) (Object) this, new BlockPos((int) x, (int) y, (int) z)))
 			info.cancel();
 	}
 

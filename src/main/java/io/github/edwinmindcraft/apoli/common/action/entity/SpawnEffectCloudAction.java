@@ -19,7 +19,7 @@ public class SpawnEffectCloudAction extends EntityAction<SpawnEffectCloudConfigu
 
 	@Override
 	public void execute(SpawnEffectCloudConfiguration configuration, Entity entity) {
-		AreaEffectCloud areaEffectCloudEntity = new AreaEffectCloud(entity.level, entity.getX(), entity.getY(), entity.getZ());
+		AreaEffectCloud areaEffectCloudEntity = new AreaEffectCloud(entity.level(), entity.getX(), entity.getY(), entity.getZ());
 		if (entity instanceof LivingEntity)
 			areaEffectCloudEntity.setOwner((LivingEntity) entity);
 		areaEffectCloudEntity.setRadius(configuration.radius());
@@ -29,6 +29,6 @@ public class SpawnEffectCloudAction extends EntityAction<SpawnEffectCloudConfigu
 		List<MobEffectInstance> effects = configuration.effects().getContent().stream().map(MobEffectInstance::new).collect(Collectors.toList());
 		areaEffectCloudEntity.setFixedColor(PotionUtils.getColor(effects));
 		effects.forEach(areaEffectCloudEntity::addEffect);
-		entity.level.addFreshEntity(areaEffectCloudEntity);
+		entity.level().addFreshEntity(areaEffectCloudEntity);
 	}
 }

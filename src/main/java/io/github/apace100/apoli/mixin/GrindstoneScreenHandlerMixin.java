@@ -70,9 +70,9 @@ public abstract class GrindstoneScreenHandlerMixin extends AbstractContainerMenu
         List<Holder<ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower>>> applyingPowers = ModifyGrindstonePower.tryGetApplyingPowers(this.apoli$cachedPlayer, top, bottom, this.resultSlots.getItem(0), this.apoli$cachedPosition);
         if (applyingPowers.isEmpty()) return;
         this.apoli$appliedPowers = applyingPowers;
-        ItemStack newOutput = ModifyGrindstonePower.tryCreateOutput(this.apoli$appliedPowers, this.apoli$cachedPlayer.level, top, bottom, this.resultSlots.getItem(0));
+        ItemStack newOutput = ModifyGrindstonePower.tryCreateOutput(this.apoli$appliedPowers, this.apoli$cachedPlayer.level(), top, bottom, this.resultSlots.getItem(0));
         this.resultSlots.setItem(0, newOutput);
-        this.xp = (int) ModifierUtil.applyModifiers(this.apoli$cachedPlayer, ModifyGrindstonePower.tryGetExperienceModifiers(applyingPowers), ((GrindstoneMenuResultSlotAccessor)this.getSlot(2)).invokeGetExperienceAmount(this.apoli$cachedPlayer.level));
+        this.xp = (int) ModifierUtil.applyModifiers(this.apoli$cachedPlayer, ModifyGrindstonePower.tryGetExperienceModifiers(applyingPowers), ((GrindstoneMenuResultSlotAccessor)this.getSlot(2)).invokeGetExperienceAmount(this.apoli$cachedPlayer.level()));
         this.broadcastChanges();
     }
 

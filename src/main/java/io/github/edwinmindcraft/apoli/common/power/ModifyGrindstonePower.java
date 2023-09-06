@@ -31,7 +31,7 @@ public class ModifyGrindstonePower extends PowerFactory<ModifyGrindstoneConfigur
     }
 
     public static List<Holder<ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower>>> tryGetApplyingPowers(Entity entity, ItemStack top, ItemStack bottom, ItemStack original, Optional<BlockPos> pos) {
-        return IPowerContainer.getPowers(entity, ApoliPowers.MODIFY_GRINDSTONE.get()).stream().filter(holder -> holder.value().getConfiguration().doesApply(holder.value(), entity.level, top, bottom, original, pos)).toList();
+        return IPowerContainer.getPowers(entity, ApoliPowers.MODIFY_GRINDSTONE.get()).stream().filter(holder -> holder.value().getConfiguration().doesApply(holder.value(), entity.level(), top, bottom, original, pos)).toList();
     }
 
     public static ItemStack tryCreateOutput(List<Holder<ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower>>> holders, Level level, ItemStack top, ItemStack bottom, ItemStack currentOutput) {

@@ -46,7 +46,7 @@ public record BlockInteractionConfiguration(Holder<ConfiguredBlockCondition<?, ?
 	}
 
 	public InteractionResult executeAction(Entity entity, BlockPos blockPos, Direction direction, InteractionHand hand) {
-		ConfiguredBlockAction.execute(this.blockAction(), entity.level, blockPos, direction);
+		ConfiguredBlockAction.execute(this.blockAction(), entity.level(), blockPos, direction);
 		ConfiguredEntityAction.execute(this.entityAction(), entity);
 		if (entity instanceof LivingEntity living)
 			this.interaction().performActorItemStuff(living, hand);

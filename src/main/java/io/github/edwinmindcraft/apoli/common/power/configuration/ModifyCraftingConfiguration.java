@@ -44,7 +44,7 @@ public record ModifyCraftingConfiguration(@Nullable ResourceLocation recipeIdent
 
 	public boolean doesApply(CraftingContainer container, Recipe<? super CraftingContainer> recipe, Level level) {
 		return (this.recipeIdentifier() == null || Objects.equals(recipe.getId(), this.recipeIdentifier())) &&
-			   (!this.itemCondition().isBound() || ConfiguredItemCondition.check(this.itemCondition(), level, recipe.assemble(container)));
+			   (!this.itemCondition().isBound() || ConfiguredItemCondition.check(this.itemCondition(), level, recipe.assemble(container, level.registryAccess())));
 	}
 
 	public ItemStack createResult(CraftingContainer container, Recipe<? super CraftingContainer> recipe, Level level) {
@@ -52,14 +52,14 @@ public record ModifyCraftingConfiguration(@Nullable ResourceLocation recipeIdent
 		if (this.newStack() != null)
 			stack.setValue(this.newStack().copy());
 		else
-			stack.setValue(recipe.assemble(container));
+			stack.setValue(recipe.assemble(container, level.registryAccess()));
 		ConfiguredItemAction.execute(this.itemAction(), level, stack);
 		return stack.getValue();
 	}
 
 	public void execute(Entity entity, @Nullable BlockPos pos) {
 		if (pos != null && this.blockAction().isBound())
-			ConfiguredBlockAction.execute(this.blockAction(), entity.level, pos, Direction.UP);
+			ConfiguredBlockAction.execute(this.blockAction(), entity.level(), pos, Direction.UP);
 		ConfiguredEntityAction.execute(this.entityAction(), entity);
 	}
 

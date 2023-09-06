@@ -22,10 +22,10 @@ public class LaunchPower extends ActiveCooldownPowerFactory.Simple<LaunchConfigu
 			player.push(0, config.speed(), 0);
 			player.hurtMarked = true;
 			if (config.sound() != null)
-				world.playSound(null, player.getX(), player.getY(), player.getZ(), config.sound(), SoundSource.NEUTRAL, 0.5F, 0.4F / (player.level.random.nextFloat() * 0.4F + 0.8F));
-			if (player.level instanceof ServerLevel serverWorld) {
+				world.playSound(null, player.getX(), player.getY(), player.getZ(), config.sound(), SoundSource.NEUTRAL, 0.5F, 0.4F / (player.level().random.nextFloat() * 0.4F + 0.8F));
+			if (player.level() instanceof ServerLevel serverWorld) {
 				for (int i = 0; i < 4; ++i)
-					serverWorld.sendParticles(ParticleTypes.CLOUD, player.getX(), player.getRandomY(), player.getZ(), 8, player.level.random.nextGaussian(), 0.0D, player.level.random.nextGaussian(), 0.5);
+					serverWorld.sendParticles(ParticleTypes.CLOUD, player.getX(), player.getRandomY(), player.getZ(), 8, player.level().random.nextGaussian(), 0.0D, player.level().random.nextGaussian(), 0.5);
 			}
 		}
 	}

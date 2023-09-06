@@ -22,7 +22,7 @@ public class RaycastCondition extends EntityCondition<RaycastConfiguration> {
 		if (hitResult.getType() == HitResult.Type.MISS)
 			return false;
 		if (hitResult instanceof BlockHitResult bhr && configuration.blockCondition().isBound())
-			return ConfiguredBlockCondition.check(configuration.blockCondition(), entity.getLevel(), bhr.getBlockPos());
+			return ConfiguredBlockCondition.check(configuration.blockCondition(), entity.level(), bhr.getBlockPos());
 		if (hitResult instanceof EntityHitResult ehr && configuration.hitCondition().isBound())
 			return configuration.hitCondition().value().check(entity, ehr.getEntity());
 		return true;

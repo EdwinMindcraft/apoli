@@ -39,7 +39,7 @@ public enum ReferencePoint {
 				LevelData data = level.getLevelData();
 				BlockPos spawnPos = new BlockPos(data.getXSpawn(), data.getYSpawn(), data.getZSpawn());
 				if (!level.getWorldBorder().isWithinBounds(spawnPos))
-					spawnPos = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(level.getWorldBorder().getCenterX(), 0.0D, level.getWorldBorder().getCenterZ()));
+					spawnPos = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos((int) level.getWorldBorder().getCenterX(), 0, (int) level.getWorldBorder().getCenterZ()));
 				return new Vec3(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
 			case WORLD_ORIGIN:
 			default:

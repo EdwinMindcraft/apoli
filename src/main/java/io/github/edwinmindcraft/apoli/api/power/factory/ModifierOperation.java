@@ -121,7 +121,7 @@ public class ModifierOperation {
             public <U> DataResult<Pair<ModifierOperation, U>> decode(DynamicOps<U> dynamicOps, U input) {
                 return dynamicOps.compressMaps() ? dynamicOps.getNumberValue(input).flatMap((number) -> {
                     ModifierOperation object = supplier.get().getValue(number.intValue());
-                    return object == null ? DataResult.error("Unknown registry id: " + number) : DataResult.success(object);
+                    return object == null ? DataResult.error(() -> "Unknown registry id: " + number) : DataResult.success(object);
                 }).map((obj) -> Pair.of(obj, dynamicOps.empty())) : Codec.STRING.decode(dynamicOps, input).flatMap((pair) -> {
                     ResourceLocation location;
                     try {
@@ -138,12 +138,12 @@ public class ModifierOperation {
                             }
                         }
                     } catch (ResourceLocationException ex) {
-                        return DataResult.error("Not a valid resource location: " + pair.getFirst() + " " + ex.getMessage());
+                        return DataResult.error(() -> "Not a valid resource location: " + pair.getFirst() + " " + ex.getMessage());
                     }
                     ModifierOperation object = supplier.get().getValue(location);
                     if (object == null && NamespaceAlias.hasAlias(location))
                         object = supplier.get().getValue(NamespaceAlias.resolveAlias(location));
-                    return object == null ? DataResult.error("Unknown registry key: " + pair.getFirst()) : DataResult.success(Pair.of(object, pair.getSecond()));
+                    return object == null ? DataResult.error(() -> "Unknown registry key: " + pair.getFirst()) : DataResult.success(Pair.of(object, pair.getSecond()));
                 });
             }
 

@@ -41,9 +41,9 @@ public record ModifyGrindstoneConfiguration(Holder<ConfiguredItemCondition<?, ?>
 
 
 	public void tryExecute(ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower> configuration, Entity entity, Mutable<ItemStack> itemStack, Optional<BlockPos> pos) {
-		ConfiguredItemAction.execute(configuration.getConfiguration().lateItemAction(), entity.level, itemStack);
+		ConfiguredItemAction.execute(configuration.getConfiguration().lateItemAction(), entity.level(), itemStack);
 		ConfiguredEntityAction.execute(configuration.getConfiguration().entityAction(), entity);
-		pos.ifPresent(blockPos -> ConfiguredBlockAction.execute(configuration.getConfiguration().blockAction(), entity.level, blockPos, Direction.UP));
+		pos.ifPresent(blockPos -> ConfiguredBlockAction.execute(configuration.getConfiguration().blockAction(), entity.level(), blockPos, Direction.UP));
 	}
 
 	public boolean doesApply(ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower> configuration, Level level, ItemStack top, ItemStack bottom, ItemStack original, Optional<BlockPos> pos) {

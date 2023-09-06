@@ -31,7 +31,7 @@ import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.ENTI
 public class ApoliEntityActions {
 	public static final BiConsumer<ConfiguredEntityAction<?, ?>, Entity> EXECUTOR = ConfiguredEntityAction::execute;
 	public static final BiPredicate<ConfiguredEntityCondition<?, ?>, Entity> PREDICATE = ConfiguredEntityCondition::check;
-	public static final Predicate<Entity> SERVERSIDE_PREDICATE = (entity) -> !entity.level.isClientSide;
+	public static final Predicate<Entity> SERVERSIDE_PREDICATE = (entity) -> !entity.level().isClientSide;
 
 	private static <U extends EntityAction<?>> RegistryObject<U> of(String name) {
 		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.ENTITY_ACTION_KEY.location(), Apoli.MODID);

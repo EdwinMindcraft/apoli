@@ -17,6 +17,6 @@ public class BlockCollisionCondition extends EntityCondition<FieldConfiguration<
 	public boolean check(FieldConfiguration<Vec3> configuration, Entity entity) {
 		AABB boundingBox = entity.getBoundingBox();
 		boundingBox = boundingBox.move(configuration.value().multiply(boundingBox.getXsize(), boundingBox.getYsize(), boundingBox.getZsize()));
-		return entity.level.getBlockCollisions(entity, boundingBox).iterator().hasNext();
+		return entity.level().getBlockCollisions(entity, boundingBox).iterator().hasNext();
 	}
 }

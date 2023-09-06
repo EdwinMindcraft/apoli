@@ -7,6 +7,7 @@ import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.ConfiguredFactory;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -30,13 +31,13 @@ public final class ConfiguredHudRenderer<T extends IDynamicFeatureConfiguration,
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void drawBar(Entity player, PoseStack matrices, int x, int y, int width, float fill) {
-		this.getFactory().drawBar(this, player, matrices, x, y, width, fill);
+	public void drawBar(Entity player, GuiGraphics graphics, int x, int y, int width, float fill) {
+		this.getFactory().drawBar(this, player, graphics, x, y, width, fill);
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void drawIcon(Entity player, PoseStack matrices, int x, int y, float fill) {
-		this.getFactory().drawIcon(this, player, matrices, x, y, fill);
+	public void drawIcon(Entity player, GuiGraphics graphics, int x, int y, float fill) {
+		this.getFactory().drawIcon(this, player, graphics, x, y, fill);
 	}
 
 	public DrawType shouldDraw(Entity player) {

@@ -17,16 +17,16 @@ public class GiveAction extends EntityAction<GiveConfiguration> {
 
 	@Override
 	public void execute(GiveConfiguration configuration, Entity entity) {
-		if (!entity.level.isClientSide()) {
+		if (!entity.level().isClientSide()) {
 			if (configuration.stack().isEmpty()) return;
 			MutableObject<ItemStack> stack = new MutableObject<>(configuration.stack().copy());
-			ConfiguredItemAction.execute(configuration.action(), entity.level, stack);
+			ConfiguredItemAction.execute(configuration.action(), entity.level(), stack);
 			if (configuration.slot() != null && entity instanceof LivingEntity living) {
 				ItemStack stackInSlot = living.getItemBySlot(configuration.slot());
 				if (stackInSlot.isEmpty()) {
 					living.setItemSlot(configuration.slot(), stack.getValue());
 					return;
-				} else if (ItemStack.isSame(stackInSlot, stack.getValue()) && stackInSlot.getCount() < stackInSlot.getMaxStackSize()) {
+				} else if (ItemStack.isSameItem(stackInSlot, stack.getValue()) && stackInSlot.getCount() < stackInSlot.getMaxStackSize()) {
 					int fit = Math.min(stackInSlot.getMaxStackSize() - stackInSlot.getCount(), stack.getValue().getCount());
 					stackInSlot.grow(fit);
 					stack.getValue().shrink(fit);
@@ -38,7 +38,7 @@ public class GiveAction extends EntityAction<GiveConfiguration> {
 			if (entity instanceof Player player)
 				player.getInventory().placeItemBackInInventory(stack.getValue());
 			else
-				entity.level.addFreshEntity(new ItemEntity(entity.level, entity.getX(), entity.getY(), entity.getZ(), stack.getValue()));
+				entity.level().addFreshEntity(new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), stack.getValue()));
 		}
 	}
 }
