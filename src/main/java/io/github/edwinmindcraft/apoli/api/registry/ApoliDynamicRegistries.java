@@ -3,12 +3,14 @@ package io.github.edwinmindcraft.apoli.api.registry;
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
+import io.github.edwinmindcraft.apoli.common.global.GlobalPowerSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
 public class ApoliDynamicRegistries {
 	public static final ResourceKey<Registry<ConfiguredPower<?, ?>>> CONFIGURED_POWER_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("configured_power"));
+    public static final ResourceKey<Registry<GlobalPowerSet>> GLOBAL_POWER_SET = ResourceKey.createRegistryKey(ApoliAPI.identifier("global_power_set"));
 
 	public static final ResourceKey<Registry<ConfiguredBiEntityAction<?, ?>>> CONFIGURED_BIENTITY_ACTION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("configured_bientity_action"));
 	public static final ResourceKey<Registry<ConfiguredBlockAction<?, ?>>> CONFIGURED_BLOCK_ACTION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("configured_block_action"));

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.global.GlobalPowerSetUtil;
 import io.github.apace100.apoli.util.GainedPowerCriterion;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
@@ -380,5 +381,6 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 	@Override
 	public void deserializeNBT(Tag nbt) {
 		this.readFromNbt((CompoundTag) nbt);
+        GlobalPowerSetUtil.applyGlobalPowers(owner);
 	}
 }

@@ -4,6 +4,7 @@ import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.apoli.common.global.GlobalPowerSet;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
@@ -12,6 +13,7 @@ import net.minecraftforge.registries.RegistryBuilder;
 public class ApoliDynamicRegisters {
 
 	public static final DeferredRegister<ConfiguredPower<?, ?>> CONFIGURED_POWERS = DeferredRegister.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY.location(), Apoli.MODID);
+    public static final DeferredRegister<GlobalPowerSet> GLOBAL_POWER_SETS = DeferredRegister.create(ApoliDynamicRegistries.GLOBAL_POWER_SET.location(), Apoli.MODID);
 
 	public static final DeferredRegister<ConfiguredBiEntityAction<?, ?>> CONFIGURED_BIENTITY_ACTIONS = DeferredRegister.create(ApoliDynamicRegistries.CONFIGURED_BIENTITY_ACTION_KEY.location(), Apoli.MODID);
 	public static final DeferredRegister<ConfiguredBlockAction<?, ?>> CONFIGURED_BLOCK_ACTIONS = DeferredRegister.create(ApoliDynamicRegistries.CONFIGURED_BLOCK_ACTION_KEY.location(), Apoli.MODID);
@@ -30,6 +32,7 @@ public class ApoliDynamicRegisters {
 
 	public static void initialize() {
 		ApoliBuiltinRegistries.CONFIGURED_POWERS = CONFIGURED_POWERS.makeRegistry(() -> new RegistryBuilder<ConfiguredPower<?, ?>>().hasTags().disableSaving());
+        ApoliBuiltinRegistries.GLOBAL_POWER_SET = GLOBAL_POWER_SETS.makeRegistry(() -> new RegistryBuilder<GlobalPowerSet>().hasTags().disableSaving());
 
 		ApoliBuiltinRegistries.CONFIGURED_BIENTITY_ACTIONS = CONFIGURED_BIENTITY_ACTIONS.makeRegistry(() -> new RegistryBuilder<ConfiguredBiEntityAction<?, ?>>().disableSaving().hasTags().setDefaultKey(ApoliDynamicRegistries.ACTION_DEFAULT));
 		ApoliBuiltinRegistries.CONFIGURED_BLOCK_ACTIONS = CONFIGURED_BLOCK_ACTIONS.makeRegistry(() -> new RegistryBuilder<ConfiguredBlockAction<?, ?>>().disableSaving().hasTags().setDefaultKey(ApoliDynamicRegistries.ACTION_DEFAULT));
@@ -48,6 +51,7 @@ public class ApoliDynamicRegisters {
 
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		CONFIGURED_POWERS.register(bus);
+        GLOBAL_POWER_SETS.register(bus);
 
 		CONFIGURED_BIENTITY_ACTIONS.register(bus);
 		CONFIGURED_BLOCK_ACTIONS.register(bus);

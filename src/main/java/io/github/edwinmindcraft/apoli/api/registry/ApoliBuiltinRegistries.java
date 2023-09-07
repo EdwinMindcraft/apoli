@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.api.registry;
 
 import io.github.apace100.calio.ClassUtil;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
+import io.github.edwinmindcraft.apoli.common.global.GlobalPowerSet;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.function.Supplier;
@@ -10,6 +11,7 @@ public class ApoliBuiltinRegistries {
 	public static final Class<ConfiguredPower<?, ?>> CONFIGURED_POWER_CLASS = ClassUtil.get();
 
 	public static Supplier<IForgeRegistry<ConfiguredPower<?, ?>>> CONFIGURED_POWERS;
+    public static Supplier<IForgeRegistry<GlobalPowerSet>> GLOBAL_POWER_SET;
 
 	public static Supplier<IForgeRegistry<ConfiguredBiEntityAction<?, ?>>> CONFIGURED_BIENTITY_ACTIONS;
 	public static Supplier<IForgeRegistry<ConfiguredBlockAction<?, ?>>> CONFIGURED_BLOCK_ACTIONS;
