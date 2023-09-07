@@ -20,6 +20,7 @@ public class DropInventoryAction extends EntityAction<DropInventoryConfiguration
                 configuration.throwRandomly(),
                 configuration.retainOwnership(),
                 entity,
-                configuration.power());
+                configuration.power(),
+                configuration.amount());
     }
 }

@@ -1,6 +1,5 @@
 package io.github.apace100.apoli.util;
 
-import com.google.common.collect.Sets;
 import io.github.apace100.apoli.mixin.ItemSlotArgumentTypeAccessor;
 import io.github.apace100.calio.util.ArgumentWrapper;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
@@ -25,7 +24,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -225,9 +223,11 @@ public class InventoryUtil {
                                      Holder<ConfiguredItemCondition<?, ?>> itemCondition,
                                      Holder<ConfiguredItemAction<?, ?>> itemAction,
                                      boolean throwRandomly, boolean retainOwnership,
-                                     Entity entity, Optional<ResourceLocation> powerId) {
+                                     Entity entity, Optional<ResourceLocation> powerId,
+                                     int amount) {
 
         Set<Integer> slots = getSlots(slotArgumentTypes);
+        deduplicateSlots(entity, slots);
 
         if (powerId.isEmpty()) {
             for (Integer slot : slots) {
@@ -239,8 +239,13 @@ public class InventoryUtil {
                             ConfiguredEntityAction.execute(entityAction, entity);
                             Mutable<ItemStack> newStack = new MutableObject<>(currentItemStack.copy());
                             ConfiguredItemAction.execute(itemAction, entity.level(), newStack);
-                            throwItem(entity, currentItemStack, throwRandomly, retainOwnership);
-                            stackReference.set(ItemStack.EMPTY);
+                            if (amount != 0) {
+                                int newAmount = amount > 0 ? amount * -1 : amount;
+                                newStack.setValue(newStack.getValue().split(newAmount));
+                                stackReference.set(newStack.getValue());
+                            } else
+                                stackReference.set(ItemStack.EMPTY);
+                            throwItem(entity, newStack.getValue(), throwRandomly, retainOwnership);
                         }
                     }
                 }
@@ -263,8 +268,13 @@ public class InventoryUtil {
                         ConfiguredEntityAction.execute(entityAction, entity);
                         Mutable<ItemStack> newStack = new MutableObject<>(currentItemStack.copy());
                         ConfiguredItemAction.execute(itemAction, entity.level(), newStack);
-                        throwItem(entity, currentItemStack, throwRandomly, retainOwnership);
-                        container.setItem(i, ItemStack.EMPTY);
+                        if (amount != 0) {
+                            int newAmount = amount > 0 ? amount * -1 : amount;
+                            newStack.setValue(newStack.getValue().split(newAmount));
+                            container.setItem(i, newStack.getValue());
+                        } else
+                            container.setItem(i, ItemStack.EMPTY);
+                        throwItem(entity, newStack.getValue(), throwRandomly, retainOwnership);
                     }
                 }
             }

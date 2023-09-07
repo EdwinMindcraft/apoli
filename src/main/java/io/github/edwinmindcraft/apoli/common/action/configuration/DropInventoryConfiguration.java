@@ -25,7 +25,8 @@ public record DropInventoryConfiguration(InventoryUtil.InventoryType inventoryTy
                                          ListConfiguration<ArgumentWrapper<Integer>> slots,
                                          Optional<ResourceLocation> power,
                                          boolean throwRandomly,
-                                         boolean retainOwnership) implements IDynamicFeatureConfiguration {
+                                         boolean retainOwnership,
+                                         int amount) implements IDynamicFeatureConfiguration {
 
     public static final Codec<DropInventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             CalioCodecHelper.optionalField(SerializableDataType.enumValue(InventoryUtil.InventoryType.class), "inventory_type", InventoryUtil.InventoryType.INVENTORY).forGetter(DropInventoryConfiguration::inventoryType),
@@ -35,7 +36,8 @@ public record DropInventoryConfiguration(InventoryUtil.InventoryType inventoryTy
             ListConfiguration.mapCodec(ApoliDataTypes.ITEM_SLOT, "slot", "slots").forGetter(DropInventoryConfiguration::slots),
             CalioCodecHelper.optionalField(SerializableDataTypes.IDENTIFIER, "power").forGetter(DropInventoryConfiguration::power),
             CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "throw_randomly", false).forGetter(DropInventoryConfiguration::throwRandomly),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "retain_ownership", true).forGetter(DropInventoryConfiguration::retainOwnership)
+            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "retain_ownership", true).forGetter(DropInventoryConfiguration::retainOwnership),
+            CalioCodecHelper.optionalField(CalioCodecHelper.INT, "amount", 0).forGetter(DropInventoryConfiguration::amount)
     ).apply(instance, DropInventoryConfiguration::new));
 
 }
