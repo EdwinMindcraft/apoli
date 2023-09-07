@@ -19,6 +19,7 @@ public class ReplaceInventoryAction extends EntityAction<ReplaceInventoryConfigu
                 configuration.itemCondition(),
                 configuration.itemAction(),
                 entity,
-                configuration.power());
+                configuration.power(),
+                configuration.mergeNbt());
     }
 }

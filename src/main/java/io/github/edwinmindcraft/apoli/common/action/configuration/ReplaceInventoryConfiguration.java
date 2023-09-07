@@ -25,7 +25,8 @@ public record ReplaceInventoryConfiguration(InventoryUtil.InventoryType inventor
                                             Holder<ConfiguredItemCondition<?, ?>> itemCondition,
                                             ListConfiguration<ArgumentWrapper<Integer>> slots,
                                             Optional<ResourceLocation> power,
-                                            ItemStack stack) implements IDynamicFeatureConfiguration {
+                                            ItemStack stack,
+                                            boolean mergeNbt) implements IDynamicFeatureConfiguration {
 
     public static final Codec<ReplaceInventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             CalioCodecHelper.optionalField(SerializableDataType.enumValue(InventoryUtil.InventoryType.class), "inventory_type", InventoryUtil.InventoryType.INVENTORY).forGetter(ReplaceInventoryConfiguration::inventoryType),
@@ -34,7 +35,8 @@ public record ReplaceInventoryConfiguration(InventoryUtil.InventoryType inventor
             ConfiguredItemCondition.optional("item_condition").forGetter(ReplaceInventoryConfiguration::itemCondition),
             ListConfiguration.mapCodec(ApoliDataTypes.ITEM_SLOT, "slot", "slots").forGetter(ReplaceInventoryConfiguration::slots),
             CalioCodecHelper.optionalField(SerializableDataTypes.IDENTIFIER, "power").forGetter(ReplaceInventoryConfiguration::power),
-            SerializableDataTypes.ITEM_STACK.fieldOf("stack").forGetter(ReplaceInventoryConfiguration::stack)
+            SerializableDataTypes.ITEM_STACK.fieldOf("stack").forGetter(ReplaceInventoryConfiguration::stack),
+            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "merge_nbt", false).forGetter(ReplaceInventoryConfiguration::mergeNbt)
     ).apply(instance, ReplaceInventoryConfiguration::new));
 
 }

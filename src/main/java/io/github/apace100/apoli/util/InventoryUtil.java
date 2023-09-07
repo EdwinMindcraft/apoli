@@ -177,9 +177,11 @@ public class InventoryUtil {
                                         Holder<ConfiguredEntityAction<?, ?>> entityAction,
                                         Holder<ConfiguredItemCondition<?, ?>> itemCondition,
                                         Holder<ConfiguredItemAction<?, ?>> itemAction,
-                                        Entity entity, Optional<ResourceLocation> powerId) {
+                                        Entity entity, Optional<ResourceLocation> powerId,
+                                        boolean mergeNbt) {
 
         Set<Integer> slots = getSlots(slotArgumentTypes);
+        deduplicateSlots(entity, slots);
 
         if (powerId.isEmpty()) {
             for (Integer slot : slots) {
@@ -189,6 +191,8 @@ public class InventoryUtil {
                     if (ConfiguredItemCondition.check(itemCondition, entity.level(), currentItemStack)) {
                         ConfiguredEntityAction.execute(entityAction, entity);
                         Mutable<ItemStack> newStack = new MutableObject<>(replacementStack.copy());
+                        if (mergeNbt && newStack.getValue().hasTag())
+                            newStack.getValue().getOrCreateTag().merge(replacementStack.getOrCreateTag());
                         ConfiguredItemAction.execute(itemAction, entity.level(), newStack);
                         stackReference.set(newStack.getValue());
                     }
@@ -210,6 +214,8 @@ public class InventoryUtil {
                 if (ConfiguredItemCondition.check(itemCondition, entity.level(), currentItemStack)) {
                     ConfiguredEntityAction.execute(entityAction, entity);
                     Mutable<ItemStack> newStack = new MutableObject<>(replacementStack.copy());
+                    if (mergeNbt && newStack.getValue().hasTag())
+                        newStack.getValue().getOrCreateTag().merge(replacementStack.getOrCreateTag());
                     ConfiguredItemAction.execute(itemAction, entity.level(), newStack);
                     container.setItem(i, newStack.getValue());
                 }
