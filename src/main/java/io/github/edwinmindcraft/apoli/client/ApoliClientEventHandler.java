@@ -59,8 +59,7 @@ public class ApoliClientEventHandler {
 		Player player = Minecraft.getInstance().player;
 		if (player != null) {
 			boolean firstPerson = Minecraft.getInstance().options.getCameraType().isFirstPerson();
-			if (!event.getEntity().isInvisibleTo(player))
-				ParticlePower.renderParticles(event.getEntity(), player, firstPerson);
+            ParticlePower.renderParticles(event.getEntity(), player, firstPerson);
 		}
 	}
 
