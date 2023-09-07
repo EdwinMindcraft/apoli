@@ -9,6 +9,7 @@ import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 public interface IActivePower<T extends IDynamicFeatureConfiguration> {
@@ -31,5 +32,22 @@ public interface IActivePower<T extends IDynamicFeatureConfiguration> {
 			case "primary" -> PRIMARY;
 			default -> new Key(string, false);
 		}), Either::left);
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj == this)
+                return true;
+
+            if (!(obj instanceof IActivePower.Key otherKey))
+                return false;
+
+            return otherKey.key.equals(this.key) && otherKey.continuous == this.continuous;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.key, this.continuous);
+        }
+
 	}
 }
