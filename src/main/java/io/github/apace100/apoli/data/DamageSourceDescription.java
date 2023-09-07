@@ -28,7 +28,7 @@ public class DamageSourceDescription {
             CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "magic", false).forGetter(o -> o.containsTag(DamageTypeTags.WITCH_RESISTANT_TO)),
             CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "out_of_world", false).forGetter(o -> o.containsTag(DamageTypeTags.BYPASSES_INVULNERABILITY)),
             CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "projectile", false).forGetter(o -> o.containsTag(DamageTypeTags.IS_PROJECTILE)),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "explosive", false).forGetter(o -> o.containsTag(DamageTypeTags.BYPASSES_SHIELD))
+            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "explosive", false).forGetter(o -> o.containsTag(DamageTypeTags.IS_EXPLOSION))
     ).apply(instance, DamageSourceDescription::new));
     private static final Set<TagKey<DamageType>> TAGS = Sets.newHashSet();
     private static int TAG_COUNT = 0;
