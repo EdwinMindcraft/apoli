@@ -40,6 +40,9 @@ public class GlobalPowerSetUtil {
     }
 
     public static void applyGlobalPowers(Entity entity) {
+        if (!entity.level().isClientSide()) {
+            return;
+        }
         IPowerContainer pc = ApoliAPI.getPowerContainer(entity);
         if(pc == null) {
             return;
