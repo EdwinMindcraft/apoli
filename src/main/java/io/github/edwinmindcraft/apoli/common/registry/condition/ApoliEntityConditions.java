@@ -119,9 +119,9 @@ public class ApoliEntityConditions {
 	public static final RegistryObject<SimpleEntityCondition> CREATIVE_FLYING = registerPlayer("creative_flying", x -> x.getAbilities().flying);
 	public static final RegistryObject<SingleFieldEntityCondition<ResourceKey<ConfiguredPower<?, ?>>>> POWER_TYPE = register("power_type", SerializableDataType.registryKey(ApoliDynamicRegistries.CONFIGURED_POWER_KEY).fieldOf("power_type"), (entity, rl) -> IPowerContainer.get(entity).map(container -> container.getPowerTypes(true).contains(rl)).orElse(false));
 	public static final RegistryObject<SingleFieldEntityCondition<PlayerAbility>> ABILITY = register("ability", ApoliDataTypes.PLAYER_ABILITY.fieldOf("ability"), IAbilityHolder::has);
+    public static final RegistryObject<SimpleEntityCondition> GLOWING = register("glowing", SimpleEntityCondition::isGlowing);
 
-
-	public static ConfiguredEntityCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
+    public static ConfiguredEntityCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 
 	@SafeVarargs
 	public static ConfiguredEntityCondition<?, ?> and(HolderSet<ConfiguredEntityCondition<?, ?>>... conditions) {

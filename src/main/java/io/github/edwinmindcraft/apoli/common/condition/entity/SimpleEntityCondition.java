@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.apoli.common.condition.entity;
 import io.github.apace100.apoli.mixin.EntityAccessor;
 import io.github.edwinmindcraft.apoli.api.configuration.NoConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -24,6 +25,13 @@ public class SimpleEntityCondition extends EntityCondition<NoConfiguration> {
 	public static boolean isExposedToSun(Entity entity) {
 		return entity.getLightLevelDependentMagicValue() > 0.5F && entity.level().isDay() && !((EntityAccessor) entity).callIsBeingRainedOn() && isExposedToSky(entity);
 	}
+
+    public static boolean isGlowing(Entity entity) {
+        if (entity.level().isClientSide())
+            return Minecraft.getInstance().shouldEntityAppearGlowing(entity);
+        else
+            return entity.isCurrentlyGlowing();
+    }
 
 	private final Predicate<Entity> predicate;
 
