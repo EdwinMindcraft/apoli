@@ -54,13 +54,6 @@ public class ApoliClientEventHandler {
 			event.setCanceled(true);
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public static void onLivingRender(RenderLivingEvent.Pre<LivingEntity, ?> event) {
-		//FIXME Doesn't seem to work with armor.
-		if (InvisibilityPower.isArmorHidden(event.getEntity()))
-			event.setCanceled(true);
-	}
-
 	@SubscribeEvent
 	public static void onLivingTick(LivingEvent.LivingTickEvent event) {
 		Player player = Minecraft.getInstance().player;

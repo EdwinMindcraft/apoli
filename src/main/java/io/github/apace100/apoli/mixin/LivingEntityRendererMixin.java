@@ -3,6 +3,7 @@ package io.github.apace100.apoli.mixin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.common.power.InvisibilityPower;
 import io.github.edwinmindcraft.apoli.common.power.PreventFeatureRenderPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
@@ -37,6 +38,13 @@ public abstract class LivingEntityRendererMixin extends EntityRenderer<LivingEnt
 		if (IPowerContainer.hasPower(entity, ApoliPowers.SHAKING.get()))
 			cir.setReturnValue(true);
 	}
+
+    @ModifyVariable(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;getRenderType(Lnet/minecraft/world/entity/LivingEntity;ZZZ)Lnet/minecraft/client/renderer/RenderType;"), ordinal = 2)
+    private boolean preventOutlineRendering(boolean original, LivingEntity livingEntity) {
+        if (InvisibilityPower.isOutlineHidden(livingEntity))
+            return false;
+        return original;
+    }
 
 	@ModifyVariable(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/MultiBufferSource;getBuffer(Lnet/minecraft/client/renderer/RenderType;)Lcom/mojang/blaze3d/vertex/VertexConsumer;", shift = At.Shift.BEFORE))
 	private RenderType changeRenderLayerWhenTranslucent(RenderType original, LivingEntity entity) {
@@ -86,7 +94,7 @@ public abstract class LivingEntityRendererMixin extends EntityRenderer<LivingEnt
 	//TODO This would be more suited to a coremod since it could do continue without having to use a Redirect.
 	@Redirect(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/RenderLayer;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/Entity;FFFFFF)V"))
 	private <T extends Entity> void preventFeatureRendering(RenderLayer<T, ?> instance, PoseStack poseStack, MultiBufferSource buffer, int packedLight, T living, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-		if (PreventFeatureRenderPower.doesPrevent(living, instance))
+		if (PreventFeatureRenderPower.doesPrevent(living, instance) || InvisibilityPower.isArmorHidden(living))
 			return;
 		instance.render(poseStack, buffer, packedLight, living, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch);
 	}
