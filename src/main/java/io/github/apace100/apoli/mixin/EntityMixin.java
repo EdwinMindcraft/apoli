@@ -128,6 +128,13 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 		return ModifyVelocityPower.getModifiedVelocity((Entity)(Object)this, original);
 	}
 
+    @Inject(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getOnPosLegacy()Lnet/minecraft/core/BlockPos;"))
+    private void forceGrounded(MoverType pType, Vec3 pPos, CallbackInfo ci) {
+        if(IPowerContainer.hasPower((Entity)(Object)this, ApoliPowers.GROUNDED.get())) {
+            this.onGround = true;
+        }
+    }
+
 	@Override
 	public boolean isSubmergedInLoosely(TagKey<Fluid> tag) {
 		if (tag == null || this.fluidOnEyes == null) {

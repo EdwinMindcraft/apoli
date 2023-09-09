@@ -118,7 +118,8 @@ public class ApoliPowers {
 	public static final RegistryObject<ModifyGrindstonePower> MODIFY_GRINDSTONE = ApoliRegisters.POWER_FACTORIES.register("modify_grindstone", ModifyGrindstonePower::new);
 	public static final RegistryObject<ReplaceLootTablePower> REPLACE_LOOT_TABLE = ApoliRegisters.POWER_FACTORIES.register("replace_loot_table", ReplaceLootTablePower::new);
 	public static final RegistryObject<ModifyVelocityPower> MODIFY_VELOCITY = ApoliRegisters.POWER_FACTORIES.register("modify_velocity", ModifyVelocityPower::new);
-	//endregion
+	public static final RegistryObject<GroundedPower> GROUNDED = ApoliRegisters.POWER_FACTORIES.register("grounded", GroundedPower::new);
+    //endregion
 
 	public static ConfiguredPower<?, ?> multiple(ImmutableMap<String, ConfiguredPower<?, ?>> powers) {
 		return MULTIPLE.get().configure(new MultipleConfiguration<>(Maps.transformValues(powers, Holder::direct)), PowerData.DEFAULT);
