@@ -14,6 +14,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCond
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.InteractionPowerConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.*;
+import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOnItemUseConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageDealtConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageTakenConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
@@ -42,6 +43,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.VanillaGameEvent;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.level.BlockEvent;
@@ -98,9 +100,24 @@ public class ApoliPowerEventHandler {
 			event.getEntity().getSleepingPos().ifPresent(pos -> ActionOnWakeUpPower.execute(event.getEntity(), pos));
 	}
 
-	@SubscribeEvent
+    @SubscribeEvent
+    public static void stopUsing(LivingEntityUseItemEvent.Stop event) {
+        ActionOnItemUsePower.execute(event.getEntity(), event.getItem(), VariableAccess.hand(event.getEntity(), event.getEntity().getUsedItemHand()), ActionOnItemUseConfiguration.TriggerType.STOP, ActionOnItemUseConfiguration.PriorityPhase.AFTER);
+    }
+
+    @SubscribeEvent
+    public static void onTossItem(ItemTossEvent event) {
+        ActionOnItemUsePower.execute(event.getPlayer(), event.getEntity().getItem(), new VariableAccess<>(event.getEntity()::getItem, event.getEntity()::setItem), ActionOnItemUseConfiguration.TriggerType.STOP, ActionOnItemUseConfiguration.PriorityPhase.ALL);
+    }
+
+    @SubscribeEvent
+    public static void tickUsing(LivingEntityUseItemEvent.Tick event) {
+        ActionOnItemUsePower.execute(event.getEntity(), event.getItem(), VariableAccess.hand(event.getEntity(), event.getEntity().getUsedItemHand()), ActionOnItemUseConfiguration.TriggerType.DURING, ActionOnItemUseConfiguration.PriorityPhase.AFTER);
+    }
+
+    @SubscribeEvent
 	public static void finishUsing(LivingEntityUseItemEvent.Finish event) {
-		ActionOnItemUsePower.execute(event.getEntity(), event.getItem(), new VariableAccess<>(event::getResultStack, event::setResultStack));
+		ActionOnItemUsePower.execute(event.getEntity(), event.getItem(), new VariableAccess<>(event::getResultStack, event::setResultStack), ActionOnItemUseConfiguration.TriggerType.FINISH, ActionOnItemUseConfiguration.PriorityPhase.AFTER);
 	}
 
 	@SubscribeEvent

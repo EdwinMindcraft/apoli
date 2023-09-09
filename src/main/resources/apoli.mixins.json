@@ -28,6 +28,7 @@
     "PhantomSpawnerMixin",
     "PlayerEntityMixin",
     "RecipeManagerMixin",
+    "ServerPlayNetworkHandlerMixin",
     "StatusEffectInstanceMixin",
     "forge.AbstractContainerMenuMixin",
     "forge.BlockBehaviourMixin",

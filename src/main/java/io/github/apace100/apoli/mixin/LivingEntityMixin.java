@@ -4,12 +4,15 @@ import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.access.HiddenEffectStatus;
 import io.github.apace100.apoli.access.ModifiableFoodEntity;
 import io.github.apace100.apoli.util.StackPowerUtil;
+import io.github.edwinmindcraft.apoli.api.ApoliAPI;
+import io.github.edwinmindcraft.apoli.api.VariableAccess;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import io.github.edwinmindcraft.apoli.common.network.S2CSyncAttacker;
 import io.github.edwinmindcraft.apoli.common.power.*;
+import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOnItemUseConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageDealtConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageTakenConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
@@ -18,6 +21,7 @@ import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
@@ -33,6 +37,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.network.PacketDistributor;
+import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -289,6 +294,40 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		return modified;
 	}
 
+    // Moved from ItemStackMixin.
+    @Inject(method = "releaseUsingItem", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/event/ForgeEventFactory;onUseItemStop(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;I)Z"))
+    private void callActionOnUseStopBefore(CallbackInfo ci) {
+        if (ApoliAPI.getPowerContainer(this) != null && ApoliAPI.getPowerContainer(this).getPowers(ApoliPowers.ACTION_ON_ITEM_USE.get()).stream().anyMatch(p -> p.isBound() && p.value().getFactory().canRun(p, this, this.useItem, ActionOnItemUseConfiguration.TriggerType.STOP, ActionOnItemUseConfiguration.PriorityPhase.BEFORE))) {
+            Mutable<ItemStack> mutable = VariableAccess.hand((LivingEntity)(Object) this, this.getUsedItemHand());
+            ActionOnItemUsePower.execute(this, this.useItem, mutable,
+                    ActionOnItemUseConfiguration.TriggerType.STOP, ActionOnItemUseConfiguration.PriorityPhase.BEFORE);
+            this.useItem = mutable.getValue();
+        }
+    }
+
+    // Moved from ItemStackMixin.
+    @ModifyVariable(method = "updateUsingItem", at = @At("HEAD"), argsOnly = true)
+    private ItemStack callActionOnUseDuringBefore(ItemStack original) {
+        if (ApoliAPI.getPowerContainer(this) != null && ApoliAPI.getPowerContainer(this).getPowers(ApoliPowers.ACTION_ON_ITEM_USE.get()).stream().anyMatch(p -> p.isBound() && p.value().getFactory().canRun(p, this, original, ActionOnItemUseConfiguration.TriggerType.DURING, ActionOnItemUseConfiguration.PriorityPhase.BEFORE))) {
+            Mutable<ItemStack> mutable = VariableAccess.hand((LivingEntity)(Object) this, this.getUsedItemHand());
+            ActionOnItemUsePower.execute(this, original, mutable, ActionOnItemUseConfiguration.TriggerType.DURING, ActionOnItemUseConfiguration.PriorityPhase.BEFORE);
+            if (!ItemStack.matches(mutable.getValue(), original)) {
+                return mutable.getValue();
+            }
+        }
+        return original;
+    }
+
+    // Moved from ItemStackMixin.
+    @Inject(method = "completeUsingItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;triggerItemUseEffects(Lnet/minecraft/world/item/ItemStack;I)V"))
+    private void callActionOnUseFinishBefore(CallbackInfo ci) {
+        if (ApoliAPI.getPowerContainer(this) != null && ApoliAPI.getPowerContainer(this).getPowers(ApoliPowers.ACTION_ON_ITEM_USE.get()).stream().anyMatch(p -> p.isBound() && p.value().getFactory().canRun(p, this, this.useItem, ActionOnItemUseConfiguration.TriggerType.FINISH, ActionOnItemUseConfiguration.PriorityPhase.BEFORE))) {
+            Mutable<ItemStack> mutable = new MutableObject<>(this.useItem);
+            ActionOnItemUsePower.execute(this, this.useItem, mutable, ActionOnItemUseConfiguration.TriggerType.FINISH, ActionOnItemUseConfiguration.PriorityPhase.BEFORE);
+            this.useItem = mutable.getValue();
+        }
+    }
+
 	@Inject(method = "eat", at = @At("TAIL"))
 	private void removeCurrentModifyFoodPowers(Level world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
 		this.setCurrentModifyFoodPowers(new LinkedList<>());
@@ -316,6 +355,10 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 	public abstract AttributeMap getAttributes();
 
     @Shadow protected abstract float getFlyingSpeed();
+
+    @Shadow protected ItemStack useItem;
+
+    @Shadow public abstract InteractionHand getUsedItemHand();
 
     @Inject(method = "getFrictionInfluencedSpeed(F)F", at = @At("RETURN"), cancellable = true)
 	private void modifyFlySpeed(float slipperiness, CallbackInfoReturnable<Float> cir) {
