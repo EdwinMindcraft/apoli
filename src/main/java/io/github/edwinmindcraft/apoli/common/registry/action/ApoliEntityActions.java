@@ -90,6 +90,7 @@ public class ApoliEntityActions {
 	public static final RegistryObject<ModifyStatAction> MODIFY_STAT = ENTITY_ACTIONS.register("modify_stat", ModifyStatAction::new);
     public static final RegistryObject<AdvancementAction> GRANT_ADVANCEMENT = ENTITY_ACTIONS.register("grant_advancement", AdvancementAction::grant);
     public static final RegistryObject<AdvancementAction> REVOKE_ADVANCEMENT = ENTITY_ACTIONS.register("revoke_advancement", AdvancementAction::revoke);
+    public static final RegistryObject<SelectorAction> SELECTOR = ENTITY_ACTIONS.register("selector", SelectorAction::new);
 
 	@SafeVarargs
 	public static ConfiguredEntityAction<?, ?> and(HolderSet<ConfiguredEntityAction<?, ?>>... conditions) {
