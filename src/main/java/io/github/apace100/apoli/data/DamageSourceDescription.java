@@ -57,7 +57,7 @@ public class DamageSourceDescription {
         registerDamageTypeTagMapping(outOfWorld, DamageTypeTags.BYPASSES_INVULNERABILITY);
         registerDamageTypeTagMapping(projectile, DamageTypeTags.IS_PROJECTILE);
         registerDamageTypeTagMapping(explosive, DamageTypeTags.IS_EXPLOSION);
-        if (TAG_COUNT == 0)
+        if (TAG_COUNT != 0)
             TAG_COUNT = TAGS.size();
     }
 
