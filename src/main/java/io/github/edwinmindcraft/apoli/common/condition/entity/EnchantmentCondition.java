@@ -13,6 +13,6 @@ public class EnchantmentCondition extends EntityCondition<EnchantmentConfigurati
 
 	@Override
 	public boolean check(EnchantmentConfiguration configuration, Entity entity) {
-		return entity instanceof LivingEntity living && configuration.enchantment() != null && configuration.applyCheck(configuration.enchantment().getSlotItems(living).values());
+		return entity instanceof LivingEntity living && configuration.enchantment().isPresent() && configuration.applyCheck(configuration.enchantment().get().getSlotItems(living).values());
 	}
 }
