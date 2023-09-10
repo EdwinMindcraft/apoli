@@ -47,6 +47,7 @@ public class ApoliBlockActions {
 	public static final RegistryObject<BonemealAction> BONEMEAL = BLOCK_ACTIONS.register("bonemeal", BonemealAction::new);
 	public static final RegistryObject<ModifyBlockStateAction> MODIFY_BLOCK_STATE = BLOCK_ACTIONS.register("modify_block_state", ModifyBlockStateAction::new);
 	public static final RegistryObject<ExplodeAction> EXPLODE = BLOCK_ACTIONS.register("explode", ExplodeAction::new);
+    public static final RegistryObject<AreaOfEffectAction> AREA_OF_EFFECT = BLOCK_ACTIONS.register("area_of_effect", AreaOfEffectAction::new);
 
 	public static void bootstrap() {
 		MetaFactories.defineMetaActions(BLOCK_ACTIONS, DelegatedBlockAction::new, ConfiguredBlockAction.CODEC_SET, ConfiguredBlockCondition.CODEC_SET, ConfiguredBlockAction::optional, EXECUTOR, PREDICATE, SERVERSIDE_PREDICATE);
