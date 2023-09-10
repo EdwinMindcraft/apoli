@@ -27,7 +27,7 @@ public class PowerTypeArgumentType implements ArgumentType<ResourceLocation> {
 	public static ResourceKey<ConfiguredPower<?, ?>> getConfiguredPower(CommandContext<CommandSourceStack> context, String argumentName) {
 		ResourceLocation argument = context.getArgument(argumentName, ResourceLocation.class);
 		if (!ApoliAPI.getPowers(context.getSource().getServer()).containsKey(argument))
-			throw new CommandRuntimeException(Component.translatable("arguments.apoli.power_type.fail", argument));
+			throw new CommandRuntimeException(Component.translatable("commands.apoli.power_not_found", argument));
 		return ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, argument);
 	}
 

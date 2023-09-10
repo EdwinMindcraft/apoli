@@ -1,9 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.registry;
 
-import io.github.apace100.apoli.command.EntityConditionArgument;
-import io.github.apace100.apoli.command.PowerOperation;
-import io.github.apace100.apoli.command.PowerSourceArgumentType;
-import io.github.apace100.apoli.command.PowerTypeArgumentType;
+import io.github.apace100.apoli.command.*;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
@@ -12,7 +9,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class ApoliArgumentTypes {
 
 	public static final RegistryObject<ArgumentTypeInfo<PowerTypeArgumentType, ?>> POWER_TYPE = ApoliRegisters.ARGUMENT_TYPES.register("power", () -> SingletonArgumentInfo.contextFree(PowerTypeArgumentType::power));
-	public static final RegistryObject<ArgumentTypeInfo<PowerSourceArgumentType, ?>> POWER_SOURCE = ApoliRegisters.ARGUMENT_TYPES.register("power_source", () -> SingletonArgumentInfo.contextAware(PowerSourceArgumentType::powerSource));
+    public static final RegistryObject<ArgumentTypeInfo<PowerSourceArgumentType, ?>> POWER_SOURCE = ApoliRegisters.ARGUMENT_TYPES.register("power_source", () -> SingletonArgumentInfo.contextAware(PowerSourceArgumentType::powerSource));
 	public static final RegistryObject<ArgumentTypeInfo<PowerOperation, ?>> POWER_OPERATION = ApoliRegisters.ARGUMENT_TYPES.register("power_operation", () -> SingletonArgumentInfo.contextFree(PowerOperation::operation));
 	public static final RegistryObject<ArgumentTypeInfo<EntityConditionArgument, ?>> ENTITY_CONDITION = ApoliRegisters.ARGUMENT_TYPES.register("entity_condition", () -> SingletonArgumentInfo.contextFree(EntityConditionArgument::entityCondition));
 
