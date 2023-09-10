@@ -32,10 +32,10 @@ public enum GlobalPowerSetLoader implements DynamicEntryFactory<GlobalPowerSet>,
 			Optional<GlobalPowerSet> powerDefinition = power.resultOrPartial(error -> {});
 			if (power.error().isPresent()) {
 				if (powerDefinition.isEmpty()) {
-					Apoli.LOGGER.error("Error loading power \"{}\": {}", resourceLocation, power.error().get().message());
+					Apoli.LOGGER.error("Error loading global power set \"{}\": {}", resourceLocation, power.error().get().message());
 					return Stream.empty();
 				} else
-					Apoli.LOGGER.warn("Power \"{}\" will only be partially loaded: {}", resourceLocation, power.error().get().message());
+					Apoli.LOGGER.warn("Global Power Set \"{}\" will only be partially loaded: {}", resourceLocation, power.error().get().message());
 			}
 			return powerDefinition.stream();
 		}).max(LOADING_ORDER_COMPARATOR);
