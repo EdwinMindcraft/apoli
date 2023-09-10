@@ -176,7 +176,6 @@ public class ApoliDataTypes {
 			PlayerAbility.class, SerializableDataTypes.IDENTIFIER,
 			ability -> PlayerAbilities.REGISTRY.get().getKey(ability), id -> {
                 ResourceLocation resolvedId = id;
-                // TODO:
                 if (id.getNamespace().equals("minecraft")) {
                     resolvedId = new ResourceLocation("calio", id.getPath());
                 }
