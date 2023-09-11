@@ -11,6 +11,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.InventoryPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.InventoryConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -69,7 +70,7 @@ public class InventoryUtil {
     }
 
 
-    public static int checkInventory(Optional<Holder<ConfiguredItemCondition<?, ?>>> itemCondition, ListConfiguration<ArgumentWrapper<Integer>> slotArgumentTypes, Entity entity, ConfiguredPower<InventoryConfiguration, InventoryPower> inventoryPower, Function<ItemStack, Integer> processor) {
+    public static int checkInventory(Holder<ConfiguredItemCondition<?, ?>> itemCondition, ListConfiguration<ArgumentWrapper<Integer>> slotArgumentTypes, Entity entity, ConfiguredPower<InventoryConfiguration, InventoryPower> inventoryPower, Function<ItemStack, Integer> processor) {
         Set<Integer> slots = getSlots(slotArgumentTypes);
         deduplicateSlots(entity, slots);
         int matches = 0;
@@ -83,7 +84,7 @@ public class InventoryUtil {
                 }
 
                 ItemStack stack = slotAccess.get();
-                if ((itemCondition.isEmpty() && !stack.isEmpty()) || ConfiguredItemCondition.check(itemCondition.get(), entity.level(), stack)) {
+                if ((itemCondition.isBound() && itemCondition.value() == ApoliDefaultConditions.ITEM_DEFAULT.get() && !stack.isEmpty()) || ConfiguredItemCondition.check(itemCondition, entity.level(), stack)) {
                     matches += processor.apply(stack);
                 }
             }
@@ -95,7 +96,7 @@ public class InventoryUtil {
                 }
 
                 ItemStack stack = inventoryPower.getFactory().getInventory(inventoryPower, entity).getItem(slot);
-                if ((itemCondition.isEmpty() && !stack.isEmpty()) || ConfiguredItemCondition.check(itemCondition.get(), entity.level(), stack)) {
+                if ((itemCondition.isBound() && itemCondition.value() == ApoliDefaultConditions.ITEM_DEFAULT.get() && !stack.isEmpty()) || ConfiguredItemCondition.check(itemCondition, entity.level(), stack)) {
                     matches += processor.apply(stack);
                 }
             }

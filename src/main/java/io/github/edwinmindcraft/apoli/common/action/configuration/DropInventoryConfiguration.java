@@ -29,7 +29,7 @@ public record DropInventoryConfiguration(InventoryUtil.InventoryType inventoryTy
                                          int amount) implements IDynamicFeatureConfiguration {
 
     public static final Codec<DropInventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            CalioCodecHelper.optionalField(SerializableDataType.enumValue(InventoryUtil.InventoryType.class), "inventory_type", InventoryUtil.InventoryType.INVENTORY).forGetter(DropInventoryConfiguration::inventoryType),
+            CalioCodecHelper.optionalField(ApoliDataTypes.INVENTORY_TYPE, "inventory_type", InventoryUtil.InventoryType.INVENTORY).forGetter(DropInventoryConfiguration::inventoryType),
             ConfiguredEntityAction.optional("entity_action").forGetter(DropInventoryConfiguration::entityAction),
             ConfiguredItemAction.optional("item_action").forGetter(DropInventoryConfiguration::itemAction),
             ConfiguredItemCondition.optional("item_condition").forGetter(DropInventoryConfiguration::itemCondition),

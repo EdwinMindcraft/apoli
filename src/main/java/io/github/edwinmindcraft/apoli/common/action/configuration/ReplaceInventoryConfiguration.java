@@ -29,7 +29,7 @@ public record ReplaceInventoryConfiguration(InventoryUtil.InventoryType inventor
                                             boolean mergeNbt) implements IDynamicFeatureConfiguration {
 
     public static final Codec<ReplaceInventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            CalioCodecHelper.optionalField(SerializableDataType.enumValue(InventoryUtil.InventoryType.class), "inventory_type", InventoryUtil.InventoryType.INVENTORY).forGetter(ReplaceInventoryConfiguration::inventoryType),
+            CalioCodecHelper.optionalField(ApoliDataTypes.INVENTORY_TYPE, "inventory_type", InventoryUtil.InventoryType.INVENTORY).forGetter(ReplaceInventoryConfiguration::inventoryType),
             ConfiguredEntityAction.optional("entity_action").forGetter(ReplaceInventoryConfiguration::entityAction),
             ConfiguredItemAction.optional("item_action").forGetter(ReplaceInventoryConfiguration::itemAction),
             ConfiguredItemCondition.optional("item_condition").forGetter(ReplaceInventoryConfiguration::itemCondition),

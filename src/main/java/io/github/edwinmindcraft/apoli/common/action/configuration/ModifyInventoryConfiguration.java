@@ -28,7 +28,7 @@ public record ModifyInventoryConfiguration(InventoryUtil.InventoryType inventory
                                            int limit) implements IDynamicFeatureConfiguration {
 
     public static final Codec<ModifyInventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            CalioCodecHelper.optionalField(SerializableDataType.enumValue(InventoryUtil.InventoryType.class), "inventory_type", InventoryUtil.InventoryType.INVENTORY).forGetter(ModifyInventoryConfiguration::inventoryType),
+            CalioCodecHelper.optionalField(ApoliDataTypes.INVENTORY_TYPE, "inventory_type", InventoryUtil.InventoryType.INVENTORY).forGetter(ModifyInventoryConfiguration::inventoryType),
             CalioCodecHelper.optionalField(ApoliDataTypes.PROCESS_MODE, "process_mode", InventoryUtil.ProcessMode.STACKS).forGetter(ModifyInventoryConfiguration::processMode),
             ConfiguredEntityAction.optional("entity_action").forGetter(ModifyInventoryConfiguration::entityAction),
             ConfiguredItemAction.optional("item_action").forGetter(ModifyInventoryConfiguration::itemAction),
