@@ -15,6 +15,6 @@ public record ActionOverTimeConfiguration(Holder<ConfiguredEntityAction<?, ?>> e
 			ConfiguredEntityAction.optional("entity_action").forGetter(ActionOverTimeConfiguration::entityAction),
 			ConfiguredEntityAction.optional("rising_action").forGetter(ActionOverTimeConfiguration::risingAction),
 			ConfiguredEntityAction.optional("falling_action").forGetter(ActionOverTimeConfiguration::fallingAction),
-			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "interval", 20).forGetter(ActionOverTimeConfiguration::interval)
+			CalioCodecHelper.optionalField(Codec.intRange(1, Integer.MAX_VALUE), "interval", 20).forGetter(ActionOverTimeConfiguration::interval)
 	).apply(instance, ActionOverTimeConfiguration::new));
 }
