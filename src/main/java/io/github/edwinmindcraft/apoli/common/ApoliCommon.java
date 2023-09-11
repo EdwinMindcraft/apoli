@@ -11,9 +11,12 @@ import io.github.edwinmindcraft.apoli.common.network.*;
 import io.github.edwinmindcraft.apoli.common.registry.*;
 import io.github.edwinmindcraft.apoli.common.registry.action.*;
 import io.github.edwinmindcraft.apoli.common.registry.condition.*;
+import io.github.edwinmindcraft.apoli.common.util.AllNamespacesLoadedCondition;
+import io.github.edwinmindcraft.apoli.common.util.AnyNamespacesLoadedCondition;
 import io.github.edwinmindcraft.apoli.compat.ApoliCompat;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -103,6 +106,9 @@ public class ApoliCommon {
 		event.enqueueWork(ApoliArgumentTypes::initialize);
 		ApoliCompat.apply();
 		initializeNetwork();
+
+        CraftingHelper.register(AnyNamespacesLoadedCondition.Serializer.INSTANCE);
+        CraftingHelper.register(AllNamespacesLoadedCondition.Serializer.INSTANCE);
 	}
 
 	@SubscribeEvent

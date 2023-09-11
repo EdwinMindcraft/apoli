@@ -1,0 +1,16 @@
+{
+  "type": "apoli:action_over_time",
+  "interval": 10,
+  "entity_action": {
+    "type": "apoli:execute_command",
+    "command": "say Loaded All!"
+  },
+  "forge:conditions": {
+    "type": "apoli:all_namespaces_loaded",
+    "namespaces": [
+      "apoli",
+      "origins",
+      "test"
+    ]
+  }
+}

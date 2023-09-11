@@ -5,7 +5,9 @@ import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.apoli.common.ApoliEventHandler;
 import io.github.edwinmindcraft.apoli.common.global.GlobalPowerSet;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -76,7 +78,7 @@ public class GlobalPowerSetUtil {
     private static boolean addMissingPowers(IPowerContainer phc, GlobalPowerSet powerSet) {
         boolean added = false;
         for(ResourceKey<ConfiguredPower<?, ?>> pt : powerSet.powers()) {
-            if(!phc.hasPower(pt, POWER_SOURCE)) {
+            if(!ApoliEventHandler.isPowerDisabled(pt.location()) && !phc.hasPower(pt, POWER_SOURCE)) {
                 phc.addPower(pt, POWER_SOURCE);
                 added = true;
             }

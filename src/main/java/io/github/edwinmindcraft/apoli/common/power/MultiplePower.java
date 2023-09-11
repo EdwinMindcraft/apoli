@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 public class MultiplePower extends PowerFactory<MultipleConfiguration<ConfiguredPower<?, ?>>> {
-	private static final ImmutableSet<String> EXCLUDED = ImmutableSet.of("type", "loading_priority", "name", "description", "hidden", "condition", "conditions");
+	private static final ImmutableSet<String> EXCLUDED = ImmutableSet.of("type", "loading_priority", "name", "description", "hidden", "condition", "conditions", "forge:conditions");
 	private static final Predicate<String> ALLOWED = str -> !EXCLUDED.contains(str) && !ApoliAPI.isAdditionalDataField(str) && !str.startsWith("$");
 
 	public MultiplePower() {

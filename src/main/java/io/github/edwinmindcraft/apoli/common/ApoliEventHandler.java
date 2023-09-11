@@ -3,21 +3,26 @@ package io.github.edwinmindcraft.apoli.common;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.command.PowerCommand;
 import io.github.apace100.apoli.command.ResourceCommand;
+import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.component.PowerDataCache;
+import io.github.edwinmindcraft.apoli.common.data.PowerLoader;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
+import io.github.edwinmindcraft.calio.api.event.DynamicRegistrationEvent;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.GameRules;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.OnDatapackSyncEvent;
@@ -25,11 +30,14 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class contains events that relate to non-power stuff, as in
@@ -72,6 +80,24 @@ public class ApoliEventHandler {
 			}
 		});
 	}
+
+    private static final Set<ResourceLocation> DISABLED_POWERS = new HashSet<>();
+
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public static void onPowerLoad(DynamicRegistrationEvent<ConfiguredPower<?, ?>> event) {
+        if (event.getOriginal().getData().forgeCondition().isPresent() && !event.getOriginal().getData().forgeCondition().get().test(ICondition.IContext.EMPTY)) {
+            disablePower(event.getRegistryName());
+            event.setCanceled(true);
+        }
+    }
+
+    private static void disablePower(ResourceLocation powerId) {
+        DISABLED_POWERS.add(powerId);
+    }
+
+    public static boolean isPowerDisabled(ResourceLocation powerId) {
+        return DISABLED_POWERS.contains(powerId);
+    }
 
 	@SubscribeEvent
 	public static void onDataSync(OnDatapackSyncEvent event) {

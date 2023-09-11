@@ -1,0 +1,12 @@
+{
+  "type": "apoli:action_over_time",
+  "interval": 10,
+  "entity_action": {
+    "type": "apoli:execute_command",
+    "command": "say Loaded Caelus!"
+  },
+  "forge:conditions": {
+    "type": "forge:mod_loaded",
+    "modid": "caelus"
+  }
+}
