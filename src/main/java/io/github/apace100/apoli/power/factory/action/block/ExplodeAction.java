@@ -2,13 +2,11 @@ package io.github.apace100.apoli.power.factory.action.block;
 
 import io.github.apace100.apoli.action.configuration.ExplodeConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockAction;
-import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
 import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
@@ -25,7 +23,7 @@ public class ExplodeAction extends BlockAction<ExplodeConfiguration> {
 	public void execute(@NotNull ExplodeConfiguration configuration, @NotNull Level world, @NotNull BlockPos pos, @NotNull Direction direction) {
 		if (world.isClientSide())
 			return;
-		ExplosionDamageCalculator calculator = configuration.indestructible() != ApoliDefaultConditions.BLOCK_DEFAULT.getHolder().get() ? configuration.calculator() : null;
+		ExplosionDamageCalculator calculator = configuration.indestructible().is(ApoliDefaultConditions.BLOCK_DEFAULT.getId()) ? configuration.calculator() : null;
         explode(world, null, world.damageSources().explosion(null), calculator, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, configuration.power(), configuration.createFire(), configuration.destructionType());
     }
 

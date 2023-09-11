@@ -86,7 +86,7 @@ public class InventoryUtil {
                 }
 
                 ItemStack stack = slotAccess.get();
-                if ((itemCondition.isBound() && itemCondition.value() == ApoliDefaultConditions.ITEM_DEFAULT.get() && !stack.isEmpty()) || ConfiguredItemCondition.check(itemCondition, entity.level(), stack)) {
+                if ((itemCondition.isBound() && itemCondition.is(ApoliDefaultConditions.ITEM_DEFAULT.getId()) && !stack.isEmpty()) || ConfiguredItemCondition.check(itemCondition, entity.level(), stack)) {
                     matches += processor.apply(stack);
                 }
             }
@@ -98,7 +98,7 @@ public class InventoryUtil {
                 }
 
                 ItemStack stack = inventoryPower.getFactory().getInventory(inventoryPower, entity).getItem(slot);
-                if ((itemCondition.isBound() && itemCondition.value() == ApoliDefaultConditions.ITEM_DEFAULT.get() && !stack.isEmpty()) || ConfiguredItemCondition.check(itemCondition, entity.level(), stack)) {
+                if ((itemCondition.isBound() && itemCondition.is(ApoliDefaultConditions.ITEM_DEFAULT.getId()) && !stack.isEmpty()) || ConfiguredItemCondition.check(itemCondition, entity.level(), stack)) {
                     matches += processor.apply(stack);
                 }
             }
