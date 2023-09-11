@@ -1,5 +1,6 @@
 package io.github.apace100.apoli.mixin;
 
+import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.core.BlockPos;
@@ -29,8 +30,11 @@ public class PhantomSpawnerMixin {
         apoli$cachedPlayer = player;
     }
 
-    @ModifyVariable(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/RandomSource;nextInt(I)I", ordinal = 1, shift= At.Shift.BEFORE), ordinal = 1)
+    @ModifyVariable(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/RandomSource;nextInt(I)I", ordinal = 1), ordinal = 1)
     private int modifyTicks(int original) {
-        return (int)IPowerContainer.modify(apoli$cachedPlayer, ApoliPowers.MODIFY_INSONMIA_TICKS.get(), original);
+        if (ApoliAPI.getPowerContainer(apoli$cachedPlayer).hasPower(ApoliPowers.MODIFY_INSONMIA_TICKS.get())) {
+            return (int)IPowerContainer.modify(apoli$cachedPlayer, ApoliPowers.MODIFY_INSONMIA_TICKS.get(), original);
+        }
+        return original;
     }
 }
