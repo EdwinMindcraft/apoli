@@ -1,6 +1,5 @@
 package io.github.apace100.apoli.mixin;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.INightVisionPower;
 import io.github.edwinmindcraft.apoli.common.power.ModifyCameraSubmersionTypePower;
@@ -115,12 +114,19 @@ public abstract class GameRendererMixin {
 		}
 	}
 
-	@Redirect(method = "getNightVisionScale", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/effect/MobEffectInstance;getDuration()I"))
-	private static int fixNightVision(MobEffectInstance instance) {
+	@Redirect(method = "getNightVisionScale", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/effect/MobEffectInstance;endsWithin(I)Z"))
+	private static boolean fixNightVision(MobEffectInstance instance, int pDuration) {
 		if (instance != null)
-			return instance.getDuration();
-		return 0;
+			return instance.endsWithin(pDuration);
+		return false;
 	}
+
+    @Redirect(method = "getNightVisionScale", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/effect/MobEffectInstance;getDuration()I"))
+    private static int extraFixNightVision(MobEffectInstance instance) {
+        if (instance != null)
+            return instance.getDuration();
+        return 0;
+    }
 
 	@Inject(at = @At("RETURN"), method = "getNightVisionScale", cancellable = true)
 	private static void updateNightVisionScale(LivingEntity living, float tickDelta, CallbackInfoReturnable<Float> cir) {
