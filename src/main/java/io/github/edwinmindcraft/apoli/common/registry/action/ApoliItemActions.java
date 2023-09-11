@@ -42,6 +42,7 @@ public class ApoliItemActions {
 	public static final RegistryObject<DamageItemAction> DAMAGE = ITEM_ACTIONS.register("damage", DamageItemAction::new);
 	public static final RegistryObject<MergeNbtItemAction> MERGE_NBT = ITEM_ACTIONS.register("merge_nbt", MergeNbtItemAction::new);
 	public static final RegistryObject<RemoveEnchantmentItemAction> REMOVE_ENCHANTMENT = ITEM_ACTIONS.register("remove_enchantment", RemoveEnchantmentItemAction::new);
+    public static final RegistryObject<HolderAction> HOLDER = ITEM_ACTIONS.register("holder", HolderAction::new);
 
 	public static void bootstrap() {
 		MetaFactories.defineMetaActions(ITEM_ACTIONS, DelegatedItemAction::new, ConfiguredItemAction.CODEC_SET, ConfiguredItemCondition.CODEC_SET, ConfiguredItemAction::optional, EXECUTOR, PREDICATE, SERVERSIDE_PREDICATE);

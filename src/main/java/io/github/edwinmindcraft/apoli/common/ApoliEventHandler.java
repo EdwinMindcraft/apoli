@@ -1,17 +1,21 @@
 package io.github.edwinmindcraft.apoli.common;
 
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.access.EntityLinkedItemStack;
 import io.github.apace100.apoli.command.PowerCommand;
 import io.github.apace100.apoli.command.ResourceCommand;
+import io.github.apace100.apoli.util.InventoryUtil;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.apoli.common.component.EntityLinkedItemStackImpl;
 import io.github.edwinmindcraft.apoli.common.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.component.PowerDataCache;
 import io.github.edwinmindcraft.apoli.common.data.PowerLoader;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import io.github.edwinmindcraft.calio.api.event.DynamicRegistrationEvent;
@@ -21,6 +25,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.util.LazyOptional;
@@ -37,6 +42,7 @@ import net.minecraftforge.network.PacketDistributor;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -53,6 +59,11 @@ public class ApoliEventHandler {
 			event.addCapability(IPowerDataCache.KEY, new PowerDataCache());
 		}
 	}
+
+    @SubscribeEvent
+    public static void attachItemCapabilities(AttachCapabilitiesEvent<ItemStack> event) {
+        event.addCapability(EntityLinkedItemStack.KEY, new EntityLinkedItemStackImpl(event.getObject()));
+    }
 
 	@SubscribeEvent
 	public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
@@ -118,6 +129,15 @@ public class ApoliEventHandler {
 	public static void livingTick(LivingEvent.LivingTickEvent event) {
 		if (!event.getEntity().level().isClientSide())
 			IPowerContainer.get(event.getEntity()).ifPresent(IPowerContainer::serverTick);
+
+        InventoryUtil.forEachStack(event.getEntity(), stack -> {
+            if (stack.isEmpty() || stack.getCapability(ApoliCapabilities.ENTITY_LINKED_ITEM_STACK).map(eli -> eli.getEntity() == event.getEntity()).orElse(false)) {
+                return;
+            }
+            stack.getCapability(ApoliCapabilities.ENTITY_LINKED_ITEM_STACK).ifPresent(eli -> {
+                eli.setEntity(event.getEntity());
+            });
+        });
 	}
 
 	@SubscribeEvent

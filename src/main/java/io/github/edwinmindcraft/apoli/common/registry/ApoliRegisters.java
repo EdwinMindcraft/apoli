@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.registry;
 
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.access.EntityLinkedItemStack;
 import io.github.apace100.apoli.util.PowerGrantingItem;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
@@ -84,5 +85,6 @@ public class ApoliRegisters {
 		event.register(IPowerContainer.class);
 		event.register(IPowerDataCache.class);
 		event.register(PowerGrantingItem.class);
+        event.register(EntityLinkedItemStack.class);
 	}
 }

@@ -27,8 +27,10 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class InventoryUtil {
 
@@ -331,8 +333,10 @@ public class InventoryUtil {
     /*
     Includes the optimisations done in https://github.com/apace100/apoli/pull/132 prior to it releasing in Origins Fabric.
     There's no way I would've let the unoptimised version of this be present...
+
+    This method is not supposed to be able to set ItemStacks as you usually would through a Mutable<ItemStack>, mainly as it is not needed for base Apoli usage.
      */
-    public static void forEachStack(Entity entity, Consumer<Mutable<ItemStack>> itemStackConsumer) {
+    public static void forEachStack(Entity entity, Consumer<ItemStack> itemStackConsumer) {
         int skip = getDuplicatedSlotIndex(entity);
 
         for(int slot : ((ItemSlotArgumentTypeAccessor) SLOT_ARGUMENT).getSlotNamesToSlotCommandId().values()) {
@@ -345,9 +349,7 @@ public class InventoryUtil {
 
             ItemStack itemStack = stackReference.get();
             if (itemStack.isEmpty()) continue;
-            Mutable<ItemStack> mutable = new MutableObject<>(itemStack);
-            itemStackConsumer.accept(mutable);
-            stackReference.set(mutable.getValue());
+            itemStackConsumer.accept(itemStack);
         }
 
         Optional<IPowerContainer> optionalPowerContainer = IPowerContainer.get(entity).resolve();
@@ -361,9 +363,7 @@ public class InventoryUtil {
                     if(stack.isEmpty()) {
                         continue;
                     }
-                    Mutable<ItemStack> mutable = new MutableObject<>(stack);
-                    itemStackConsumer.accept(mutable);
-                    inventoryPower.getFactory().getInventory(inventoryPower, entity).setItem(index, mutable.getValue());
+                    itemStackConsumer.accept(stack);
                 }
             }
         }
