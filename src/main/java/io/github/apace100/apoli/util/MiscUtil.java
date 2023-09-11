@@ -3,19 +3,56 @@ package io.github.apace100.apoli.util;
 import com.google.gson.JsonSyntaxException;
 import io.github.apace100.apoli.data.DamageSourceDescription;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.ForgeEventFactory;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 
 public final class MiscUtil {
+
+    public static Optional<Entity> getEntityWithPassengers(Level world, EntityType<?> entityType, @Nullable CompoundTag entityNbt, Vec3 pos, float yaw, float pitch) {
+
+        if (world.isClientSide()) return Optional.empty();
+        ServerLevel serverWorld = (ServerLevel) world;
+
+        CompoundTag entityToSpawnNbt = new CompoundTag();
+        if (entityNbt != null) entityToSpawnNbt.merge(entityNbt);
+        entityToSpawnNbt.putString("id", BuiltInRegistries.ENTITY_TYPE.getKey(entityType).toString());
+
+        Entity entityToSpawn = EntityType.loadEntityRecursive(
+                entityToSpawnNbt,
+                serverWorld,
+                entity -> {
+                    entity.moveTo(pos.x, pos.y, pos.z, yaw, pitch);
+                    return entity;
+                }
+        );
+        if (entityToSpawn == null) return Optional.empty();
+
+        if (entityNbt == null && entityToSpawn instanceof Mob mobToSpawn) ForgeEventFactory.onFinalizeSpawn(
+                mobToSpawn,
+                serverWorld,
+                serverWorld.getCurrentDifficultyAt(BlockPos.containing(pos)),
+                MobSpawnType.COMMAND,
+                null,
+                null
+        );
+        return Optional.of(entityToSpawn);
+
+    }
 
 	public static BlockState getInWallBlockState(LivingEntity playerEntity) {
 		BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
