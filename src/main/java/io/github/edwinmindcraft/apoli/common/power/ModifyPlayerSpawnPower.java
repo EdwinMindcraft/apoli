@@ -20,9 +20,9 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
 		super(ModifyPlayerSpawnConfiguration.CODEC);
 	}
 
-	public void teleportToModifiedSpawn(ModifyPlayerSpawnConfiguration configuration, Entity entity) {
+	public void teleportToModifiedSpawn(ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration, Entity entity) {
 		if (entity instanceof ServerPlayer serverPlayer) {
-			Tuple<ServerLevel, BlockPos> spawn = configuration.getSpawn(entity, false);
+			Tuple<ServerLevel, BlockPos> spawn = configuration.getConfiguration().getSpawn(configuration.getRegistryName(), entity, false);
 			if (spawn != null) {
 				Vec3 tpPos = DismountHelper.findSafeDismountLocation(EntityType.PLAYER, spawn.getA(), spawn.getB(), true);
 				if (tpPos != null) {
@@ -44,7 +44,7 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
 	}
 
 	@Override
-	protected void onRespawn(ModifyPlayerSpawnConfiguration configuration, Entity entity) {
+	public void onRespawn(ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration, Entity entity) {
 		if (entity instanceof ServerPlayer player && player.getRespawnPosition() == null)
 			this.teleportToModifiedSpawn(configuration, entity);
 	}
