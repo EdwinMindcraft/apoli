@@ -23,7 +23,7 @@ public class ExplodeAction extends BlockAction<ExplodeConfiguration> {
 	public void execute(@NotNull ExplodeConfiguration configuration, @NotNull Level world, @NotNull BlockPos pos, @NotNull Direction direction) {
 		if (world.isClientSide())
 			return;
-		ExplosionDamageCalculator calculator = configuration.indestructible().is(ApoliDefaultConditions.BLOCK_DEFAULT.getId()) ? configuration.calculator() : null;
+		ExplosionDamageCalculator calculator = !configuration.indestructible().is(ApoliDefaultConditions.BLOCK_DEFAULT.getId()) ? configuration.calculator() : null;
         explode(world, null, world.damageSources().explosion(null), calculator, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, configuration.power(), configuration.createFire(), configuration.destructionType());
     }
 

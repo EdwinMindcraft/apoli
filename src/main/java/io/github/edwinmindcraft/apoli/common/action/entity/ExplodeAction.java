@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.apoli.common.action.entity;
 import io.github.apace100.apoli.action.configuration.ExplodeConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -22,7 +23,7 @@ public class ExplodeAction extends EntityAction<ExplodeConfiguration> {
     public void execute(@NotNull ExplodeConfiguration configuration, @NotNull Entity entity) {
         if (entity.level().isClientSide())
             return;
-        ExplosionDamageCalculator calculator = configuration.indestructible().is(ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_BLOCK_CONDITION_KEY, ApoliDynamicRegistries.CONDITION_DEFAULT)) ? configuration.calculator() : null;
+        ExplosionDamageCalculator calculator = !configuration.indestructible().is(ApoliDefaultConditions.BLOCK_DEFAULT.getId()) ? configuration.calculator() : null;
         explode(entity.level(), configuration.damageSelf() ? null : entity, entity.level().damageSources().explosion(null), calculator, entity.getX(), entity.getY(), entity.getZ(), configuration.power(), configuration.createFire(), configuration.destructionType());
     }
 
