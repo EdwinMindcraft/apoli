@@ -4,8 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
+import io.github.edwinmindcraft.apoli.api.configuration.NoConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.ConditionData;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
+import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliEntityConditions;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -22,7 +25,7 @@ public record PhasingConfiguration(Holder<ConfiguredBlockCondition<?, ?>> phaseC
 			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "blacklist", false).forGetter(PhasingConfiguration::blacklist),
 			SerializableDataType.enumValue(RenderType.class).optionalFieldOf("render_type", RenderType.BLINDNESS).forGetter(PhasingConfiguration::renderType),
 			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "view_distance", 10F).forGetter(PhasingConfiguration::viewDistance),
-			ConfiguredEntityCondition.optional("phase_down_condition").forGetter(PhasingConfiguration::phaseDownCondition)
+			CalioCodecHelper.optionalField(ConfiguredEntityCondition.HOLDER, "phase_down_condition", Holder.direct(new ConfiguredEntityCondition<>(ApoliEntityConditions.SNEAKING, new NoConfiguration(), new ConditionData(false)))).forGetter(PhasingConfiguration::phaseDownCondition)
 	).apply(instance, PhasingConfiguration::new));
 
 	public boolean canPhaseDown(Entity entity) {
