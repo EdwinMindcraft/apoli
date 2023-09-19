@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.network;
 
+import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
@@ -25,6 +26,8 @@ public class C2SFetchActiveSpawnPowerPacket {
 
     @SuppressWarnings("ConstantConditions")
     private void handleSync(ServerPlayer sender) {
+        if (!ApoliConfigs.SERVER.separateSpawnFindingThread.get()) return;
+
         if (((ModifyPlayerSpawnCache)sender).getActiveSpawnPower() == null) {
             sender.reviveCaps();
             if (ApoliAPI.getPowerContainer(sender).hasPower(ApoliPowers.MODIFY_PLAYER_SPAWN.get())) {

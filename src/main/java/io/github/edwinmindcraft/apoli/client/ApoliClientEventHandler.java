@@ -67,7 +67,7 @@ public class ApoliClientEventHandler {
 
     @SubscribeEvent
     public static void onInitScreen(ScreenEvent.Init event) {
-        if (ApoliConfigs.SERVER.separateSpawnFindingThread.get() && event.getScreen() instanceof DeathScreen && Minecraft.getInstance().player != null) {
+        if (event.getScreen() instanceof DeathScreen && Minecraft.getInstance().player != null) {
             Minecraft.getInstance().player.reviveCaps();
             if (ApoliAPI.getPowerContainer(Minecraft.getInstance().player).hasPower(ApoliPowers.MODIFY_PLAYER_SPAWN.get()))
                 ApoliCommon.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SFetchActiveSpawnPowerPacket());
