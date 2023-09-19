@@ -49,6 +49,7 @@ import net.minecraftforge.event.VanillaGameEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -239,6 +240,12 @@ public class ApoliPowerEventHandler {
 
     @SubscribeEvent
     public static void onCalioReload(CalioDynamicRegistryEvent.Reload event) throws InterruptedException {
+        SpawnLookupScheduler.INSTANCE.clear();
+    }
+
+    @SubscribeEvent
+    public static void onServerStopping(ServerStoppingEvent event) throws InterruptedException {
+        // Primarily so integrated servers will clear their spawns.
         SpawnLookupScheduler.INSTANCE.clear();
     }
 
