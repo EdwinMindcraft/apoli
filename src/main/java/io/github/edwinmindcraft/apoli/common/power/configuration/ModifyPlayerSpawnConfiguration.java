@@ -11,26 +11,18 @@ import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.Tuple;
-import net.minecraft.util.Unit;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.vehicle.DismountHelper;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.Optional;
 
 public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float distanceMultiplier,
@@ -48,7 +40,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 
 
 	@Nullable
-	private static Pair<BlockPos, Holder<Structure>> getStructureLocation(Level world, @Nullable ResourceKey<Structure> structure, @Nullable TagKey<Structure> structureTag, ResourceKey<Level> dimension) {
+    public static Pair<BlockPos, Holder<Structure>> getStructureLocation(Level world, @Nullable ResourceKey<Structure> structure, @Nullable TagKey<Structure> structureTag, ResourceKey<Level> dimension) {
 		Registry<Structure> registry = world.registryAccess().registryOrThrow(Registry.STRUCTURE_REGISTRY);
 		HolderSet<Structure> entryList = null;
 		String structureOrTagName = "";
@@ -86,7 +78,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 	}
 
 	@Nullable
-	private static Vec3 getValidSpawn(BlockPos startPos, int range, ServerLevel world) {
+    public static Vec3 getValidSpawn(BlockPos startPos, int range, ServerLevel world) {
 		//Force load the chunk in which we are working.
 		//This method will generate the chunk if it needs to.
 		world.getChunk(startPos.getX() >> 4, startPos.getZ() >> 4, ChunkStatus.FULL, true);
@@ -146,82 +138,6 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 			}
 			i++;
 			d--;
-		}
-		return null;
-	}
-
-	@Nullable
-	public Tuple<ServerLevel, BlockPos> getSpawn(Entity entity, boolean isSpawnObstructed) {
-		if (entity instanceof ServerPlayer) {
-			ServerLevel world = ServerLifecycleHooks.getCurrentServer().getLevel(this.dimension);
-			BlockPos regularSpawn = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer().getLevel(Level.OVERWORLD)).getSharedSpawnPos();
-			BlockPos spawnToDimPos;
-			if (world == null) {
-				Apoli.LOGGER.warn("Could not find dimension \"{}\".", this.dimension.toString());
-				return null;
-			}
-			int center = world.getLogicalHeight() / 2;
-			BlockPos.MutableBlockPos mutable;
-			Vec3 tpPos;
-			int range = 64;
-
-			switch (this.strategy()) {
-				case "center":
-					spawnToDimPos = new BlockPos(0, center, 0);
-					break;
-
-				case "default":
-					if (this.distanceMultiplier() != 0) {
-						spawnToDimPos = new BlockPos(regularSpawn.getX() * this.distanceMultiplier(), regularSpawn.getY(), regularSpawn.getZ() * this.distanceMultiplier());
-					} else {
-						spawnToDimPos = new BlockPos(regularSpawn.getX(), regularSpawn.getY(), regularSpawn.getZ());
-					}
-					break;
-
-				default:
-					Apoli.LOGGER.warn("This case does nothing. The game crashes if there is no spawn strategy set");
-					if (this.distanceMultiplier() != 0) {
-						spawnToDimPos = new BlockPos(regularSpawn.getX() * this.distanceMultiplier(), regularSpawn.getY(), regularSpawn.getZ() * this.distanceMultiplier());
-					} else {
-						spawnToDimPos = new BlockPos(regularSpawn.getX(), regularSpawn.getY(), regularSpawn.getZ());
-					}
-			}
-
-			if (this.biome() != null) {
-				Pair<BlockPos, Holder<Biome>> biomePos = world.findClosestBiome3d(x -> x.is(this.biome()), spawnToDimPos, 6400, 8, 8);
-				if (biomePos != null) {
-					spawnToDimPos = biomePos.getFirst();
-				} else {
-					Apoli.LOGGER.warn("Could not find biome \"{}\" in dimension \"{}\".", this.biome(), this.dimension.toString());
-				}
-			}
-
-			if (this.structure == null) {
-				tpPos = getValidSpawn(spawnToDimPos, range, world);
-			} else {
-				Pair<BlockPos, Holder<Structure>> structure = getStructureLocation(world, this.structure, null, this.dimension);
-				ChunkPos structureChunkPos;
-
-				if (structure == null) {
-					return null;
-				}
-				BlockPos structurePos = structure.getFirst();
-				structureChunkPos = new ChunkPos(structurePos.getX() >> 4, structurePos.getZ() >> 4);
-				StructureStart structureStart = world.structureManager().getStartForStructure(SectionPos.of(structureChunkPos, 0), structure.getSecond().value(), world.getChunk(structurePos));
-				if (structureStart != null) {
-					BlockPos structureCenter = new BlockPos(structureStart.getBoundingBox().getCenter());
-					tpPos = getValidSpawn(structureCenter, range, world);
-				} else
-					tpPos = null;
-			}
-
-			if (tpPos != null) {
-				mutable = new BlockPos(tpPos.x, tpPos.y, tpPos.z).mutable();
-				BlockPos spawnLocation = mutable;
-				world.getChunkSource().addRegionTicket(TicketType.START, new ChunkPos(spawnLocation), 11, Unit.INSTANCE);
-				return new Tuple<>(world, spawnLocation);
-			}
-			return null;
 		}
 		return null;
 	}

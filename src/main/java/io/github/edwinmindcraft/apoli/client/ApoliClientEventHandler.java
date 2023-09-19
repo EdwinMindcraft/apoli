@@ -8,13 +8,18 @@ import io.github.apace100.calio.Calio;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.common.ApoliCommon;
+import io.github.edwinmindcraft.apoli.common.network.C2SFetchActiveSpawnPowerPacket;
 import io.github.edwinmindcraft.apoli.common.power.InvisibilityPower;
 import io.github.edwinmindcraft.apoli.common.power.ParticlePower;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.PhasingConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import io.github.edwinmindcraft.apoli.common.util.SpawnLookupScheduler;
+import io.github.edwinmindcraft.apoli.common.util.SpawnLookupUtil;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.core.Holder;
@@ -23,14 +28,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderBlockScreenEffectEvent;
-import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.client.event.ViewportEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,6 +64,22 @@ public class ApoliClientEventHandler {
 		if (InvisibilityPower.isArmorHidden(event.getEntity()))
 			event.setCanceled(true);
 	}
+
+    @SubscribeEvent
+    public static void onInitScreen(ScreenEvent.Init event) {
+        // This is meant to make sure that a player doesn't get softlocked upon rejoining into a previous world after dying.
+        if (event.getScreen() instanceof DeathScreen && Minecraft.getInstance().player != null) {
+            Minecraft.getInstance().player.reviveCaps();
+            if (ApoliAPI.getPowerContainer(Minecraft.getInstance().player).hasPower(ApoliPowers.MODIFY_PLAYER_SPAWN.get()))
+                ApoliCommon.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SFetchActiveSpawnPowerPacket());
+            Minecraft.getInstance().player.invalidateCaps();
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
+        SpawnLookupUtil.resetSpawnCache();
+    }
 
 	@SubscribeEvent
 	public static void onLivingTick(LivingEvent.LivingTickEvent event) {

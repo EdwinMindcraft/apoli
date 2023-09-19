@@ -33,6 +33,7 @@
     "forge.ForgeHooksMixin",
     "forge.GrindstoneMenuResultSlotAccessor",
     "forge.InventoryMenuMixin",
+    "forge.PlayerMixin",
     "forge.ResultSlotAccessor"
   ],
   "client": [
@@ -50,6 +51,8 @@
     "PlayerEntityRendererMixin",
     "WorldRendererMixin",
     "forge.ChangeGlowColorMixin",
+    "forge.ConfirmScreenMixin",
+    "forge.DeathScreenMixin",
     "forge.EarsCompatMixin"
   ],
   "refmap": "apoli.refmap.json",

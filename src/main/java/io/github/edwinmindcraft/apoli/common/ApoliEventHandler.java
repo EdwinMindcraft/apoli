@@ -9,8 +9,12 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.component.PowerDataCache;
+import io.github.edwinmindcraft.apoli.common.network.S2CCachedSpawnsPacket;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import io.github.edwinmindcraft.apoli.common.util.ModifyPlayerSpawnCache;
+import io.github.edwinmindcraft.apoli.common.util.SpawnLookupScheduler;
+import io.github.edwinmindcraft.apoli.common.util.SpawnLookupUtil;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.nbt.CompoundTag;
@@ -49,6 +53,7 @@ public class ApoliEventHandler {
 	@SubscribeEvent
 	public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
 		if (event.getEntity() instanceof ServerPlayer spe) {
+            ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> spe), new S2CCachedSpawnsPacket(SpawnLookupUtil.getPowersWithSpawns()));
 			S2CSynchronizePowerContainer packet = S2CSynchronizePowerContainer.forEntity(spe);
 			if (packet == null)
 				Apoli.LOGGER.error("Couldn't create synchronization packet for player {}", spe.getScoreboardName());
@@ -105,6 +110,11 @@ public class ApoliEventHandler {
 		}
 		original.ifPresent(x -> x.getPowers().forEach(y -> y.value().onRemoved(event.getOriginal())));
         player.ifPresent(p -> original.ifPresent(o -> p.readFromNbt(o.writeToNbt(new CompoundTag()))));
+
+        if (event.getEntity() instanceof ServerPlayer) {
+            ((ModifyPlayerSpawnCache)event.getEntity()).setActiveSpawnPower(((ModifyPlayerSpawnCache)event.getOriginal()).getActiveSpawnPower());
+        }
+
 		if (!event.getEntity().level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
 			IPowerContainer.getPowers(event.getEntity(), ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.value().getFactory().restoreItems(power.value(), event.getEntity()));
 
@@ -115,8 +125,10 @@ public class ApoliEventHandler {
 	public static void playerRespawn(PlayerEvent.PlayerRespawnEvent event) {
 		if (event.getEntity() instanceof ServerPlayer sp) {
 			IPowerContainer.sync(sp);
-			if (!event.isEndConquered())
-				IPowerContainer.get(sp).ifPresent(x -> x.getPowers().forEach(y -> y.value().onRespawn(sp)));
+			if (!event.isEndConquered()) {
+                ApoliPowers.MODIFY_PLAYER_SPAWN.get().schedulePlayerToSpawn(sp);
+                IPowerContainer.get(sp).ifPresent(x -> x.getPowers().forEach(y -> y.value().onRespawn(sp)));
+            }
 		}
 	}
 

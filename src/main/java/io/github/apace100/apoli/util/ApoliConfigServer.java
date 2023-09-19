@@ -5,6 +5,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 public class ApoliConfigServer {
 	public final ExecuteCommand executeCommand;
 	public final ForgeConfigSpec.BooleanValue enforceFoodRestrictions;
+    public final ForgeConfigSpec.BooleanValue separateSpawnFindingThread;
 
 	public ApoliConfigServer(ForgeConfigSpec.Builder builder) {
 		builder.push("execute_command");
@@ -13,7 +14,10 @@ public class ApoliConfigServer {
 		builder.push("prevent_usage");
 		this.enforceFoodRestrictions = builder.comment("Whether to enforce food restrictions or not").translation("config.apoli.prevent_usage.enforce_food_restrictions").define("enforce_food_restrictions", true);
 		builder.pop();
-	}
+        builder.push("modify_player_spawn");
+        this.separateSpawnFindingThread = builder.comment("Whether finding a spawn for Modify Player Spawn should happen on a separate thread or not").translation("config.apoli.modify_player_spawn.separate_finding_thread").define("separate_finding_thread", true);
+	    builder.pop();
+    }
 
 	/**
 	 * Putting this on the server allows for world specific configurations.

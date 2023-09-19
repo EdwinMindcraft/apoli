@@ -5,6 +5,7 @@ import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.apace100.apoli.util.StackPowerUtil;
+import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.VariableAccess;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
@@ -18,6 +19,8 @@ import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageDea
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageTakenConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
+import io.github.edwinmindcraft.apoli.common.util.SpawnLookupScheduler;
+import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -44,6 +47,7 @@ import net.minecraftforge.event.VanillaGameEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -221,13 +225,36 @@ public class ApoliPowerEventHandler {
 		event.setAmount(IPowerContainer.modify(event.getEntity(), ApoliPowers.MODIFY_HEALING.get(), event.getAmount()));
 	}
 
+    @SubscribeEvent
+    public static void playerTick(LivingEvent.LivingTickEvent event) {
+        if (event.getEntity() instanceof ServerPlayer spe && ApoliAPI.getPowerContainer(spe) != null && ApoliAPI.getPowerContainer(spe).hasPower(ApoliPowers.MODIFY_PLAYER_SPAWN.get())) {
+            ApoliPowers.MODIFY_PLAYER_SPAWN.get().tick(spe);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onCalioReload(CalioDynamicRegistryEvent.Reload event) throws InterruptedException {
+        SpawnLookupScheduler.INSTANCE.clear();
+    }
+
+    @SubscribeEvent
+    public static void onStopServer(ServerStoppingEvent event) throws InterruptedException {
+        // Reset the cache on integrated servers.
+        SpawnLookupScheduler.INSTANCE.clear();
+    }
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onPlayerDeath(LivingDeathEvent event) {
-		if (event.getEntity() instanceof Player player && !player.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
-			IPowerContainer.getPowers(player, ApoliPowers.INVENTORY.get()).stream().map(Holder::value).forEach(inventory -> {
-				InventoryPower.tryDropItemsOnDeath(inventory, player);
-			});
-			IPowerContainer.getPowers(player, ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.value().getFactory().captureItems(power.value(), player));
+		if (event.getEntity() instanceof Player player) {
+            if (event.getEntity() instanceof ServerPlayer serverPlayer && IPowerContainer.hasPower(serverPlayer, ApoliPowers.MODIFY_PLAYER_SPAWN.get()))
+                ApoliPowers.MODIFY_PLAYER_SPAWN.get().checkSpawn(serverPlayer);
+
+            if (!player.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
+                IPowerContainer.getPowers(player, ApoliPowers.INVENTORY.get()).stream().map(Holder::value).forEach(inventory -> {
+                    InventoryPower.tryDropItemsOnDeath(inventory, player);
+                });
+                IPowerContainer.getPowers(player, ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.value().getFactory().captureItems(power.value(), player));
+            }
 		}
 	}
 
