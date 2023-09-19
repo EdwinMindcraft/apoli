@@ -24,6 +24,7 @@ import io.github.edwinmindcraft.apoli.common.util.ModifyPlayerSpawnCache;
 import io.github.edwinmindcraft.apoli.common.util.SpawnLookupScheduler;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -240,12 +241,6 @@ public class ApoliPowerEventHandler {
 
     @SubscribeEvent
     public static void onCalioReload(CalioDynamicRegistryEvent.Reload event) throws InterruptedException {
-        SpawnLookupScheduler.INSTANCE.clear();
-    }
-
-    @SubscribeEvent
-    public static void onServerStopping(ServerStoppingEvent event) throws InterruptedException {
-        // Primarily so integrated servers will clear their spawns.
         SpawnLookupScheduler.INSTANCE.clear();
     }
 

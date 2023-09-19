@@ -60,8 +60,10 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
             if (spawn == null) return;
 
             Vec3 tpPos = DismountHelper.findSafeDismountLocation(EntityType.PLAYER, spawn.getA(), new BlockPos(spawn.getB()), true);
-            if (tpPos != spawn.getB()) {
+            if (tpPos == null) {
                 SpawnLookupScheduler.INSTANCE.invalidate(activeKey);
+            } else if (tpPos != spawn.getB()) {
+                SpawnLookupUtil.changeSpawnCacheValue(activeKey, spawn.getA(), tpPos);
             }
         }
     }
