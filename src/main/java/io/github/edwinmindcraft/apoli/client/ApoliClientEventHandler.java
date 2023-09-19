@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.apoli.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.ApoliClient;
+import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.apace100.apoli.util.MiscUtil;
 import io.github.apace100.calio.Calio;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
@@ -15,7 +16,6 @@ import io.github.edwinmindcraft.apoli.common.power.ParticlePower;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.PhasingConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import io.github.edwinmindcraft.apoli.common.util.SpawnLookupScheduler;
 import io.github.edwinmindcraft.apoli.common.util.SpawnLookupUtil;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -67,8 +67,7 @@ public class ApoliClientEventHandler {
 
     @SubscribeEvent
     public static void onInitScreen(ScreenEvent.Init event) {
-        // This is meant to make sure that a player doesn't get softlocked upon rejoining into a previous world after dying.
-        if (event.getScreen() instanceof DeathScreen && Minecraft.getInstance().player != null) {
+        if (ApoliConfigs.SERVER.separateSpawnFindingThread.get() && event.getScreen() instanceof DeathScreen && Minecraft.getInstance().player != null) {
             Minecraft.getInstance().player.reviveCaps();
             if (ApoliAPI.getPowerContainer(Minecraft.getInstance().player).hasPower(ApoliPowers.MODIFY_PLAYER_SPAWN.get()))
                 ApoliCommon.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SFetchActiveSpawnPowerPacket());
