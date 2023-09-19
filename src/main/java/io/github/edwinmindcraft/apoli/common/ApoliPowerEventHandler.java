@@ -237,12 +237,6 @@ public class ApoliPowerEventHandler {
         SpawnLookupScheduler.INSTANCE.clear();
     }
 
-    @SubscribeEvent
-    public static void onStopServer(ServerStoppingEvent event) throws InterruptedException {
-        // Reset the cache on integrated servers.
-        SpawnLookupScheduler.INSTANCE.clear();
-    }
-
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onPlayerDeath(LivingDeathEvent event) {
 		if (event.getEntity() instanceof Player player) {
