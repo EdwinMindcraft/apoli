@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import io.github.edwinmindcraft.apoli.common.network.S2CCachedSpawnsPacket;
+import io.github.edwinmindcraft.apoli.common.network.S2CResetSpawnCachePacket;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyPlayerSpawnConfiguration;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -198,6 +199,8 @@ public class SpawnLookupScheduler {
         }
         // Clear cache position for all powers.
         SpawnLookupUtil.resetSpawnCache();
+        if (ServerLifecycleHooks.getCurrentServer() == null) return;
+        ApoliCommon.CHANNEL.send(PacketDistributor.ALL.noArg(), new S2CResetSpawnCachePacket());
     }
 
     public void doSpawnLookup(ResourceKey<ConfiguredPower<?, ?>> power) {

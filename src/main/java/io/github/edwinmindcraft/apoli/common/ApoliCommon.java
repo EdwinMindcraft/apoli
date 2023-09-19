@@ -65,6 +65,10 @@ public class ApoliCommon {
                 .encoder(C2SFetchActiveSpawnPowerPacket::encode).decoder(C2SFetchActiveSpawnPowerPacket::decode)
                 .consumerNetworkThread(C2SFetchActiveSpawnPowerPacket::handle).add();
 
+        CHANNEL.messageBuilder(S2CResetSpawnCachePacket.class, messageId++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(S2CResetSpawnCachePacket::encode).decoder(S2CResetSpawnCachePacket::decode)
+                .consumerNetworkThread(S2CResetSpawnCachePacket::handle).add();
+
 		Apoli.LOGGER.debug("Registered {} network messages.", messageId);
 	}
 
