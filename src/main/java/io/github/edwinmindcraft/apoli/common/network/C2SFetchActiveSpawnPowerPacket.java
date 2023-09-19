@@ -18,7 +18,8 @@ public class C2SFetchActiveSpawnPowerPacket {
 	public void encode(FriendlyByteBuf buffer) { }
 
     private void handleSync(ServerPlayer sender) {
-        ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sender), new S2CActiveSpawnPowerPacket(Optional.ofNullable(((ModifyPlayerSpawnCache)sender).getActiveSpawnPower())));
+        if (((ModifyPlayerSpawnCache)sender).getActiveSpawnPower() == null) return;
+        ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sender), new S2CActiveSpawnPowerPacket(Optional.of(((ModifyPlayerSpawnCache)sender).getActiveSpawnPower())));
     }
 
 	public void handle(Supplier<NetworkEvent.Context> contextSupplier) {

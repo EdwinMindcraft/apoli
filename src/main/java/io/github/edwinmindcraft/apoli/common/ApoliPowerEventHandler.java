@@ -14,11 +14,13 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCon
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.InteractionPowerConfiguration;
+import io.github.edwinmindcraft.apoli.common.network.S2CActiveSpawnPowerPacket;
 import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageDealtConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageTakenConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
+import io.github.edwinmindcraft.apoli.common.util.ModifyPlayerSpawnCache;
 import io.github.edwinmindcraft.apoli.common.util.SpawnLookupScheduler;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.minecraft.ChatFormatting;
@@ -47,11 +49,11 @@ import net.minecraftforge.event.VanillaGameEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -218,6 +220,9 @@ public class ApoliPowerEventHandler {
 			if (event.getSource().getEntity() instanceof LivingEntity living)
 				SelfCombatActionPower.onKill(living, event.getEntity(), event.getSource(), x);
 		});
+        if (event.getEntity() instanceof ServerPlayer serverPlayer && ((ModifyPlayerSpawnCache)serverPlayer).getActiveSpawnPower() != null) {
+            ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new S2CActiveSpawnPowerPacket(Optional.of(((ModifyPlayerSpawnCache)serverPlayer).getActiveSpawnPower())));
+        }
 	}
 
 	@SubscribeEvent
