@@ -1,6 +1,7 @@
 package io.github.apace100.apoli.mixin;
 
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.access.EntityAttributeInstanceAccess;
 import io.github.apace100.apoli.access.HiddenEffectStatus;
 import io.github.apace100.apoli.access.ModifiableFoodEntity;
 import io.github.apace100.apoli.util.StackPowerUtil;
@@ -28,6 +29,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -252,22 +254,19 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		}
 	}
 
+	@Inject(method = "getAttribute", at = @At("RETURN"))
+	private void setEntityToAttributeInstance(Attribute attribute, CallbackInfoReturnable<AttributeInstance> cir) {
+		AttributeInstance instance = cir.getReturnValue();
+		if (instance != null) {
+			((EntityAttributeInstanceAccess)instance).setEntity(this);
+		}
+	}
+
 	@Inject(method = "doPush", at = @At("HEAD"), cancellable = true)
 	private void preventPushing(Entity entity, CallbackInfo ci) {
 		if (BiEntityConditionPower.any(ApoliPowers.PREVENT_ENTITY_COLLISION.get(), this, this, entity) || BiEntityConditionPower.any(ApoliPowers.PREVENT_ENTITY_COLLISION.get(), entity, entity, this)) {
 			ci.cancel();
 		}
-	}
-
-	@ModifyVariable(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getFluidState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/material/FluidState;"), method = "travel", name = "d0", ordinal = 0)
-	public double modifyFallingVelocity(double in) {
-		if (this.getDeltaMovement().y > 0D) {
-			return in;
-		}
-		if (IPowerContainer.hasPower(this, ApoliPowers.MODIFY_FALLING.get())) {
-			return IPowerContainer.modify(this, ApoliPowers.MODIFY_FALLING.get(), in);
-		}
-		return in;
 	}
 
 	@ModifyVariable(method = "eat", at = @At("HEAD"), argsOnly = true)
