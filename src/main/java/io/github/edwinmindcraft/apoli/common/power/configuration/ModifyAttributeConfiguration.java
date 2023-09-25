@@ -8,10 +8,28 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 
-public record ModifyAttributeConfiguration(Attribute attribute, ListConfiguration<ConfiguredModifier<?>> modifiers) implements IValueModifyingPowerConfiguration {
+public class ModifyAttributeConfiguration implements IValueModifyingPowerConfiguration {
 
 	public static final Codec<ModifyAttributeConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.ATTRIBUTE.fieldOf("attribute").forGetter(ModifyAttributeConfiguration::attribute),
 			ListConfiguration.MODIFIER_CODEC.forGetter(ModifyAttributeConfiguration::modifiers)
 	).apply(instance, ModifyAttributeConfiguration::new));
+
+	private final Attribute attribute;
+
+	private final ListConfiguration<ConfiguredModifier<?>> modifiers;
+
+	public ModifyAttributeConfiguration(Attribute attribute, ListConfiguration<ConfiguredModifier<?>> modifiers) {
+		this.attribute = attribute;
+		this.modifiers = modifiers;
+	}
+
+	public Attribute attribute() {
+		return this.attribute;
+	}
+
+	@Override
+	public ListConfiguration<ConfiguredModifier<?>> modifiers() {
+		return this.modifiers;
+	}
 }

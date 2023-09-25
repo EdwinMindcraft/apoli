@@ -8,11 +8,12 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliModifierOperations;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import net.minecraftforge.common.ForgeMod;
 
 import java.util.Objects;
 import java.util.Optional;
 
-public final class ModifyFallingConfiguration implements IValueModifyingPowerConfiguration {
+public final class ModifyFallingConfiguration extends ModifyAttributeConfiguration {
 	public static final Codec<ModifyFallingConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.optionalField(CalioCodecHelper.DOUBLE, "velocity").forGetter(ModifyFallingConfiguration::velocity),
 			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "take_fall_damage", true).forGetter(ModifyFallingConfiguration::takeFallDamage),
@@ -21,19 +22,11 @@ public final class ModifyFallingConfiguration implements IValueModifyingPowerCon
 
 	private final Optional<Double> velocity;
 	private final boolean takeFallDamage;
-	private final ListConfiguration<ConfiguredModifier<?>> modifiers;
 
 	public ModifyFallingConfiguration(Optional<Double> velocity, boolean takeFallDamage, ListConfiguration<ConfiguredModifier<?>> modifiers) {
+		super(ForgeMod.ENTITY_GRAVITY.get(), velocity.isPresent() && modifiers.getContent().isEmpty() ? ListConfiguration.of(ModifierUtil.createSimpleModifier(ApoliModifierOperations.SET_TOTAL::get, velocity.get())) : modifiers);
 		this.velocity = velocity;
 		this.takeFallDamage = takeFallDamage;
-		if (velocity.isPresent() && modifiers.getContent().isEmpty())
-			this.modifiers = ListConfiguration.of(modifier(velocity.get()));
-		else
-			this.modifiers = modifiers;
-	}
-
-	public ConfiguredModifier<?> modifier(double velocity) {
-		return ModifierUtil.createSimpleModifier(ApoliModifierOperations.SET_TOTAL::get, velocity);
 	}
 
 	public Optional<Double> velocity() {
@@ -45,11 +38,6 @@ public final class ModifyFallingConfiguration implements IValueModifyingPowerCon
 	}
 
 	@Override
-	public ListConfiguration<ConfiguredModifier<?>> modifiers() {
-		return this.modifiers;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) return true;
 		if (obj == null || obj.getClass() != this.getClass()) return false;
@@ -57,12 +45,12 @@ public final class ModifyFallingConfiguration implements IValueModifyingPowerCon
 		return this.velocity().isPresent() == that.velocity().isPresent() &&
 				(this.velocity().isEmpty() || Double.doubleToLongBits(this.velocity.get()) == Double.doubleToLongBits(that.velocity.get()))
 				&& this.takeFallDamage == that.takeFallDamage
-				&& this.modifiers.entries() == that.modifiers.entries();
+				&& this.modifiers().entries() == that.modifiers().entries();
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.velocity, this.takeFallDamage, this.modifiers);
+		return Objects.hash(this.velocity, this.takeFallDamage, this.modifiers());
 	}
 
 	@Override
@@ -70,6 +58,6 @@ public final class ModifyFallingConfiguration implements IValueModifyingPowerCon
 		return "ModifyFallingConfiguration[" +
 				"velocity=" + this.velocity + ", " +
 				"takeFallDamage=" + this.takeFallDamage + ", " +
-				"modifiers=" + this.modifiers + ']';
+				"modifiers=" + this.modifiers() + ']';
 	}
 }

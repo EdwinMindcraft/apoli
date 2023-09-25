@@ -4,11 +4,11 @@ import io.github.apace100.apoli.access.MovingEntity;
 import io.github.apace100.apoli.access.SubmergableEntity;
 import io.github.apace100.apoli.access.WaterMovingEntity;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.common.power.ModifyVelocityPower;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -19,10 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -120,12 +117,16 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 			this.isMoving = true;
 	}
 
-	@ModifyVariable(method = "move", at = @At("HEAD"), argsOnly = true)
-	private Vec3 modifyMovementVelocity(Vec3 original, MoverType movementType) {
+	@ModifyVariable(method = "move", at = @At(value = "HEAD"), argsOnly = true)
+	private Vec3 modifyMovementVelocityXZ(Vec3 vec, MoverType movementType) {
 		if(!IPowerContainer.hasPower((Entity)(Object)this, ApoliPowers.MODIFY_VELOCITY.get()) || movementType != MoverType.SELF) {
-			return original;
+			return vec;
 		}
-		return ModifyVelocityPower.getModifiedVelocity((Entity)(Object)this, original);
+		// Forge: We do not set the Y value for this, as that is handled through modifications to the `forge:gravity` attribute.
+		double x = IPowerContainer.modify((Entity)(Object)this, ApoliPowers.MODIFY_VELOCITY.get(), (float)vec.x, p -> p.value().getConfiguration().axes().contains(Direction.Axis.X));
+		double y = IPowerContainer.modify((Entity)(Object)this, ApoliPowers.MODIFY_VELOCITY.get(), (float)vec.y, p -> p.value().getConfiguration().axes().contains(Direction.Axis.Y));
+		double z = IPowerContainer.modify((Entity)(Object)this, ApoliPowers.MODIFY_VELOCITY.get(), (float)vec.z, p -> p.value().getConfiguration().axes().contains(Direction.Axis.Z));
+		return new Vec3(x, y, z);
 	}
 
 	@Override
