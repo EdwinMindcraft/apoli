@@ -38,6 +38,7 @@
     "forge.ForgeHooksMixin",
     "forge.GrindstoneMenuResultSlotAccessor",
     "forge.InventoryMenuMixin",
+    "forge.PlayerMixin",
     "forge.ResultSlotAccessor",
     "forge.TransientCraftingContainerMixin"
   ],
@@ -56,6 +57,8 @@
     "PlayerEntityRendererMixin",
     "WorldRendererMixin",
     "forge.ChangeGlowColorMixin",
+    "forge.ConfirmScreenMixin",
+    "forge.DeathScreenMixin",
     "forge.EarsCompatMixin",
     "forge.ForgeGuiMixin"
   ],

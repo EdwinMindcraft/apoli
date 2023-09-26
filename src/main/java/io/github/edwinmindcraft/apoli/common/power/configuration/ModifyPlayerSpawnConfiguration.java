@@ -52,13 +52,13 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 	).apply(instance, (t1, t2, t3, t4, t5, t6) -> new ModifyPlayerSpawnConfiguration(t1, t2, t3.orElse(null), t4, t5.orElse(null), t6.orElse(null))));
 
 
-    private Optional<BlockPos> getBiomePos(ResourceLocation powerId, String entityName, ServerLevel targetDimension, BlockPos originPos) {
+    public Optional<BlockPos> getBiomePos(ResourceLocation powerId, ServerLevel targetDimension, BlockPos originPos) {
 
         if (biome() == null) return Optional.empty();
 
         Optional<Biome> targetBiome = targetDimension.registryAccess().registryOrThrow(Registries.BIOME).getOptional(biome());
         if (targetBiome.isEmpty()) {
-            Apoli.LOGGER.warn("Power {} could not set {}'s spawnpoint at biome \"{}\" as it's not registered in dimension \"{}\".", powerId, entityName, biome().location(), dimension().location());
+            Apoli.LOGGER.warn("Power {} could not set spawnpoint at biome \"{}\" as it's not registered in dimension \"{}\".", powerId, biome().location(), dimension().location());
             return Optional.empty();
         }
 
@@ -72,13 +72,13 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 
         if (targetBiomePos != null) return Optional.of(targetBiomePos.getFirst());
         else {
-            Apoli.LOGGER.warn("Power {} could not set {}'s spawnpoint at biome \"{}\" as it couldn't be found in dimension \"{}\".", powerId, entityName, biome().location(), dimension().location());
+            Apoli.LOGGER.warn("Power {} could not set spawnpoint at biome \"{}\" as it couldn't be found in dimension \"{}\".", powerId, biome().location(), dimension().location());
             return Optional.empty();
         }
 
     }
 
-    private Optional<Pair<BlockPos, Structure>> getStructurePos(ResourceLocation powerId, String entityName, Level world, @Nullable ResourceKey<Structure> structure, @Nullable TagKey<Structure> structureTag, ResourceKey<Level> dimension) {
+    private Optional<Pair<BlockPos, Structure>> getStructurePos(ResourceLocation powerId, Level world, @Nullable ResourceKey<Structure> structure, @Nullable TagKey<Structure> structureTag, ResourceKey<Level> dimension) {
 
         Registry<Structure> structureRegistry = world.registryAccess().registryOrThrow(Registries.STRUCTURE);
         HolderSet<Structure> structureRegistryEntryList = null;
@@ -121,7 +121,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
                 );
 
         if (structurePos == null) {
-            Apoli.LOGGER.warn("Power {} could not set {}'s spawnpoint at structure \"{}\" as it couldn't be found in dimension \"{}\".", powerId, entityName, structureTagOrName, dimension.location());
+            Apoli.LOGGER.warn("Power {} could not set spawnpoint at structure \"{}\" as it couldn't be found in dimension \"{}\".", powerId, structureTagOrName, dimension.location());
             return Optional.empty();
         }
 
@@ -130,11 +130,11 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
     }
 
 
-    private Optional<Vec3> getSpawnPos(ResourceLocation powerId, String entityName, ServerLevel targetDimension, BlockPos originPos, int range) {
+    public Optional<Vec3> getSpawnPos(ResourceLocation powerId, ServerLevel targetDimension, BlockPos originPos, int range) {
 
         if (this.structure() == null) return getValidSpawn(originPos, range, targetDimension);
 
-        Optional<Pair<BlockPos, Structure>> targetStructure = getStructurePos(powerId, entityName, targetDimension, this.structure(), null, this.dimension());
+        Optional<Pair<BlockPos, Structure>> targetStructure = getStructurePos(powerId, targetDimension, this.structure(), null, this.dimension());
         if (targetStructure.isEmpty()) return Optional.empty();
 
         BlockPos targetStructurePos = targetStructure.get().getFirst();
@@ -215,33 +215,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
     @Nullable
     public Tuple<ServerLevel, BlockPos> getSpawn(ResourceLocation powerId, Entity entity, boolean isSpawnObstructed) {
         if (entity instanceof ServerPlayer) {
-            ServerLevel targetDimension = ServerLifecycleHooks.getCurrentServer().getLevel(this.dimension());
 
-            if (targetDimension == null) {
-                Apoli.LOGGER.warn("Power {} could not set {}'s spawnpoint at dimension \"{}\" as it's not registered! Falling back to default spawnpoint...", powerId, entity.getScoreboardName(), this.dimension().location());
-                return null;
-            }
-
-            BlockPos regularSpawn = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer().getLevel(Level.OVERWORLD)).getSharedSpawnPos();
-            int center = targetDimension.getLogicalHeight() / 2;
-            int range = 64;
-
-            AtomicReference<Vec3> modifiedSpawnPos = new AtomicReference<>();
-
-            BlockPos.MutableBlockPos modifiedSpawnBlockPos = new BlockPos.MutableBlockPos();
-            BlockPos.MutableBlockPos dimensionSpawnPos = this.strategy().apply(regularSpawn, center, this.distanceMultiplier()).mutable();
-
-            this.getBiomePos(powerId, entity.getScoreboardName(), targetDimension, dimensionSpawnPos).ifPresent(dimensionSpawnPos::set);
-            this.getSpawnPos(powerId, entity.getScoreboardName(), targetDimension, dimensionSpawnPos, range).ifPresent(modifiedSpawnPos::set);
-
-
-            if (modifiedSpawnPos.get() == null) return null;
-
-            Vec3 msp = modifiedSpawnPos.get();
-            modifiedSpawnBlockPos.set(msp.x, msp.y, msp.z);
-            targetDimension.getChunkSource().addRegionTicket(TicketType.START, new ChunkPos(modifiedSpawnBlockPos), 11, Unit.INSTANCE);
-
-            return new Tuple<>(targetDimension, modifiedSpawnBlockPos);
         }
         return null;
     }
