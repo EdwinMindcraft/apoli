@@ -34,7 +34,8 @@ public class CraftingScreenHandlerMixin {
 
 	@Inject(method = "slotChangedCraftingGrid", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/crafting/RecipeManager;getRecipeFor(Lnet/minecraft/world/item/crafting/RecipeType;Lnet/minecraft/world/Container;Lnet/minecraft/world/level/Level;)Ljava/util/Optional;"))
 	private static void clearPowerCraftingInventory(AbstractContainerMenu menu, Level level, Player player, CraftingContainer container, ResultContainer result, CallbackInfo ci) {
-		((PowerCraftingInventory) container).setPower(null);
+		if (container instanceof PowerCraftingInventory)
+			((PowerCraftingInventory) container).setPower(null);
 	}
 
 	/*

@@ -53,8 +53,7 @@ public class AbstractContainerMenuMixin {
 				return Optional.of(newStack.getValue());
 			} else if (!this.apoli$cachedPlayer.level().isClientSide && this.slots.stream().anyMatch(slot -> slot instanceof ResultSlot)) {
 				ResultSlot slot = (ResultSlot) this.slots.stream().filter(s -> s instanceof ResultSlot).findFirst().get();
-                if (((ResultSlotAccessor) slot).getCraftSlots() instanceof TransientCraftingContainer craftingContainer) {
-                    PowerCraftingInventory pci = (PowerCraftingInventory) ((ResultSlotAccessor) slot).getCraftSlots();
+                if (((ResultSlotAccessor) slot).getCraftSlots() instanceof TransientCraftingContainer craftingContainer && ((ResultSlotAccessor) slot).getCraftSlots() instanceof PowerCraftingInventory pci) {
                     ConfiguredPower<?, ?> power = pci.getPower();
                     if (power != null && power.getConfiguration() instanceof ModifyCraftingConfiguration config) {
                         Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(craftingContainer);
@@ -78,8 +77,7 @@ public class AbstractContainerMenuMixin {
 			return Optional.of(newStack.getValue());
 		} else if (!this.apoli$cachedPlayer.level().isClientSide && this.slots.stream().anyMatch(slot -> slot instanceof ResultSlot)) {
 			ResultSlot slot = (ResultSlot) this.slots.stream().filter(s -> s instanceof ResultSlot).findFirst().get();
-            if (((ResultSlotAccessor) slot).getCraftSlots() instanceof TransientCraftingContainer craftingContainer) {
-                PowerCraftingInventory pci = (PowerCraftingInventory) ((ResultSlotAccessor) slot).getCraftSlots();
+            if (((ResultSlotAccessor) slot).getCraftSlots() instanceof TransientCraftingContainer craftingContainer && ((ResultSlotAccessor) slot).getCraftSlots() instanceof PowerCraftingInventory pci) {
                 ConfiguredPower<?, ?> power = pci.getPower();
                 if (power != null && power.getConfiguration() instanceof ModifyCraftingConfiguration config) {
                     Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(craftingContainer);
@@ -101,8 +99,7 @@ public class AbstractContainerMenuMixin {
 			return newStack.getValue();
 		} else if (!this.apoli$cachedPlayer.level().isClientSide && this.slots.stream().anyMatch(slot -> slot instanceof ResultSlot)) {
 			ResultSlot slot = (ResultSlot) this.slots.stream().filter(s -> s instanceof ResultSlot).findFirst().get();
-            if (((ResultSlotAccessor) slot).getCraftSlots() instanceof TransientCraftingContainer craftingContainer) {
-                PowerCraftingInventory pci = (PowerCraftingInventory) ((ResultSlotAccessor) slot).getCraftSlots();
+            if (((ResultSlotAccessor) slot).getCraftSlots() instanceof TransientCraftingContainer craftingContainer && ((ResultSlotAccessor) slot).getCraftSlots() instanceof PowerCraftingInventory pci) {
                 ConfiguredPower<?, ?> power = pci.getPower();
                 if (power != null && power.getConfiguration() instanceof ModifyCraftingConfiguration config) {
                     Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(craftingContainer);
@@ -124,8 +121,7 @@ public class AbstractContainerMenuMixin {
 			return newStack.getValue();
 		} else if (!this.apoli$cachedPlayer.level().isClientSide && this.slots.stream().anyMatch(slot -> slot instanceof ResultSlot)) {
 			ResultSlot slot = (ResultSlot) this.slots.stream().filter(s -> s instanceof ResultSlot).findFirst().get();
-            if (((ResultSlotAccessor) slot).getCraftSlots() instanceof TransientCraftingContainer craftingContainer) {
-                PowerCraftingInventory pci = (PowerCraftingInventory) ((ResultSlotAccessor) slot).getCraftSlots();
+            if (((ResultSlotAccessor) slot).getCraftSlots() instanceof TransientCraftingContainer craftingContainer&& ((ResultSlotAccessor) slot).getCraftSlots() instanceof PowerCraftingInventory pci) {
                 ConfiguredPower<?, ?> power = pci.getPower();
                 if (power != null && power.getConfiguration() instanceof ModifyCraftingConfiguration config) {
                     Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(craftingContainer);
@@ -147,8 +143,7 @@ public class AbstractContainerMenuMixin {
 			return newStack.getValue();
 		} else if (!this.apoli$cachedPlayer.level().isClientSide && this.slots.stream().anyMatch(slot -> slot instanceof ResultSlot)) {
 			ResultSlot slot = (ResultSlot) this.slots.stream().filter(s -> s instanceof ResultSlot).findFirst().get();
-            if (((ResultSlotAccessor) slot).getCraftSlots() instanceof TransientCraftingContainer craftingContainer) {
-                PowerCraftingInventory pci = (PowerCraftingInventory) ((ResultSlotAccessor) slot).getCraftSlots();
+            if (((ResultSlotAccessor) slot).getCraftSlots() instanceof TransientCraftingContainer craftingContainer && ((ResultSlotAccessor) slot).getCraftSlots() instanceof PowerCraftingInventory pci) {
                 ConfiguredPower<?, ?> power = pci.getPower();
                 if (power != null && power.getConfiguration() instanceof ModifyCraftingConfiguration config) {
                     Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(craftingContainer);
