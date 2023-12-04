@@ -5,7 +5,6 @@ import io.github.apace100.apoli.access.EntityLinkedItemStack;
 import io.github.apace100.apoli.command.PowerCommand;
 import io.github.apace100.apoli.command.ResourceCommand;
 import io.github.apace100.apoli.util.InventoryUtil;
-import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -13,7 +12,6 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.component.EntityLinkedItemStackImpl;
 import io.github.edwinmindcraft.apoli.common.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.component.PowerDataCache;
-import io.github.edwinmindcraft.apoli.common.data.PowerLoader;
 import io.github.edwinmindcraft.apoli.common.network.S2CCachedSpawnsPacket;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
@@ -134,13 +132,15 @@ public class ApoliEventHandler {
 		if (!event.getEntity().level().isClientSide())
 			IPowerContainer.get(event.getEntity()).ifPresent(IPowerContainer::serverTick);
 
-        InventoryUtil.forEachStack(event.getEntity(), stack -> {
-            if (stack.isEmpty() || stack.getCapability(ApoliCapabilities.ENTITY_LINKED_ITEM_STACK).map(eli -> eli.getEntity() == event.getEntity()).orElse(false)) {
+        InventoryUtil.forEachStack(event.getEntity(), (stack, slot) -> {
+            if (stack.getValue().isEmpty() || stack.getValue().getCapability(ApoliCapabilities.ENTITY_LINKED_ITEM_STACK).map(eli -> eli.getEntity() == event.getEntity()).orElse(false)) {
                 return;
             }
-            stack.getCapability(ApoliCapabilities.ENTITY_LINKED_ITEM_STACK).ifPresent(eli -> {
+            stack.getValue().getCapability(ApoliCapabilities.ENTITY_LINKED_ITEM_STACK).ifPresent(eli -> {
                 eli.setEntity(event.getEntity());
             });
+			if (slot != null)
+				slot.set(stack.getValue());
         });
 	}
 

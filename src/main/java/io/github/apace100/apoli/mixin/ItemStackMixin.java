@@ -62,9 +62,9 @@ public abstract class ItemStackMixin extends net.minecraftforge.common.capabilit
     }
 
     // This is probably the wrong way to do this but I really didn't want to set up NBT for the capability. Oh well.
-    @Inject(method = "copy", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;setPopTime(I)V"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void copyNewParams(CallbackInfoReturnable<ItemStack> cir, ItemStack stack) {
-        stack.getCapability(ApoliCapabilities.ENTITY_LINKED_ITEM_STACK).ifPresent(eli -> {
+    @Inject(method = "copy", at = @At(value = "RETURN"))
+    private void copyNewParams(CallbackInfoReturnable<ItemStack> cir) {
+        cir.getReturnValue().getCapability(ApoliCapabilities.ENTITY_LINKED_ITEM_STACK).ifPresent(eli -> {
             Optional<EntityLinkedItemStack> otherEli = this.getCapability(ApoliCapabilities.ENTITY_LINKED_ITEM_STACK).resolve();
             if (otherEli.isPresent() && otherEli.get().getEntity() != null) {
                 eli.setEntity(otherEli.get().getEntity());
