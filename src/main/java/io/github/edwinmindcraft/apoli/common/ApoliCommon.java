@@ -26,7 +26,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public class ApoliCommon {
-	public static final String NETWORK_VERSION = "1.1";
+	public static final String NETWORK_VERSION = "1.2";
 
 	public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder.named(Apoli.identifier("channel"))
 			.networkProtocolVersion(() -> NETWORK_VERSION)
@@ -69,6 +69,10 @@ public class ApoliCommon {
 		CHANNEL.messageBuilder(C2SFetchActiveSpawnPowerPacket.class, messageId++, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(C2SFetchActiveSpawnPowerPacket::encode).decoder(C2SFetchActiveSpawnPowerPacket::decode)
 				.consumerNetworkThread(C2SFetchActiveSpawnPowerPacket::handle).add();
+
+		CHANNEL.messageBuilder(S2CResetSpawnCachePacket.class, messageId++, NetworkDirection.PLAY_TO_SERVER)
+				.encoder(S2CResetSpawnCachePacket::encode).decoder(S2CResetSpawnCachePacket::decode)
+				.consumerNetworkThread(S2CResetSpawnCachePacket::handle).add();
 
 		Apoli.LOGGER.debug("Registered {} newtork messages.", messageId);
 	}
