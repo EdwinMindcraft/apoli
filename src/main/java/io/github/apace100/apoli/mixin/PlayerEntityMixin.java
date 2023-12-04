@@ -3,15 +3,12 @@ package io.github.apace100.apoli.mixin;
 import io.github.apace100.apoli.access.ModifiableFoodEntity;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
-import io.github.edwinmindcraft.apoli.common.ApoliCommon;
-import io.github.edwinmindcraft.apoli.common.network.S2CPlayerDismount;
 import io.github.edwinmindcraft.apoli.common.power.ModifyFoodPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.util.CoreUtils;
 import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
 import net.minecraft.commands.CommandSource;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -22,7 +19,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -85,13 +81,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 		((ModifiableFoodEntity) this).setCurrentModifyFoodPowers(mfps);
 		((ModifiableFoodEntity) this).setOriginalFoodStack(original);
 		return stack.getValue();
-	}
-
-	@Inject(method = "removeVehicle", at = @At("HEAD"))
-	private void sendPlayerDismountPacket(CallbackInfo ci) {
-		if (!this.level().isClientSide() && this.getVehicle() instanceof ServerPlayer player) {
-			ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CPlayerDismount(this.getId()));
-		}
 	}
 
 	// ModifyExhaustion

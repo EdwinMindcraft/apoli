@@ -11,6 +11,7 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
+import io.github.edwinmindcraft.apoli.common.network.S2CPlayerDismount;
 import io.github.edwinmindcraft.apoli.common.network.S2CSyncAttacker;
 import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOnItemUseConfiguration;
@@ -21,6 +22,7 @@ import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.CombatRules;
@@ -231,6 +233,14 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 	@Inject(method = "canFreeze", at = @At("RETURN"), cancellable = true)
 	private void allowFreezingPower(CallbackInfoReturnable<Boolean> cir) {
 		if (IPowerContainer.hasPower(this, ApoliPowers.FREEZE.get())) cir.setReturnValue(true);
+	}
+
+	// Moved from PlayerEntityMixin.
+	@Inject(method = "stopRiding", at = @At("HEAD"))
+	private void sendPlayerDismountPacket(CallbackInfo ci) {
+		if (!this.level().isClientSide() && this.getVehicle() instanceof ServerPlayer player) {
+			ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CPlayerDismount(this.getId()));
+		}
 	}
 
 	// SetEntityGroupPower
