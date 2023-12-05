@@ -73,6 +73,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 			this.setSwimming(false);
 	}
 
+	@Inject(method = "getFlyingSpeed", at = @At("RETURN"), cancellable = true)
+	private void modifyFlySpeed(CallbackInfoReturnable<Float> cir) {
+		cir.setReturnValue(IPowerContainer.modify(this, ApoliPowers.MODIFY_AIR_SPEED.get(), cir.getReturnValue()));
+	}
+
 	@ModifyVariable(method = "eat", at = @At("HEAD"), argsOnly = true)
 	private ItemStack modifyEatenItemStack(ItemStack original) {
 		List<ConfiguredPower<ModifyFoodConfiguration, ModifyFoodPower>> mfps = ModifyFoodPower.getValidPowers(this, original);
