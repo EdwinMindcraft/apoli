@@ -87,13 +87,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 		return stack.getValue();
 	}
 
-	@Inject(method = "removeVehicle", at = @At("HEAD"))
-	private void sendPlayerDismountPacket(CallbackInfo ci) {
-		if (!this.level.isClientSide() && this.getVehicle() instanceof ServerPlayer player) {
-			ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CPlayerDismount(this.getId()));
-		}
-	}
-
 	// ModifyExhaustion
 	@ModifyVariable(at = @At("HEAD"), method = "causeFoodExhaustion", ordinal = 0, name = "exhaustion", argsOnly = true)
 	private float modifyExhaustion(float exhaustionIn) {
