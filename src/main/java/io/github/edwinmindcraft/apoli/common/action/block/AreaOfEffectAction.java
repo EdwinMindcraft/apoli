@@ -19,7 +19,7 @@ public class AreaOfEffectAction extends BlockAction<AreaOfEffectConfiguration<Co
     public void execute(@NotNull AreaOfEffectConfiguration<ConfiguredBlockAction<?, ?>, ConfiguredBlockCondition<?, ?>> configuration, Level world, BlockPos pos, Direction direction) {
         Shape.forPositions(pos, configuration.shape(), (int)configuration.radius(), blockPos -> {
             if (ConfiguredBlockCondition.check(configuration.condition(), world, blockPos))
-                configuration.action().value().execute(world, pos, direction);
+                configuration.action().value().execute(world, blockPos, direction);
         }, () -> false);
     }
 }
