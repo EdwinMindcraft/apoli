@@ -132,15 +132,13 @@ public class ApoliEventHandler {
 		if (!event.getEntity().level().isClientSide())
 			IPowerContainer.get(event.getEntity()).ifPresent(IPowerContainer::serverTick);
 
-        InventoryUtil.forEachStack(event.getEntity(), (stack, slot) -> {
-            if (stack.getValue().isEmpty() || stack.getValue().getCapability(ApoliCapabilities.ENTITY_LINKED_ITEM_STACK).map(eli -> eli.getEntity() == event.getEntity()).orElse(false)) {
+        InventoryUtil.forEachStack(event.getEntity(), (slot) -> {
+            if (slot.get().isEmpty() || slot.get().getCapability(ApoliCapabilities.ENTITY_LINKED_ITEM_STACK).map(eli -> eli.getEntity() == event.getEntity()).orElse(false)) {
                 return;
             }
-            stack.getValue().getCapability(ApoliCapabilities.ENTITY_LINKED_ITEM_STACK).ifPresent(eli -> {
+            slot.get().getCapability(ApoliCapabilities.ENTITY_LINKED_ITEM_STACK).ifPresent(eli -> {
                 eli.setEntity(event.getEntity());
             });
-			if (slot != null)
-				slot.set(stack.getValue());
         });
 	}
 

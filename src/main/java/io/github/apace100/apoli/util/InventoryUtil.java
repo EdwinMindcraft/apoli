@@ -27,7 +27,7 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import java.util.*;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class InventoryUtil {
@@ -334,7 +334,7 @@ public class InventoryUtil {
 
     We also provide the slot access in the BiConsumer, so we aren't setting the stack all the time.
      */
-    public static void forEachStack(Entity entity, BiConsumer<Mutable<ItemStack>, SlotAccess> itemStackConsumer) {
+    public static void forEachStack(Entity entity, Consumer<SlotAccess> itemStackConsumer) {
         int skip = getDuplicatedSlotIndex(entity);
 
         for(int slot : ((ItemSlotArgumentTypeAccessor) SLOT_ARGUMENT).getSlotNamesToSlotCommandId().values()) {
@@ -347,8 +347,7 @@ public class InventoryUtil {
 
             ItemStack stack = stackReference.get();
             if (stack.isEmpty()) continue;
-            Mutable<ItemStack> mutable = new MutableObject<>(stack.copy());
-            itemStackConsumer.accept(mutable, stackReference);
+            itemStackConsumer.accept(stackReference);
         }
 
         Optional<IPowerContainer> optionalPowerContainer = IPowerContainer.get(entity).resolve();
@@ -362,8 +361,7 @@ public class InventoryUtil {
                     if(stack.isEmpty()) {
                         continue;
                     }
-                    Mutable<ItemStack> mutable = new MutableObject<>(stack);
-                    itemStackConsumer.accept(mutable, SlotAccess.forContainer(inventoryPower.getFactory().getInventory(inventoryPower, entity), index));
+                    itemStackConsumer.accept(SlotAccess.forContainer(inventoryPower.getFactory().getInventory(inventoryPower, entity), index));
                 }
             }
         }
