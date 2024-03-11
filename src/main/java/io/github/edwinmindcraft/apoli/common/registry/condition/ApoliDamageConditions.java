@@ -32,6 +32,7 @@ public class ApoliDamageConditions {
 
 	public static final RegistryObject<AmountCondition> AMOUNT = DAMAGE_CONDITIONS.register("amount", AmountCondition::new);
 	public static final RegistryObject<NameCondition> NAME = DAMAGE_CONDITIONS.register("name", NameCondition::new);
+	public static final RegistryObject<InTagCondition> IN_TAG = DAMAGE_CONDITIONS.register("in_tag", InTagCondition::new);
 	public static final RegistryObject<SimpleDamageCondition> FIRE = DAMAGE_CONDITIONS.register("fire", () -> new SimpleTagCondition(DamageTypeTags.IS_FIRE));
 	public static final RegistryObject<ProjectileCondition> PROJECTILE = DAMAGE_CONDITIONS.register("projectile", ProjectileCondition::new);
 	public static final RegistryObject<AttackerCondition> ATTACKER = DAMAGE_CONDITIONS.register("attacker", AttackerCondition::new);
