@@ -11,6 +11,7 @@ public class NameCondition extends DamageCondition<FieldConfiguration<String>> {
 		super(FieldConfiguration.codec(Codec.STRING, "name"));
 	}
 
+	// TODO: Fix https://github.com/apace100/origins-fabric/issues/735 as soon as upstream does.
 	@Override
 	public boolean check(FieldConfiguration<String> configuration, DamageSource source, float amount) {
 		return configuration.value().equals(source.getMsgId());

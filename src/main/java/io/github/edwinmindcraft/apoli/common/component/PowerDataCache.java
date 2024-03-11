@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class PowerDataCache implements IPowerDataCache, ICapabilityProvider {
 	private float damage = -1F;
+	private boolean shouldExecuteActions = true;
 
 	@Override
 	public void setDamage(float damage) {
@@ -20,6 +21,16 @@ public class PowerDataCache implements IPowerDataCache, ICapabilityProvider {
 	@Override
 	public float getDamage() {
 		return this.damage;
+	}
+
+	@Override
+	public void setShouldExecuteActions(boolean value) {
+		this.shouldExecuteActions = value;
+	}
+
+	@Override
+	public boolean shouldExecuteActions() {
+		return this.shouldExecuteActions;
 	}
 
 	private final transient LazyOptional<IPowerDataCache> thisOptional = LazyOptional.of(() -> this);
