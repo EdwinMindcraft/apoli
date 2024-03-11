@@ -297,8 +297,10 @@ public class ApoliPowerEventHandler {
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void playerBlockInteraction(PlayerInteractEvent.RightClickBlock event) {
 		ActionOnBlockUsePower.tryInteract(event.getEntity(), event.getPos(), event.getFace(), event.getHand()).ifPresent(res -> {
-			event.setCancellationResult(res);
-			event.setCanceled(true);
+			if (res.consumesAction()) {
+				event.setCancellationResult(res);
+				event.setCanceled(true);
+			}
 		});
 	}
 
