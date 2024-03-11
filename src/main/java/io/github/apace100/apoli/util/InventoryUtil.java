@@ -27,6 +27,7 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -326,6 +327,20 @@ public class InventoryUtil {
 
         thrower.level().addFreshEntity(itemEntity);
 
+    }
+
+    /**
+     * Use {@link InventoryUtil#forEachStack(Entity, Consumer)} instead.
+     * The Mutable caused optimisation issues, and we will make the swap to SlotAccess
+     * in future versions of the mod.
+     *
+     * @param entity            The entity to perform actions on the stacks of.
+     * @param itemStackConsumer A consumer that decides what happens to the items,
+     *                          DO NOT use the Mutable as it is null.
+     */
+    @Deprecated
+    public static void forEachStack(Entity entity, BiConsumer<Mutable<ItemStack>, SlotAccess> itemStackConsumer) {
+        forEachStack(entity, (slotAccess) -> itemStackConsumer.accept(null, slotAccess));
     }
 
     /*
