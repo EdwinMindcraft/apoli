@@ -16,13 +16,13 @@ public class ModifyFallingPower extends ValueModifyingPowerFactory<ModifyFalling
 	}
 
 	// As Origins Fabric now utilises special modifiers for this class, so we hook into the Forge Attribute by extending ModifyAttributePower.
-	public static double apply(Entity entity, boolean isFalling, double originalValue) {
+	public static double apply(Entity entity, double originalValue) {
 		if (!(entity instanceof LivingEntity living))
 			return originalValue;
 		AttributeInstance attribute = living.getAttribute(ForgeMod.ENTITY_GRAVITY.get());
-		if (attribute != null && isFalling) {
+		if (attribute != null) {
 			double modifier = IPowerContainer.modify(entity, ApoliPowers.MODIFY_FALLING.get(), originalValue);
-			if (modifier != originalValue) {
+			if (modifier != originalValue && modifier >= 0.0) {
 				return modifier;
 			}
 		}
