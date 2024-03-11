@@ -16,4 +16,8 @@ public interface IPowerDataCache {
 	void setDamage(float damage);
 
 	float getDamage();
+
+	void setShouldExecuteActions(boolean value);
+
+	boolean shouldExecuteActions();
 }

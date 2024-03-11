@@ -176,7 +176,11 @@ public class ApoliPowerEventHandler {
 		boolean validate = event.getAmount() != target.lastHurt;
 		float prevDamage = pdc.map(IPowerDataCache::getDamage).orElse(Float.POSITIVE_INFINITY);
 		pdc.ifPresent(x -> x.setDamage(amount));
-		if (amount > 0 && !event.isCanceled() && (!validate || target.invulnerableTime > 10F || prevDamage <= amount)) {
+		if (amount > 0 && pdc.map(IPowerDataCache::shouldExecuteActions).orElse(true)) {
+			// PowerDataCache having this value is to ensure that we can replicate Origins Fabric's logic.
+			// See https://github.com/EdwinMindcraft/origins-architectury/issues/422#issuecomment-1988053821 for more info.
+			boolean canRunAgain = !event.isCanceled() && (!validate && target.invulnerableTime > 10F && !event.getSource().is(DamageTypeTags.BYPASSES_COOLDOWN) && prevDamage <= amount);
+			pdc.ifPresent(cache -> cache.setShouldExecuteActions(canRunAgain));
 			SelfActionWhenHitPower.execute(target, source, amount);
 			AttackerActionWhenHitPower.execute(target, source, amount);
 			if (attacker != null) {
@@ -184,6 +188,8 @@ public class ApoliPowerEventHandler {
 				TargetCombatActionPower.onHit(attacker, target, source, amount);
 				CombatHitActionPower.perform(attacker, target, source, amount);
 			}
+		} else {
+			pdc.ifPresent(cache -> cache.setShouldExecuteActions(true));
 		}
 	}
 
