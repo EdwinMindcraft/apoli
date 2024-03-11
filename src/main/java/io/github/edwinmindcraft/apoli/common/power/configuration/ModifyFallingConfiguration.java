@@ -1,11 +1,11 @@
 package io.github.edwinmindcraft.apoli.common.power.configuration;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
-import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliModifierOperations;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraftforge.common.ForgeMod;
@@ -24,7 +24,12 @@ public final class ModifyFallingConfiguration extends ModifyAttributeConfigurati
 	private final boolean takeFallDamage;
 
 	public ModifyFallingConfiguration(Optional<Double> velocity, boolean takeFallDamage, ListConfiguration<ConfiguredModifier<?>> modifiers) {
-		super(ForgeMod.ENTITY_GRAVITY.get(), velocity.isPresent() && modifiers.getContent().isEmpty() ? ListConfiguration.of(ModifierUtil.createSimpleModifier(ApoliModifierOperations.SET_TOTAL::get, velocity.get())) : modifiers);
+		super(ForgeMod.ENTITY_GRAVITY.get(), velocity.map(aDouble -> {
+			ImmutableList.Builder<ConfiguredModifier<?>> builder = ImmutableList.builder();
+			builder.addAll(modifiers.getContent());
+			builder.add(ModifierUtil.createSimpleModifier(ApoliModifierOperations.SET_TOTAL::get, aDouble));
+			return new ListConfiguration<>(builder.build());
+		}).orElse(modifiers));
 		this.velocity = velocity;
 		this.takeFallDamage = takeFallDamage;
 	}

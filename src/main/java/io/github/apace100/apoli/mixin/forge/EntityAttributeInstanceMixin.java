@@ -41,9 +41,9 @@ public abstract class EntityAttributeInstanceMixin implements EntityAttributeIns
 
     @Inject(method = "getValue", at = @At("RETURN"), cancellable = true)
     private void apoli$modifyAttributeValue(CallbackInfoReturnable<Double> cir) {
-        if (apoli$entity != null && attribute == ForgeMod.ENTITY_GRAVITY.get() && IPowerContainer.hasPower(apoli$entity, ApoliPowers.MODIFY_FALLING.get())) {
+        if (apoli$entity != null && attribute == ForgeMod.ENTITY_GRAVITY.get() && apoli$entity.getDeltaMovement().y <= 0D && IPowerContainer.hasPower(apoli$entity, ApoliPowers.MODIFY_FALLING.get())) {
             double original = cir.getReturnValueD();
-            cir.setReturnValue(ModifyFallingPower.apply(apoli$entity, apoli$entity.getDeltaMovement().y < 0D, original));
+            cir.setReturnValue(ModifyFallingPower.apply(apoli$entity, original));
         }
     }
 
