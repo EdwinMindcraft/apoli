@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ParticleConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
@@ -13,7 +13,7 @@ public class ParticlePower extends PowerFactory<ParticleConfiguration> {
 
 	@OnlyIn(Dist.CLIENT)
 	public static void renderParticles(Entity entity, Entity camera, boolean firstPerson) {
-		IPowerContainer.getPowers(entity, ApoliPowers.PARTICLE.get()).stream()
+		PowerContainer.getPowers(entity, ApoliPowers.PARTICLE.get()).stream()
 				.filter(x -> entity.tickCount % x.value().getConfiguration().frequency() == 0 && (x.value().getConfiguration().visibleInFirstPerson() || entity != camera || !firstPerson) && (x.value().getConfiguration().visibleWhileInvisible() || !entity.isInvisible()) && x.value().getConfiguration().count() > 0)
 				.forEach(power -> {
                     Vec3 spread = power.value().getConfiguration().spread();;

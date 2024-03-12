@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.network;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkEvent;
@@ -30,7 +30,7 @@ public class C2SUseActivePowers {
 	}
 
 	public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-		contextSupplier.get().enqueueWork(() -> IPowerContainer.get(contextSupplier.get().getSender()).ifPresent(container -> this.powers.stream()
+		contextSupplier.get().enqueueWork(() -> PowerContainer.get(contextSupplier.get().getSender()).ifPresent(container -> this.powers.stream()
 				.filter(container::hasPower)
 				.map(container::getPower)
 				.filter(Objects::nonNull)

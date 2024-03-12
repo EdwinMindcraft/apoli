@@ -2,7 +2,7 @@ package dev.experiment.hud;
 
 import io.github.apace100.apoli.screen.GameHudRender;
 import io.github.apace100.apoli.util.ApoliConfigs;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -23,10 +23,10 @@ public enum ConfiguredHudDrawer implements GameHudRender {
 	public void render(GuiGraphics matrixStack, float tickDelta) {
 		Minecraft client = Minecraft.getInstance();
 		LocalPlayer player = client.player;
-		LazyOptional<IPowerContainer> containerOptional = IPowerContainer.get(player);
+		LazyOptional<PowerContainer> containerOptional = PowerContainer.get(player);
 		if (!containerOptional.isPresent() || player == null)
 			return;
-		IPowerContainer container = containerOptional.orElseThrow(RuntimeException::new);
+		PowerContainer container = containerOptional.orElseThrow(RuntimeException::new);
 
 		int x = client.getWindow().getGuiScaledWidth() / 2 + 20 + ApoliConfigs.CLIENT.resourcesAndCooldowns.hudOffsetX.get();
 		int y = client.getWindow().getGuiScaledHeight() - 47 + ApoliConfigs.CLIENT.resourcesAndCooldowns.hudOffsetY.get();

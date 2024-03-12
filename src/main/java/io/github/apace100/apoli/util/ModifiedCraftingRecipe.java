@@ -2,7 +2,7 @@ package io.github.apace100.apoli.util;
 
 import com.google.common.collect.Lists;
 import io.github.apace100.apoli.access.PowerCraftingInventory;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.ModifyCraftingPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyCraftingConfiguration;
@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
@@ -27,8 +28,8 @@ import java.util.stream.Collectors;
 
 public class ModifiedCraftingRecipe extends CustomRecipe {
 
-    public ModifiedCraftingRecipe(ResourceLocation id, CraftingBookCategory category) {
-        super(id, category);
+    public ModifiedCraftingRecipe(CraftingBookCategory category) {
+        super(category);
     }
 
 	@Override
@@ -45,7 +46,7 @@ public class ModifiedCraftingRecipe extends CustomRecipe {
 	}
 
 	private static Player getCraftingPlayer(@NotNull TransientCraftingContainer inv) {
-		Player player = ForgeHooks.getCraftingPlayer();
+		Player player = CommonHooks.getCraftingPlayer();
 		if (player != null)
 			return player;
 		return getPlayerFromInventory(inv);
@@ -95,7 +96,7 @@ public class ModifiedCraftingRecipe extends CustomRecipe {
 
 	private List<ConfiguredPower<ModifyCraftingConfiguration, ModifyCraftingPower>> getRecipes(Player player) {
 		if (player != null)
-			return IPowerContainer.getPowers(player, ApoliPowers.MODIFY_CRAFTING.get()).stream().map(Holder::value).collect(Collectors.toList());
+			return PowerContainer.getPowers(player, ApoliPowers.MODIFY_CRAFTING.get()).stream().map(Holder::value).collect(Collectors.toList());
 		return Lists.newArrayList();
 	}
 

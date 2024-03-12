@@ -7,11 +7,13 @@ import io.github.apace100.apoli.util.Scheduler;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.DistExecutor;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.loading.FMLEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,7 +37,7 @@ public class Apoli {
 
 	public static ApoliConfig config;
 
-	public Apoli() {
+	public Apoli(IEventBus bus) {
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ApoliConfigs.COMMON_SPECS);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ApoliConfigs.CLIENT_SPECS);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ApoliConfigs.SERVER_SPECS);
@@ -46,8 +48,8 @@ public class Apoli {
 
 		CriteriaTriggers.register(GainedPowerCriterion.INSTANCE);
 
-		ApoliCommon.initialize();
-		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ApoliClient::initialize);
+		ApoliCommon.initialize(bus);
+		if (FMLEnvironment.dist == Dist.CLIENT) ApoliClient.initialize(bus);
 		LOGGER.info("Apoli " + ModLoadingContext.get().getActiveContainer().getModInfo().getVersion() + " has initialized. Ready to power up your game!");
 	}
 }

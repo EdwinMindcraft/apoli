@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
@@ -17,7 +17,7 @@ import java.util.List;
 public class TooltipPower extends PowerFactory<TooltipConfiguration> {
 	public static void tryAdd(@Nullable Entity entity, ItemStack itemStack, List<Component> tooltips) {
 		if (entity == null) return;
-		IPowerContainer.getPowers(entity, ApoliPowers.TOOLTIP.get()).stream().sorted(Comparator.comparing(holder -> holder.value().getConfiguration().order())).forEachOrdered(power -> power.value().getFactory().tryAdd(power.value(), entity, itemStack, tooltips));
+		PowerContainer.getPowers(entity, ApoliPowers.TOOLTIP.get()).stream().sorted(Comparator.comparing(holder -> holder.value().getConfiguration().order())).forEachOrdered(power -> power.value().getFactory().tryAdd(power.value(), entity, itemStack, tooltips));
 	}
 
 	public TooltipPower() {

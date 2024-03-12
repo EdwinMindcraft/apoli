@@ -1,7 +1,7 @@
 package io.github.edwinmindcraft.apoli.api;
 
 import io.github.apace100.apoli.util.ApoliConfigs;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
@@ -9,7 +9,6 @@ import io.github.edwinmindcraft.apoli.common.network.C2SUseActivePowers;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
 import net.minecraft.core.MappedRegistry;
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -32,9 +31,9 @@ public class ApoliAPI {
 	public static final String MODID = "apoli";
 
 	@Nullable
-	public static IPowerContainer getPowerContainer(Entity entity) {
+	public static PowerContainer getPowerContainer(Entity entity) {
 		if (entity instanceof LivingEntity living) {
-			LazyOptional<IPowerContainer> optional = IPowerContainer.get(living);
+			LazyOptional<PowerContainer> optional = PowerContainer.get(living);
 			if (optional.isPresent())
 				return optional.orElseThrow(RuntimeException::new);
 		}

@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 public class ClimbingPower extends PowerFactory<ClimbingConfiguration> {
 	public static boolean check(LivingEntity player, Consumer<BlockPos> climbingPosSetter) {
-		List<ConfiguredPower<ClimbingConfiguration, ClimbingPower>> climbingPowers = IPowerContainer.get(player)
+		List<ConfiguredPower<ClimbingConfiguration, ClimbingPower>> climbingPowers = PowerContainer.get(player)
 				.map(x -> x.getPowers(ApoliPowers.CLIMBING.get(), true).stream().map(Holder::value))
 				.orElseGet(Stream::of).toList();
 		if (climbingPowers.size() > 0) {

@@ -9,9 +9,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.NonNullSupplier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Supplier;
+
 
 public class ModifyBlockRenderPower extends PowerFactory<ModifyBlockRenderConfiguration> {
 
@@ -19,7 +22,7 @@ public class ModifyBlockRenderPower extends PowerFactory<ModifyBlockRenderConfig
 		super(ModifyBlockRenderConfiguration.CODEC, false);
 	}
 
-	public boolean check(ConfiguredPower<ModifyBlockRenderConfiguration, ?> power, LevelReader world, BlockPos pos, NonNullSupplier<BlockState> state) {
+	public boolean check(ConfiguredPower<ModifyBlockRenderConfiguration, ?> power, LevelReader world, BlockPos pos, Supplier<@NotNull BlockState> state) {
 		return ConfiguredBlockCondition.check(power.getConfiguration().blockCondition(), world, pos, state);
 	}
 

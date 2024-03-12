@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
@@ -20,7 +20,7 @@ public class EntityActionPower extends PowerFactory<EntityActionConfiguration> {
 	 * @return {@code true} if any power exists, {@code false} otherwise.
 	 */
 	public static boolean execute(EntityActionPower power, Entity entity) {
-		List<Holder<ConfiguredPower<EntityActionConfiguration, EntityActionPower>>> powers = IPowerContainer.getPowers(entity, power);
+		List<Holder<ConfiguredPower<EntityActionConfiguration, EntityActionPower>>> powers = PowerContainer.getPowers(entity, power);
 		powers.forEach(x -> ConfiguredEntityAction.execute(x.value().getConfiguration().entityAction(), entity));
 		return !powers.isEmpty();
 	}

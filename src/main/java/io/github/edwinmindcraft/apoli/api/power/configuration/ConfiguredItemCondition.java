@@ -55,6 +55,6 @@ public final class ConfiguredItemCondition<C extends IDynamicFeatureConfiguratio
 
 	@Override
 	public String toString() {
-		return "CIC:" + ApoliRegistries.ITEM_CONDITION.get().getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
+		return "CIC:" + ApoliRegistries.ITEM_CONDITION.getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
 	}
 }

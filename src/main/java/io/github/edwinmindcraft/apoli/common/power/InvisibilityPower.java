@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.InvisibilityConfiguration;
@@ -13,12 +13,12 @@ import java.util.List;
 public class InvisibilityPower extends PowerFactory<InvisibilityConfiguration> {
 
 	public static boolean isArmorHidden(Entity player) {
-		List<Holder<ConfiguredPower<InvisibilityConfiguration, InvisibilityPower>>> powers = IPowerContainer.getPowers(player, ApoliPowers.INVISIBILITY.get());
+		List<Holder<ConfiguredPower<InvisibilityConfiguration, InvisibilityPower>>> powers = PowerContainer.getPowers(player, ApoliPowers.INVISIBILITY.get());
 		return !powers.isEmpty() && powers.stream().noneMatch(x -> x.value().getConfiguration().renderArmor());
 	}
 
     public static boolean isOutlineHidden(Entity player) {
-        List<Holder<ConfiguredPower<InvisibilityConfiguration, InvisibilityPower>>> powers = IPowerContainer.getPowers(player, ApoliPowers.INVISIBILITY.get());
+        List<Holder<ConfiguredPower<InvisibilityConfiguration, InvisibilityPower>>> powers = PowerContainer.getPowers(player, ApoliPowers.INVISIBILITY.get());
         return !powers.isEmpty() && powers.stream().noneMatch(x -> x.value().getConfiguration().renderOutline());
     }
 

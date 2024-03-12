@@ -3,7 +3,7 @@ package io.github.edwinmindcraft.apoli.client.screen;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.OverlayPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
@@ -86,7 +86,7 @@ public class ApoliPowerOverlay implements IGuiOverlay {
 	public void render(ForgeGui gui, GuiGraphics graphics, float partialTick, int width, int height) {
 		boolean hideGui = Minecraft.getInstance().options.hideGui;
 		boolean isFirstPerson = Minecraft.getInstance().options.getCameraType().isFirstPerson();
-		List<ConfiguredPower<OverlayConfiguration, OverlayPower>> powers = IPowerContainer.getPowers(Minecraft.getInstance().getCameraEntity(), ApoliPowers.OVERLAY.get()).stream()
+		List<ConfiguredPower<OverlayConfiguration, OverlayPower>> powers = PowerContainer.getPowers(Minecraft.getInstance().getCameraEntity(), ApoliPowers.OVERLAY.get()).stream()
 				.map(Holder::value)
 				.filter(x -> this.shouldDraw.test(x.getConfiguration()) && (!x.getConfiguration().hideWithHud() || !hideGui) && (x.getConfiguration().visibleInThirdPerson() || isFirstPerson))
 				.toList();

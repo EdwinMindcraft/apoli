@@ -6,7 +6,7 @@ import io.github.edwinmindcraft.apoli.common.action.configuration.OffsetConfigur
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.NonNullSupplier;
+
 
 public class OffsetCondition extends BlockCondition<OffsetConfiguration<ConfiguredBlockCondition<?, ?>>> {
 
@@ -15,7 +15,7 @@ public class OffsetCondition extends BlockCondition<OffsetConfiguration<Configur
 	}
 
 	@Override
-	protected boolean check(OffsetConfiguration<ConfiguredBlockCondition<?, ?>> configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
+	protected boolean check(OffsetConfiguration<ConfiguredBlockCondition<?, ?>> configuration, LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> stateGetter) {
 		BlockPos target = position.offset(configuration.asBlockPos());
 		return ConfiguredBlockCondition.check(configuration.value(), reader, target, () -> reader.getBlockState(target));
 	}

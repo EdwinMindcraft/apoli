@@ -2,12 +2,11 @@ package io.github.apace100.apoli.global;
 
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.ApoliEventHandler;
 import io.github.edwinmindcraft.apoli.common.global.GlobalPowerSet;
-import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -45,7 +44,7 @@ public class GlobalPowerSetUtil {
         if (entity.level().isClientSide()) {
             return;
         }
-        IPowerContainer pc = ApoliAPI.getPowerContainer(entity);
+        PowerContainer pc = ApoliAPI.getPowerContainer(entity);
         if(pc == null) {
             return;
         }
@@ -60,7 +59,7 @@ public class GlobalPowerSetUtil {
         }
     }
 
-    private static boolean removeExcessPowers(IPowerContainer phc, Set<ResourceLocation> expected) {
+    private static boolean removeExcessPowers(PowerContainer phc, Set<ResourceLocation> expected) {
         List<ResourceKey<ConfiguredPower<?, ?>>> powers = phc.getPowersFromSource(POWER_SOURCE);
         List<ResourceKey<ConfiguredPower<?, ?>>> toRemove = new LinkedList<>();
         for(ResourceKey<ConfiguredPower<?, ?>> pt : powers) {
@@ -75,7 +74,7 @@ public class GlobalPowerSetUtil {
         return toRemove.size() > 0;
     }
 
-    private static boolean addMissingPowers(IPowerContainer phc, GlobalPowerSet powerSet) {
+    private static boolean addMissingPowers(PowerContainer phc, GlobalPowerSet powerSet) {
         boolean added = false;
         for(ResourceKey<ConfiguredPower<?, ?>> pt : powerSet.powers()) {
             if(!ApoliEventHandler.isPowerDisabled(pt.location()) && !phc.hasPower(pt, POWER_SOURCE)) {

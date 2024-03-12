@@ -3,7 +3,7 @@ package io.github.edwinmindcraft.apoli.fabric;
 import com.mojang.serialization.Codec;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.nbt.CompoundTag;
@@ -21,7 +21,7 @@ public class FabricPowerFactory<P extends Power> extends PowerFactory<FabricPowe
 	}
 
 	@SuppressWarnings("unchecked")
-	private P getPower(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, LivingEntity entity, IPowerContainer container) {
+	private P getPower(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, LivingEntity entity, PowerContainer container) {
 		return configuration.getPowerData(container, () -> configuration.getConfiguration().power().apply((PowerType<P>) configuration.getPowerType(), entity));
 	}
 
@@ -77,13 +77,13 @@ public class FabricPowerFactory<P extends Power> extends PowerFactory<FabricPowe
 	}
 
 	@Override
-	public void serialize(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, IPowerContainer container, CompoundTag tag) {
+	public void serialize(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, PowerContainer container, CompoundTag tag) {
 		if (container.getOwner() instanceof LivingEntity living)
 			tag.put("FabricData", this.getPower(configuration, living, container).toTag());
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, IPowerContainer container, CompoundTag tag) {
+	public void deserialize(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, PowerContainer container, CompoundTag tag) {
 		if (container.getOwner() instanceof LivingEntity living)
 			this.getPower(configuration, living, container).fromTag(tag);
 	}

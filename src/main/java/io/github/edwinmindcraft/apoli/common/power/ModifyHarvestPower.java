@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ValueModifyingPowerFactory;
@@ -17,7 +17,7 @@ public class ModifyHarvestPower extends ValueModifyingPowerFactory<ModifyHarvest
 	 * This implementation assumes that if a single power says you can harvest, you can harvest.
 	 */
 	public static Optional<Boolean> isHarvestAllowed(Player player, LevelReader reader, BlockPos pos) {
-		return IPowerContainer.getPowers(player, ApoliPowers.MODIFY_HARVEST.get()).stream()
+		return PowerContainer.getPowers(player, ApoliPowers.MODIFY_HARVEST.get()).stream()
 				.filter(x -> x.value().getFactory().doesApply(x.value(), reader, pos))
 				.map(x -> x.value().getFactory().isHarvestAllowed(x.value()))
 				.reduce((x, y) -> x || y);

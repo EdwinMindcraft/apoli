@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.action.entity;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.PowerReference;
 import io.github.edwinmindcraft.apoli.api.power.ITogglePower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -18,7 +18,7 @@ public class ToggleAction extends EntityAction<PowerReference> {
 	@SuppressWarnings("unchecked")
 	public void execute(PowerReference configuration, Entity entity) {
 		if (entity instanceof Player player) {
-			ConfiguredPower<?, ?> power = IPowerContainer.get(player).resolve()
+			ConfiguredPower<?, ?> power = PowerContainer.get(player).resolve()
 					.map(x -> x.getPower(configuration.power())).map(Holder::value).orElse(null);
 			if (power.getFactory() instanceof ITogglePower cp)
 				cp.toggle(power, player);

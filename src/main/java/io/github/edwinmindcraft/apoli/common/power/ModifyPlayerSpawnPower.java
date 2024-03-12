@@ -1,10 +1,9 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import com.google.common.collect.Sets;
-import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
@@ -143,7 +142,7 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
 	// This is not the same tick method because we'd prefer it to only run once.
 	public void tick(Entity entity) {
 		if (ApoliConfigs.SERVER.separateSpawnFindingThread.get() && entity instanceof ModifyPlayerSpawnCache cache && entity instanceof ServerPlayer spe && cache.getActiveSpawnPower() != null) {
-			IPowerContainer.get(entity).ifPresent(container -> {
+			PowerContainer.get(entity).ifPresent(container -> {
 				if ((!container.hasPower(cache.getActiveSpawnPower()) || !container.getPower(cache.getActiveSpawnPower()).isBound() || ApoliAPI.getPowers().containsKey(cache.getActiveSpawnPower()) && !ApoliAPI.getPowers().get(cache.getActiveSpawnPower()).isConfigurationValid() || ApoliAPI.getPowers().containsKey(cache.getActiveSpawnPower()) && !ApoliAPI.getPowers().get(cache.getActiveSpawnPower()).isActive(entity))) {
 					Optional<ConfiguredPower<ModifyPlayerSpawnConfiguration, ModifyPlayerSpawnPower>> optional = container.getPowers(ApoliPowers.MODIFY_PLAYER_SPAWN.get()).stream().filter(Holder::isBound).map(Holder::value).findFirst();
 					resetSpawn(optional, entity, spe.isDeadOrDying());

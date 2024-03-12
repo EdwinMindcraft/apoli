@@ -1,7 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.apace100.apoli.util.AttributeUtil;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemAction;
@@ -28,7 +28,7 @@ public class ModifyFoodPower extends PowerFactory<ModifyFoodConfiguration> {
 	}
 
 	public static List<ConfiguredPower<ModifyFoodConfiguration, ModifyFoodPower>> getValidPowers(Entity source, Level level, ItemStack stack) {
-		return IPowerContainer.getPowers(source, ApoliPowers.MODIFY_FOOD.get()).stream().map(Holder::value)
+		return PowerContainer.getPowers(source, ApoliPowers.MODIFY_FOOD.get()).stream().map(Holder::value)
 				.filter(x -> x.getFactory().check(x, level, stack)).collect(Collectors.toList());
 	}
 

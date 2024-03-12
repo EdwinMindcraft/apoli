@@ -1,7 +1,7 @@
 package io.github.edwinmindcraft.apoli.api.power.factory.power;
 
 import com.mojang.serialization.Codec;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.ITogglePower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.TogglePowerConfiguration;
@@ -22,16 +22,16 @@ public abstract class TogglePowerFactory<T extends TogglePowerConfiguration> ext
 	}
 
 	protected void setStatus(ConfiguredPower<T, ?> configuration, Entity entity, boolean status) {
-		this.setStatus(configuration, IPowerContainer.get(entity).resolve().orElse(null), status);
+		this.setStatus(configuration, PowerContainer.get(entity).resolve().orElse(null), status);
 	}
 
 	protected boolean getStatus(ConfiguredPower<T, ?> configuration, Entity entity) {
-		return this.getStatus(configuration, IPowerContainer.get(entity).resolve().orElse(null));
+		return this.getStatus(configuration, PowerContainer.get(entity).resolve().orElse(null));
 	}
 
-	protected abstract void setStatus(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container, boolean status);
+	protected abstract void setStatus(ConfiguredPower<T, ?> configuration, @Nullable PowerContainer container, boolean status);
 
-	protected abstract boolean getStatus(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container);
+	protected abstract boolean getStatus(ConfiguredPower<T, ?> configuration, @Nullable PowerContainer container);
 
 	@Override
 	public boolean isActive(ConfiguredPower<T, ?> configuration, Entity player) {
@@ -52,7 +52,7 @@ public abstract class TogglePowerFactory<T extends TogglePowerConfiguration> ext
 	public void tick(ConfiguredPower<T, ?> configuration, Entity entity) {
 		if (!super.isActive(configuration, entity) && this.getStatus(configuration, entity)) {
 			this.setStatus(configuration, entity, false);
-			IPowerContainer.sync(entity);
+			PowerContainer.sync(entity);
 		}
 	}
 
@@ -64,7 +64,7 @@ public abstract class TogglePowerFactory<T extends TogglePowerConfiguration> ext
 	@Override
 	public void toggle(ConfiguredPower<T, ?> configuration, Entity entity) {
 		this.setStatus(configuration, entity, !this.getStatus(configuration, entity));
-		IPowerContainer.sync(entity);
+		PowerContainer.sync(entity);
 	}
 
 	@Override
@@ -81,31 +81,31 @@ public abstract class TogglePowerFactory<T extends TogglePowerConfiguration> ext
 			super(codec, allowConditions);
 		}
 
-		private AtomicBoolean getData(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
+		private AtomicBoolean getData(ConfiguredPower<T, ?> configuration, PowerContainer container) {
 			return configuration.getPowerData(container, () -> new AtomicBoolean(configuration.getConfiguration().defaultState()));
 		}
 
 		@Override
-		protected void setStatus(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container, boolean status) {
+		protected void setStatus(ConfiguredPower<T, ?> configuration, @Nullable PowerContainer container, boolean status) {
 			if (container == null)
 				return;
 			this.getData(configuration, container).set(status);
 		}
 
 		@Override
-		protected boolean getStatus(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container) {
+		protected boolean getStatus(ConfiguredPower<T, ?> configuration, @Nullable PowerContainer container) {
 			if (container == null)
 				return false;
 			return this.getData(configuration, container).get();
 		}
 
 		@Override
-		public void serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+		public void serialize(ConfiguredPower<T, ?> configuration, PowerContainer container, CompoundTag tag) {
 			tag.putBoolean("Status", this.getStatus(configuration, container));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+		public void deserialize(ConfiguredPower<T, ?> configuration, PowerContainer container, CompoundTag tag) {
 			this.setStatus(configuration, container, tag.getBoolean("Status"));
 		}
 	}

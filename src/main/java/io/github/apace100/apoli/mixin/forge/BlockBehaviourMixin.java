@@ -1,6 +1,6 @@
 package io.github.apace100.apoli.mixin.forge;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.core.BlockPos;
@@ -26,7 +26,7 @@ public class BlockBehaviourMixin {
     private void allowUnbreakableBreaking(BlockState pState, Player pPlayer, BlockGetter pLevel, BlockPos pPos, CallbackInfoReturnable<Float> cir) {
         if (pState.getDestroySpeed(pLevel, pPos) <= 0.0F) {
             float base = cir.getReturnValue();
-            float modified = IPowerContainer.modify(pPlayer, ApoliPowers.MODIFY_BREAK_SPEED.get(), base, p -> ConfiguredBlockCondition.check(p.value().getConfiguration().condition(), pPlayer.level(), pPos, () -> pState));
+            float modified = PowerContainer.modify(pPlayer, ApoliPowers.MODIFY_BREAK_SPEED.get(), base, p -> ConfiguredBlockCondition.check(p.value().getConfiguration().condition(), pPlayer.level(), pPos, () -> pState));
             cir.setReturnValue(modified);
         }
     }

@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ValueModifyingPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFallingConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
@@ -21,7 +21,7 @@ public class ModifyFallingPower extends ValueModifyingPowerFactory<ModifyFalling
 			return originalValue;
 		AttributeInstance attribute = living.getAttribute(ForgeMod.ENTITY_GRAVITY.get());
 		if (attribute != null && isFalling) {
-			double modifier = IPowerContainer.modify(entity, ApoliPowers.MODIFY_FALLING.get(), originalValue);
+			double modifier = PowerContainer.modify(entity, ApoliPowers.MODIFY_FALLING.get(), originalValue);
 			if (modifier != originalValue) {
 				return modifier;
 			}

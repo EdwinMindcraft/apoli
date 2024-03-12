@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.StackingStatusEffectConfiguration;
@@ -21,7 +21,7 @@ public class StackingStatusEffectPower extends PowerFactory<StackingStatusEffect
 		return configuration.getPowerData(player, () -> new AtomicInteger(0));
 	}
 
-	public AtomicInteger getCurrentStacks(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, IPowerContainer player) {
+	public AtomicInteger getCurrentStacks(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, PowerContainer player) {
 		return configuration.getPowerData(player, () -> new AtomicInteger(0));
 	}
 
@@ -48,12 +48,12 @@ public class StackingStatusEffectPower extends PowerFactory<StackingStatusEffect
 	}
 
 	@Override
-	public void serialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+	public void serialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, PowerContainer container, CompoundTag tag) {
 		tag.putInt("CurrentStacks", this.getCurrentStacks(configuration, container).get());
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+	public void deserialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, PowerContainer container, CompoundTag tag) {
 		this.getCurrentStacks(configuration, container).set(tag.getInt("CurrentStacks"));
 	}
 

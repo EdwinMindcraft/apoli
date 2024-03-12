@@ -18,7 +18,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.NonNullSupplier;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -28,7 +28,6 @@ import java.util.function.Supplier;
  *
  * @param <T> The configuration of this condition
  * @param <F> The executor of this condition.
- *
  * @author Edwin
  */
 public final class ConfiguredBlockCondition<T extends IDynamicFeatureConfiguration, F extends BlockCondition<T>> extends ConfiguredCondition<T, F, ConfiguredBlockCondition<?, ?>> {
@@ -59,13 +58,11 @@ public final class ConfiguredBlockCondition<T extends IDynamicFeatureConfigurati
 	 * @param condition The condition to check for
 	 * @param position  The {@link BlockPos position} to check the condition at
 	 * @param state     The fast access to the {@link BlockState} to check the condition for
-	 *
 	 * @return The result of the check or {@code true} if the condition is {@code null}
-	 *
-	 * @see #check(LevelReader, BlockPos, NonNullSupplier) for a non-nullable version
+	 * @see #check(LevelReader, BlockPos, Supplier) for a non-nullable version
 	 * @see #check(Holder, LevelReader, BlockPos) for a version that accesses the state from the world
 	 */
-	public static boolean check(Holder<ConfiguredBlockCondition<?, ?>> condition, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> state) {
+	public static boolean check(Holder<ConfiguredBlockCondition<?, ?>> condition, LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> state) {
 		return !condition.isBound() || condition.value().check(reader, position, state);
 	}
 
@@ -74,10 +71,8 @@ public final class ConfiguredBlockCondition<T extends IDynamicFeatureConfigurati
 	 *
 	 * @param condition The condition to check for
 	 * @param position  The {@link BlockPos position} to check the condition at
-	 *
 	 * @return The result of the check or {@code true} if the condition is {@code null}
-	 *
-	 * @see #check(Holder, LevelReader, BlockPos, NonNullSupplier) for a version with a block state provider
+	 * @see #check(Holder, LevelReader, BlockPos, Supplier) for a version with a block state provider
 	 */
 	public static boolean check(Holder<ConfiguredBlockCondition<?, ?>> condition, LevelReader reader, BlockPos position) {
 		return check(condition, reader, position, () -> reader.getBlockState(position));
@@ -93,18 +88,16 @@ public final class ConfiguredBlockCondition<T extends IDynamicFeatureConfigurati
 	 * @param reader   The {@link LevelReader level} to check the condition in
 	 * @param position The {@link BlockPos position} to check the condition at
 	 * @param state    The fast access to the {@link BlockState} to check the condition for
-	 *
 	 * @return The result of the check
-	 *
-	 * @see #check(Holder, LevelReader, BlockPos, NonNullSupplier)  for a nullable version
+	 * @see #check(Holder, LevelReader, BlockPos, Supplier)  for a nullable version
 	 */
-	public boolean check(LevelReader reader, BlockPos position, NonNullSupplier<BlockState> state) {
+	public boolean check(LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> state) {
 		return this.getFactory().check(this, reader, position, state);
 	}
 
 
 	@Override
 	public String toString() {
-		return "CBC:" + ApoliRegistries.BLOCK_CONDITION.get().getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
+		return "CBC:" + ApoliRegistries.BLOCK_CONDITION.getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
 	}
 }

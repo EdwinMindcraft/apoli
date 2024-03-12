@@ -1,7 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.action.entity;
 
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
@@ -18,7 +18,7 @@ public class ModifyResourceAction extends EntityAction<ModifyResourceConfigurati
 	public void execute(ModifyResourceConfiguration configuration, Entity entity) {
 		if (entity instanceof Player player && configuration.resource().isBound()) {
 			ConfiguredPower<?, ?> power = configuration.resource().value();
-			if (IPowerContainer.get(entity).resolve().flatMap(x -> configuration.resource().unwrapKey().map(x::hasPower)).orElse(false)) {
+			if (PowerContainer.get(entity).resolve().flatMap(x -> configuration.resource().unwrapKey().map(x::hasPower)).orElse(false)) {
 				power.assign(entity, (int) ConfiguredModifier.apply(configuration.modifier(), entity, power.getValue(entity).orElse(0)));
 				ApoliAPI.synchronizePowerContainer(player);
 			}

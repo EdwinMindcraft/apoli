@@ -9,7 +9,7 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.entity.Entity;
 
 public abstract class BiEntityCondition<T extends IDynamicFeatureConfiguration> implements IConditionFactory<T, ConfiguredBiEntityCondition<T, ?>, BiEntityCondition<T>> {
-	public static final Codec<BiEntityCondition<?>> CODEC = ApoliRegistries.codec(() -> ApoliRegistries.BIENTITY_CONDITION.get());
+	public static final Codec<BiEntityCondition<?>> CODEC = ApoliRegistries.BIENTITY_CONDITION.byNameCodec();
 	private final Codec<ConfiguredBiEntityCondition<T, ?>> codec;
 
 	protected BiEntityCondition(Codec<T> codec) {

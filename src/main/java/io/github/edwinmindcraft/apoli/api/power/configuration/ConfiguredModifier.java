@@ -13,7 +13,7 @@ import io.github.edwinmindcraft.calio.api.network.PropagatingDefaultedOptionalFi
 import io.github.edwinmindcraft.calio.api.network.PropagatingOptionalFieldCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.common.util.Lazy;
+import net.neoforged.neoforge.common.util.Lazy;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -64,6 +64,6 @@ public final class ConfiguredModifier<F extends ModifierOperation> {
 
 	@Override
 	public String toString() {
-		return "CM:" + ApoliRegistries.MODIFIER_OPERATION.get().getKey(this.getFactory()) + "-" + this.getData();
+		return "CM:" + ApoliRegistries.MODIFIER_OPERATION.getKey(this.getFactory()) + "-" + this.getData();
 	}
 }

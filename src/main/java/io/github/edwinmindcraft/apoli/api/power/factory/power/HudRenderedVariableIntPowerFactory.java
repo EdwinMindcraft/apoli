@@ -2,7 +2,7 @@ package io.github.edwinmindcraft.apoli.api.power.factory.power;
 
 import com.mojang.serialization.Codec;
 import io.github.apace100.apoli.util.HudRender;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IHudRenderedPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IHudRenderedVariableIntPowerConfiguration;
@@ -45,31 +45,31 @@ public abstract class HudRenderedVariableIntPowerFactory<T extends IHudRenderedV
 			super(codec, allowConditions);
 		}
 
-		protected AtomicInteger getCurrentValue(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
+		protected AtomicInteger getCurrentValue(ConfiguredPower<T, ?> configuration, PowerContainer container) {
 			return configuration.getPowerData(container, () -> new AtomicInteger(configuration.getConfiguration().initialValue()));
 		}
 
 		@Override
-		protected int get(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container) {
+		protected int get(ConfiguredPower<T, ?> configuration, @Nullable PowerContainer container) {
 			if (container == null)
 				return configuration.getConfiguration().initialValue();
 			return this.getCurrentValue(configuration, container).get();
 		}
 
 		@Override
-		protected void set(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container, int value) {
+		protected void set(ConfiguredPower<T, ?> configuration, @Nullable PowerContainer container, int value) {
 			if (container == null)
 				return;
 			this.getCurrentValue(configuration, container).set(value);
 		}
 
 		@Override
-		public void serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+		public void serialize(ConfiguredPower<T, ?> configuration, PowerContainer container, CompoundTag tag) {
 			tag.putInt("Value", this.get(configuration, container));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+		public void deserialize(ConfiguredPower<T, ?> configuration, PowerContainer container, CompoundTag tag) {
 			this.set(configuration, container, tag.getInt("Value"));
 		}
 	}

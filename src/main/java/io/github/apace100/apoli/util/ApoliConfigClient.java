@@ -1,10 +1,10 @@
 package io.github.apace100.apoli.util;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class ApoliConfigClient {
 
-	public ApoliConfigClient(ForgeConfigSpec.Builder builder) {
+	public ApoliConfigClient(ModConfigSpec.Builder builder) {
 		builder.push("resources_and_cooldowns");
 		this.resourcesAndCooldowns = new ResourcesAndCooldowns(builder);
 		builder.pop();
@@ -19,10 +19,10 @@ public class ApoliConfigClient {
 
 	public static class ResourcesAndCooldowns {
 
-		public final ForgeConfigSpec.ConfigValue<Integer> hudOffsetX;
-		public final ForgeConfigSpec.ConfigValue<Integer> hudOffsetY;
+		public final ModConfigSpec.ConfigValue<Integer> hudOffsetX;
+		public final ModConfigSpec.ConfigValue<Integer> hudOffsetY;
 
-		public ResourcesAndCooldowns(ForgeConfigSpec.Builder builder) {
+		public ResourcesAndCooldowns(ModConfigSpec.Builder builder) {
 			this.hudOffsetX = builder
 					.translation("text.autoconfig.power_config.option.resourcesAndCooldowns.hudOffsetX")
 					.define("hud_offset_x", 0);
@@ -34,10 +34,10 @@ public class ApoliConfigClient {
 
 	public static class Tooltips {
 
-		public final ForgeConfigSpec.BooleanValue showUsabilityHints;
-		public final ForgeConfigSpec.BooleanValue compactUsabilityHints;
+		public final ModConfigSpec.BooleanValue showUsabilityHints;
+		public final ModConfigSpec.BooleanValue compactUsabilityHints;
 
-		public Tooltips(ForgeConfigSpec.Builder builder) {
+		public Tooltips(ModConfigSpec.Builder builder) {
 			this.showUsabilityHints = builder
 					.translation("text.autoconfig.power_config.option.tooltips.showUsabilityHints")
 					.define("show_usability_hints", true);

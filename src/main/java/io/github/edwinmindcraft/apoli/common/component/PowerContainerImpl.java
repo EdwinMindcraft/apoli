@@ -8,7 +8,6 @@ import io.github.apace100.apoli.global.GlobalPowerSetUtil;
 import io.github.apace100.apoli.util.GainedPowerCriterion;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
@@ -29,7 +28,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.common.util.NonNullSupplier;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class PowerContainer implements IPowerContainer, ICapabilitySerializable<Tag> {
+public class PowerContainerImpl implements io.github.edwinmindcraft.apoli.api.component.PowerContainer, ICapabilitySerializable<Tag> {
 	@NotNull
 	private final LivingEntity owner;
 	private final Map<ResourceKey<ConfiguredPower<?, ?>>, Holder<ConfiguredPower<?, ?>>> powers;
@@ -46,9 +45,9 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 	private final Map<ResourceKey<ConfiguredPower<?, ?>>, Object> powerData;
 	private final Map<PowerFactory<?>, List<Holder<ConfiguredPower<?, ?>>>> factoryAccessCache;
 
-	private transient final LazyOptional<IPowerContainer> thisOptional = LazyOptional.of(() -> this);
+	private transient final LazyOptional<io.github.edwinmindcraft.apoli.api.component.PowerContainer> thisOptional = LazyOptional.of(() -> this);
 
-	public PowerContainer(@NotNull LivingEntity owner) {
+	public PowerContainerImpl(@NotNull LivingEntity owner) {
 		this.owner = owner;
 		this.powers = new ConcurrentHashMap<>();
 		this.powerSources = new ConcurrentHashMap<>();
@@ -353,7 +352,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> @NotNull T getPowerData(ResourceKey<ConfiguredPower<?, ?>> power, NonNullSupplier<? extends T> supplier) {
+	public <T> @NotNull T getPowerData(ResourceKey<ConfiguredPower<?, ?>> power, Supplier<@NotNull ? extends T> supplier) {
 		Object obj = this.powerData.computeIfAbsent(power, x -> supplier.get());
 		try {
 			return (T) obj;

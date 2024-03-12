@@ -9,10 +9,12 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.NonNullSupplier;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Supplier;
 
 public abstract class BlockCondition<T extends IDynamicFeatureConfiguration> implements IConditionFactory<T, ConfiguredBlockCondition<T, ?>, BlockCondition<T>> {
-	public static final Codec<BlockCondition<?>> CODEC = ApoliRegistries.codec(() -> ApoliRegistries.BLOCK_CONDITION.get());
+	public static final Codec<BlockCondition<?>> CODEC = ApoliRegistries.BLOCK_CONDITION.byNameCodec();
 
 	private final Codec<ConfiguredBlockCondition<T, ?>> codec;
 
@@ -30,21 +32,21 @@ public abstract class BlockCondition<T extends IDynamicFeatureConfiguration> imp
 		return new ConfiguredBlockCondition<>(() -> this, input, data);
 	}
 
-	protected boolean check(T configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
+	protected boolean check(T configuration, LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> stateGetter) {
 		return false;
 	}
 
-	public boolean check(ConfiguredBlockCondition<T, ?> configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> state) {
+	public boolean check(ConfiguredBlockCondition<T, ?> configuration, LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> state) {
 		return configuration.getData().inverted() ^ this.check(configuration.getConfiguration(), reader, position, state);
 	}
 
 	@FunctionalInterface
 	public interface BlockPredicate {
-		boolean test(LevelReader reader, BlockPos position, NonNullSupplier<BlockState> state);
+		boolean test(LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> state);
 	}
 
 	@FunctionalInterface
 	public interface BlockFloatFunction {
-		float apply(LevelReader reader, BlockPos position, NonNullSupplier<BlockState> state);
+		float apply(LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> state);
 	}
 }

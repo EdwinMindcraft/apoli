@@ -1,7 +1,7 @@
 package io.github.edwinmindcraft.apoli.api.power.factory.power;
 
 import com.mojang.serialization.Codec;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IActiveCooldownPowerConfiguration;
@@ -47,30 +47,30 @@ public abstract class ActiveCooldownPowerFactory<T extends IActiveCooldownPowerC
 			super(codec, allowConditions);
 		}
 
-		protected AtomicLong getUseTime(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
+		protected AtomicLong getUseTime(ConfiguredPower<T, ?> configuration, PowerContainer container) {
 			return configuration.getPowerData(container, () -> new AtomicLong(Long.MIN_VALUE));
 		}
 
 		@Override
-		protected long getLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container) {
+		protected long getLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable PowerContainer container) {
 			if (container == null)
 				return 0;
 			return this.getUseTime(configuration, container).get();
 		}
 
 		@Override
-		protected void setLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container, long value) {
+		protected void setLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable PowerContainer container, long value) {
 			if (container == null) return;
 			this.getUseTime(configuration, container).set(value);
 		}
 
 		@Override
-		public void serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+		public void serialize(ConfiguredPower<T, ?> configuration, PowerContainer container, CompoundTag tag) {
 			tag.putLong("LastUseTime", this.getLastUseTime(configuration, container));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+		public void deserialize(ConfiguredPower<T, ?> configuration, PowerContainer container, CompoundTag tag) {
 			this.setLastUseTime(configuration, container, tag.getLong("LastUseTime"));
 		}
 	}

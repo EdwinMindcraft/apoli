@@ -1,6 +1,6 @@
 package io.github.apace100.apoli.mixin;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.INightVisionPower;
 import io.github.edwinmindcraft.apoli.common.power.ModifyCameraSubmersionTypePower;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
@@ -73,7 +73,7 @@ public abstract class GameRendererMixin {
     @Inject(at = @At("TAIL"), method = "checkEntityPostEffect")
 	private void loadShaderFromPowerOnCameraEntity(Entity entity, CallbackInfo ci) {
 		if (ApoliPowers.SHADER.isPresent()) {
-			IPowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
+			PowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
 				ResourceLocation shaderLoc = shaderPower.value().getConfiguration().shader();
 				if (this.resourceManager.getResource(shaderLoc).isPresent()) {
 					this.loadEffect(shaderLoc);
@@ -86,7 +86,7 @@ public abstract class GameRendererMixin {
 	@Inject(at = @At("HEAD"), method = "render")
 	private void loadShaderFromPower(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
 		if (ApoliPowers.SHADER.isPresent()) {
-			IPowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
+			PowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
                 if (shaderPower.isBound()) {
                     ResourceLocation shaderLoc = shaderPower.get().getConfiguration().shader();
                     if (this.currentlyLoadedShader != shaderLoc) {
@@ -95,7 +95,7 @@ public abstract class GameRendererMixin {
                     }
                 }
 			});
-			if (!IPowerContainer.hasPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get()) && this.currentlyLoadedShader != null) {
+			if (!PowerContainer.hasPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get()) && this.currentlyLoadedShader != null) {
 				if (this.postEffect != null) {
 					this.postEffect.close();
 					this.postEffect = null;
@@ -108,7 +108,7 @@ public abstract class GameRendererMixin {
 
 	@Inject(at = @At("HEAD"), method = "togglePostEffect", cancellable = true)
 	private void disableShaderToggle(CallbackInfo ci) {
-		if (IPowerContainer.getPowers(this.getMinecraft().cameraEntity, ApoliPowers.SHADER.get()).stream()
+		if (PowerContainer.getPowers(this.getMinecraft().cameraEntity, ApoliPowers.SHADER.get()).stream()
 				.anyMatch(power -> !power.value().getConfiguration().toggleable() && power.value().getConfiguration().shader().equals(this.currentlyLoadedShader))) {
 			ci.cancel();
 		}

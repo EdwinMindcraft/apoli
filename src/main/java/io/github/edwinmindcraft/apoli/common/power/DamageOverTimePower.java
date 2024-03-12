@@ -1,7 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.apace100.apoli.util.MiscUtil;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.DamageOverTimeConfiguration;
@@ -22,7 +22,7 @@ public class DamageOverTimePower extends PowerFactory<DamageOverTimeConfiguratio
 		this.ticking(true);
 	}
 
-	protected DataContainer getDataContainer(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, @Nullable IPowerContainer player) {
+	protected DataContainer getDataContainer(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, @Nullable PowerContainer player) {
 		if (player == null)
 			return new DataContainer(0, 0);
 		return configuration.getPowerData(player, () -> new DataContainer(this.getDamageBegin(configuration.getConfiguration(), player.getOwner()), 0));
@@ -93,14 +93,14 @@ public class DamageOverTimePower extends PowerFactory<DamageOverTimeConfiguratio
 	}
 
 	@Override
-	public void serialize(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+	public void serialize(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, PowerContainer container, CompoundTag tag) {
 		DataContainer dataContainer = this.getDataContainer(configuration, container);
 		tag.putInt("InDamage", dataContainer.inDamageTicks);
 		tag.putInt("OutDamage", dataContainer.outOfDamageTicks);
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+	public void deserialize(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, PowerContainer container, CompoundTag tag) {
 		DataContainer dataContainer = this.getDataContainer(configuration, container);
 		dataContainer.inDamageTicks = tag.getInt("InDamage");
 		dataContainer.outOfDamageTicks = tag.getInt("OutDamage");

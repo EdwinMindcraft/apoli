@@ -8,13 +8,12 @@ import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import io.github.edwinmindcraft.apoli.api.power.IHudRenderedPower;
 import io.github.edwinmindcraft.apoli.api.power.IVariableIntPower;
 import io.github.edwinmindcraft.apoli.api.power.PowerData;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
-import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
@@ -24,13 +23,12 @@ import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.common.capabilities.CapabilityProvider;
-import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.common.util.NonNullSupplier;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.attachment.AttachmentHolder;
+import net.neoforged.neoforge.common.util.Lazy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +44,7 @@ import java.util.function.Supplier;
  * @param <C> The type of the configuration.
  * @param <F> The type of the factory.
  */
-public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> extends CapabilityProvider<ConfiguredPower<?, ?>> implements IDynamicFeatureConfiguration, DynamicRegistryListener {
+public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> extends AttachmentHolder implements IDynamicFeatureConfiguration, DynamicRegistryListener {
 	public static final Codec<ConfiguredPower<?, ?>> CODEC = PowerFactory.CODEC.dispatch(ConfiguredPower::getFactory, PowerFactory::getCodec);
 	public static final CodecSet<ConfiguredPower<?, ?>> CODEC_SET = CalioCodecHelper.forDynamicRegistry(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, SerializableDataTypes.IDENTIFIER, CODEC);
 	public static final Codec<Holder<ConfiguredPower<?, ?>>> HOLDER = CODEC_SET.holder();
@@ -70,17 +68,12 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	}
 
 	private ConfiguredPower(@Nullable ResourceLocation key, Supplier<F> factory, C configuration, PowerData data) {
-		super(ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);
 		this.registryName = key;
 		this.configuration = configuration;
 		this.data = data;
 		this.factorySupplier = factory;
-		this.factory = Lazy.of(() -> {
-			F f = factory.get();
-			this.gatherCapabilities(f::initCapabilities);
-			return f;
-		});
-		if (!(factory instanceof RegistryObject<F> ro) || ro.isPresent())
+		this.factory = Lazy.of(factory);
+		if (factory instanceof Holder<?> holder && holder.isBound())
 			this.factory.get(); //Should be mostly safe.
 	}
 
@@ -127,11 +120,12 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		this.getFactory().onRespawn(this, entity);
 	}
 
-	public <T> T getPowerData(Entity player, NonNullSupplier<? extends T> supplier) {
-		return IPowerContainer.get(player).resolve().<T>map(container -> this.getPowerData(container, supplier)).orElseGet(supplier::get);
+	public <T> T getPowerData(Entity player, Supplier<@NotNull T> supplier) {
+		PowerContainer container = PowerContainer.get(player);
+		return container != null ? this.getPowerData(container, supplier) : supplier.get();
 	}
 
-	public <T> T getPowerData(IPowerContainer container, NonNullSupplier<? extends T> supplier) {
+	public <T> T getPowerData(PowerContainer container, Supplier<@NotNull T> supplier) {
 		if (this.registryName == null)
 			return container.getPowerData(Holder.direct(this), supplier);
 		else
@@ -172,15 +166,18 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return builder.build();
 	}
 
-	public CompoundTag serialize(IPowerContainer container) {
+	public CompoundTag serialize(PowerContainer container) {
 		CompoundTag tag = new CompoundTag();
-		CompoundTag caps = this.serializeCaps();
-		if (caps != null && !caps.isEmpty()) tag.put("ForgeCaps", caps);
+		CompoundTag attachments = this.serializeAttachments();
+		if (attachments != null && !attachments.isEmpty())
+			tag.put("neoforge:attachments", attachments);
 		this.getFactory().serialize(this, container, tag);
 		return tag;
 	}
 
-	public void deserialize(IPowerContainer container, CompoundTag tag) {
+	public void deserialize(PowerContainer container, CompoundTag tag) {
+		if (tag.contains("neoforge:attachments", Tag.TAG_COMPOUND))
+			this.deserializeAttachments(tag.getCompound("neoforge:attachments"));
 		this.getFactory().deserialize(this, container, tag);
 	}
 
@@ -190,7 +187,6 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	 *
 	 * @param entity The entity to execute the action on.
 	 * @param force  If true, there won't be any check to {@link PowerFactory#tickInterval(ConfiguredPower, Entity)}.
-	 *
 	 * @see #tick(Entity) for a version without the ability to be forced.
 	 */
 	public void tick(Entity entity, boolean force) {
@@ -281,9 +277,7 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	}
 
 	public ConfiguredPower<C, F> complete(ResourceLocation name) {
-		ConfiguredPower<C, F> power = new ConfiguredPower<>(name, this.factorySupplier, this.factorySupplier.get().complete(name, this.getConfiguration()), this.getData().complete(name));
-		this.invalidateCaps(); //Free capabilities that are now unused.
-		return power;
+		return new ConfiguredPower<>(name, this.factorySupplier, this.factorySupplier.get().complete(name, this.getConfiguration()), this.getData().complete(name));
 	}
 
 	public F getFactory() {
@@ -311,7 +305,7 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 
 	@Override
 	public String toString() {
-		String str = "CP:" + ApoliRegistries.POWER_FACTORY.get().getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
+		String str = "CP:" + ApoliRegistries.POWER_FACTORY.getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
 		return this.registryName != null ? "[" + this.registryName + "]" + str : str;
 	}
 
@@ -336,8 +330,8 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		if (this.registryName != null && other.registryName != null)
 			return Objects.equals(this.registryName, other.registryName);
 		return Objects.equals(this.factorySupplier.get(), other.factorySupplier.get()) &&
-			   Objects.equals(this.configuration, other.configuration) &&
-			   Objects.equals(this.data, other.data);
+				Objects.equals(this.configuration, other.configuration) &&
+				Objects.equals(this.data, other.data);
 	}
 
 	@Nullable

@@ -15,7 +15,9 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.NonNullSupplier;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Supplier;
 
 public record PhasingConfiguration(Holder<ConfiguredBlockCondition<?, ?>> phaseCondition, boolean blacklist,
 								   RenderType renderType, float viewDistance,
@@ -32,7 +34,7 @@ public record PhasingConfiguration(Holder<ConfiguredBlockCondition<?, ?>> phaseC
 		return !this.phaseDownCondition().isBound() ? entity.isCrouching() : this.phaseDownCondition().value().check(entity);
 	}
 
-	public boolean canPhaseThrough(LevelReader reader, BlockPos pos, NonNullSupplier<BlockState> stateGetter) {
+	public boolean canPhaseThrough(LevelReader reader, BlockPos pos, Supplier<@NotNull BlockState> stateGetter) {
 		return this.blacklist() != ConfiguredBlockCondition.check(this.phaseCondition(), reader, pos, stateGetter);
 	}
 

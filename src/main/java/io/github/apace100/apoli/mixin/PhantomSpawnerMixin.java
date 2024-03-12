@@ -1,7 +1,7 @@
 package io.github.apace100.apoli.mixin;
 
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -34,7 +34,7 @@ public class PhantomSpawnerMixin {
     @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;clamp(III)I"), index = 0)
     private int modifyTicks(int original) {
         if (ApoliAPI.getPowerContainer(apoli$cachedPlayer).hasPower(ApoliPowers.MODIFY_INSONMIA_TICKS.get())) {
-            return (int)IPowerContainer.modify(apoli$cachedPlayer, ApoliPowers.MODIFY_INSONMIA_TICKS.get(), original);
+            return (int) PowerContainer.modify(apoli$cachedPlayer, ApoliPowers.MODIFY_INSONMIA_TICKS.get(), original);
         }
         return original;
     }

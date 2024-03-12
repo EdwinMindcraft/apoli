@@ -2,7 +2,7 @@ package io.github.apace100.apoli.mixin;
 
 import io.github.apace100.apoli.access.IdentifiedLootTable;
 import io.github.apace100.apoli.access.ReplacingLootContext;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.power.ReplaceLootTablePower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ReplaceLootTableConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
@@ -73,7 +73,7 @@ public class LootTableMixin implements IdentifiedLootTable {
                     }
                 }
             }
-            List<ReplaceLootTableConfiguration> powers = IPowerContainer.getPowers(entity, ApoliPowers.REPLACE_LOOT_TABLE.get()).stream().map(holder -> holder.value().getConfiguration()).toList();
+            List<ReplaceLootTableConfiguration> powers = PowerContainer.getPowers(entity, ApoliPowers.REPLACE_LOOT_TABLE.get()).stream().map(holder -> holder.value().getConfiguration()).toList();
             Entity finalEntity = entity;
             powers = powers.stream()
                 .filter(p -> p.hasReplacement(apoli$id) && p.doesApply(context, finalEntity))

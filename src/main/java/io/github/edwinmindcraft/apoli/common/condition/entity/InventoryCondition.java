@@ -2,7 +2,7 @@ package io.github.edwinmindcraft.apoli.common.condition.entity;
 
 import io.github.apace100.apoli.util.InventoryUtil;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.InventoryConfiguration;
@@ -30,7 +30,7 @@ public class InventoryCondition extends EntityCondition<InventoryConfiguration> 
                 return result;
             }
 
-            IPowerContainer container = ApoliAPI.getPowerContainer(entity);
+            PowerContainer container = ApoliAPI.getPowerContainer(entity);
             if (container == null) {
                 return result;
             }

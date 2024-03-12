@@ -1,7 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -18,11 +18,11 @@ import java.util.Optional;
 public class PreventItemActionPower extends PowerFactory<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>> {
 
 	public static boolean isUsagePrevented(Entity entity, ItemStack stack) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_ITEM_USAGE.get()).stream().map(Holder::value).anyMatch(x -> x.getFactory().doesPrevent(x, entity.level(), stack));
+		return PowerContainer.getPowers(entity, ApoliPowers.PREVENT_ITEM_USAGE.get()).stream().map(Holder::value).anyMatch(x -> x.getFactory().doesPrevent(x, entity.level(), stack));
 	}
 
 	public static List<ConfiguredPower<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>, PreventItemActionPower>> getPreventingForDisplay(Entity entity, ItemStack stack) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_ITEM_USAGE.get()).stream().map(Holder::value).filter(x -> x.getFactory().doesPrevent(x, entity.level(), stack)).toList();
+		return PowerContainer.getPowers(entity, ApoliPowers.PREVENT_ITEM_USAGE.get()).stream().map(Holder::value).filter(x -> x.getFactory().doesPrevent(x, entity.level(), stack)).toList();
 	}
 
 	public PreventItemActionPower() {

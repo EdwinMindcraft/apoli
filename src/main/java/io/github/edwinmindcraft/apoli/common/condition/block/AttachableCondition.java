@@ -7,7 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.NonNullSupplier;
+
 
 import java.util.Arrays;
 
@@ -20,7 +20,7 @@ public class AttachableCondition extends BlockCondition<NoConfiguration> {
 	}
 
 	@Override
-	protected boolean check(NoConfiguration configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
+	protected boolean check(NoConfiguration configuration, LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> stateGetter) {
 		return Arrays.stream(Direction.values()).anyMatch(d -> reader.getBlockState(position.relative(d)).isFaceSturdy(reader, position, d.getOpposite()));
 	}
 }

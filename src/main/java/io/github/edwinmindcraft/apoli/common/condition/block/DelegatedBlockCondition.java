@@ -7,7 +7,7 @@ import io.github.edwinmindcraft.apoli.common.condition.meta.IDelegatedConditionC
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.NonNullSupplier;
+
 
 public class DelegatedBlockCondition<T extends IDelegatedConditionConfiguration<BlockConditionContext>> extends BlockCondition<T> {
 	public DelegatedBlockCondition(Codec<T> codec) {
@@ -15,7 +15,7 @@ public class DelegatedBlockCondition<T extends IDelegatedConditionConfiguration<
 	}
 
 	@Override
-	protected boolean check(T configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
+	protected boolean check(T configuration, LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> stateGetter) {
 		return configuration.check(new BlockConditionContext(reader, position, stateGetter));
 	}
 }

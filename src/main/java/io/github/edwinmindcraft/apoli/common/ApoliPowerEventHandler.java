@@ -7,8 +7,7 @@ import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.apace100.apoli.util.StackPowerUtil;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.VariableAccess;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
@@ -19,11 +18,11 @@ import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOnItemUseConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageDealtConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageTakenConfiguration;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliAttachments;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
 import io.github.edwinmindcraft.apoli.common.util.ModifyPlayerSpawnCache;
 import io.github.edwinmindcraft.apoli.common.util.SpawnLookupScheduler;
-import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -45,19 +44,16 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.VanillaGameEvent;
-import net.minecraftforge.event.entity.item.ItemTossEvent;
-import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.entity.player.*;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.event.VanillaGameEvent;
+import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
+import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.player.*;
+import net.neoforged.neoforge.event.level.BlockEvent;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -79,10 +75,10 @@ public class ApoliPowerEventHandler {
 		float speed = event.getNewSpeed();
 		//This is less than ideal since it fires two hooks, but hey, I do what I can.
 		boolean stateCheck = state.canHarvestBlock(event.getEntity().level(), position.get(), event.getEntity());
-		boolean forgeCheck = ForgeHooks.isCorrectToolForDrops(state, event.getEntity());
+		boolean forgeCheck = CommonHooks.isCorrectToolForDrops(state, event.getEntity());
 		int toolFactor = forgeCheck ? 30 : 100;
 		float factor = hardness * toolFactor;
-		speed = IPowerContainer.modify(player, ApoliPowers.MODIFY_BREAK_SPEED.get(), speed / factor, p -> ConfiguredBlockCondition.check(p.value().getConfiguration().condition(), world, position.get(), () -> state)) * factor;
+		speed = PowerContainer.modify(player, ApoliPowers.MODIFY_BREAK_SPEED.get(), speed / factor, p -> ConfiguredBlockCondition.check(p.value().getConfiguration().condition(), world, position.get(), () -> state)) * factor;
 
 		if (stateCheck == forgeCheck)
 			event.setNewSpeed(speed);
@@ -107,22 +103,22 @@ public class ApoliPowerEventHandler {
 			event.getEntity().getSleepingPos().ifPresent(pos -> ActionOnWakeUpPower.execute(event.getEntity(), pos));
 	}
 
-    @SubscribeEvent
-    public static void stopUsing(LivingEntityUseItemEvent.Stop event) {
-        ActionOnItemUsePower.execute(event.getEntity(), event.getItem(), VariableAccess.hand(event.getEntity(), event.getEntity().getUsedItemHand()), ActionOnItemUseConfiguration.TriggerType.STOP, ActionOnItemUseConfiguration.PriorityPhase.AFTER);
-    }
+	@SubscribeEvent
+	public static void stopUsing(LivingEntityUseItemEvent.Stop event) {
+		ActionOnItemUsePower.execute(event.getEntity(), event.getItem(), VariableAccess.hand(event.getEntity(), event.getEntity().getUsedItemHand()), ActionOnItemUseConfiguration.TriggerType.STOP, ActionOnItemUseConfiguration.PriorityPhase.AFTER);
+	}
 
-    @SubscribeEvent
-    public static void onTossItem(ItemTossEvent event) {
-        ActionOnItemUsePower.execute(event.getPlayer(), event.getEntity().getItem(), new VariableAccess<>(event.getEntity()::getItem, event.getEntity()::setItem), ActionOnItemUseConfiguration.TriggerType.STOP, ActionOnItemUseConfiguration.PriorityPhase.ALL);
-    }
+	@SubscribeEvent
+	public static void onTossItem(ItemTossEvent event) {
+		ActionOnItemUsePower.execute(event.getPlayer(), event.getEntity().getItem(), new VariableAccess<>(event.getEntity()::getItem, event.getEntity()::setItem), ActionOnItemUseConfiguration.TriggerType.STOP, ActionOnItemUseConfiguration.PriorityPhase.ALL);
+	}
 
-    @SubscribeEvent
-    public static void tickUsing(LivingEntityUseItemEvent.Tick event) {
-        ActionOnItemUsePower.execute(event.getEntity(), event.getItem(), VariableAccess.hand(event.getEntity(), event.getEntity().getUsedItemHand()), ActionOnItemUseConfiguration.TriggerType.DURING, ActionOnItemUseConfiguration.PriorityPhase.AFTER);
-    }
+	@SubscribeEvent
+	public static void tickUsing(LivingEntityUseItemEvent.Tick event) {
+		ActionOnItemUsePower.execute(event.getEntity(), event.getItem(), VariableAccess.hand(event.getEntity(), event.getEntity().getUsedItemHand()), ActionOnItemUseConfiguration.TriggerType.DURING, ActionOnItemUseConfiguration.PriorityPhase.AFTER);
+	}
 
-    @SubscribeEvent
+	@SubscribeEvent
 	public static void finishUsing(LivingEntityUseItemEvent.Finish event) {
 		ActionOnItemUsePower.execute(event.getEntity(), event.getItem(), new VariableAccess<>(event::getResultStack, event::setResultStack), ActionOnItemUseConfiguration.TriggerType.FINISH, ActionOnItemUseConfiguration.PriorityPhase.AFTER);
 	}
@@ -138,7 +134,7 @@ public class ApoliPowerEventHandler {
 		LivingEntity entityLiving = event.getEntity();
 		//TODO Check if this works. It should since MC1.17 seems to fire this on both sides.
 		ActionOnLandPower.execute(entityLiving);
-		if (IPowerContainer.getPowers(entityLiving, ApoliPowers.MODIFY_FALLING.get()).stream().anyMatch(x -> !x.value().getConfiguration().takeFallDamage()))
+		if (PowerContainer.getPowers(entityLiving, ApoliPowers.MODIFY_FALLING.get()).stream().anyMatch(x -> !x.value().getConfiguration().takeFallDamage()))
 			event.setDamageMultiplier(0.0F); //Disable fall damage without actually removing distance. This is to avoid breaking compatibility.
 	}
 
@@ -147,24 +143,26 @@ public class ApoliPowerEventHandler {
 		if (sourceEntity != null) {
 			Consumer<Holder<ConfiguredPower<ModifyDamageDealtConfiguration, ModifyDamageDealtPower>>> otherConsumer = exec ?
 					x -> x.value().getFactory().execute(x.value(), sourceEntity, target) :
-					x -> { };
+					x -> {
+					};
 			ModifyDamageDealtPower factory = source.is(DamageTypeTags.IS_PROJECTILE) ? ApoliPowers.MODIFY_PROJECTILE_DAMAGE.get() : ApoliPowers.MODIFY_DAMAGE_DEALT.get();
 			if (target instanceof LivingDamageCache pdc && pdc.getModifyDamageDealtPowers() != null)
-				amount = (float) IPowerContainer.modify(sourceEntity, factory, pdc.getModifyDamageDealtPowers(), amount, otherConsumer);
+				amount = (float) PowerContainer.modify(sourceEntity, factory, pdc.getModifyDamageDealtPowers(), amount, otherConsumer);
 			else {
 				float finalAmount = amount;
-				amount = IPowerContainer.modify(sourceEntity, factory, amount, x -> factory.check(x.value(), sourceEntity, target, source, finalAmount), otherConsumer);
+				amount = PowerContainer.modify(sourceEntity, factory, amount, x -> factory.check(x.value(), sourceEntity, target, source, finalAmount), otherConsumer);
 			}
 		}
 		Consumer<Holder<ConfiguredPower<ModifyDamageTakenConfiguration, ModifyDamageTakenPower>>> selfConsumer = exec ?
 				x -> x.value().getFactory().execute(x.value(), target, source) :
-				x -> { };
+				x -> {
+				};
 		if (target instanceof LivingDamageCache pdc && pdc.getModifyDamageTakenPowers() != null) {
-			amount = (float) IPowerContainer.modify(sourceEntity, ApoliPowers.MODIFY_DAMAGE_TAKEN.get(), pdc.getModifyDamageTakenPowers(), amount, selfConsumer);
+			amount = (float) PowerContainer.modify(sourceEntity, ApoliPowers.MODIFY_DAMAGE_TAKEN.get(), pdc.getModifyDamageTakenPowers(), amount, selfConsumer);
 			if (amount > 0) pdc.bypassDamageCheck(true);
 		} else {
 			float finalAmount = amount;
-			amount = IPowerContainer.modify(sourceEntity, ApoliPowers.MODIFY_DAMAGE_TAKEN.get(), amount, x -> x.value().getFactory().check(x.value(), target, source, finalAmount), selfConsumer);
+			amount = PowerContainer.modify(sourceEntity, ApoliPowers.MODIFY_DAMAGE_TAKEN.get(), amount, x -> x.value().getFactory().check(x.value(), target, source, finalAmount), selfConsumer);
 		}
 		return amount;
 	}
@@ -186,9 +184,8 @@ public class ApoliPowerEventHandler {
 		float amount = event.getAmount();
 		if (target instanceof LivingDamageCache ldc)
 			ldc.gatherDamagePowers(target, source, amount);
-		IPowerDataCache.get(target).ifPresent(x -> x.setDamage(amount));
+		event.getEntity().setData(ApoliAttachments.DAMAGE_CACHE, amount);
 		float newAmount = computeDamageAmount(target, source, amount, true);
-
 		if (newAmount != amount && newAmount <= 0)
 			event.setCanceled(true);
 	}
@@ -216,12 +213,11 @@ public class ApoliPowerEventHandler {
 		DamageSource source = event.getSource();
 		Entity attacker = source.getEntity();
 		float amount = event.getAmount();
-		LazyOptional<IPowerDataCache> pdc = IPowerDataCache.get(target);
 		//This is only true if the invulnerability path was used. (LivingEntity:1102)
 		//Using this allows me to bypass an inconsistency in the vanilla code.
 		boolean validate = event.getAmount() != target.lastHurt;
-		float prevDamage = pdc.map(IPowerDataCache::getDamage).orElse(Float.POSITIVE_INFINITY);
-		pdc.ifPresent(x -> x.setDamage(amount));
+		float prevDamage = event.getEntity().getData(ApoliAttachments.DAMAGE_CACHE);
+		event.getEntity().setData(ApoliAttachments.DAMAGE_CACHE, amount);
 		if (amount > 0 && !event.isCanceled() && (!validate || target.invulnerableTime > 10F || prevDamage <= amount)) {
 			SelfActionWhenHitPower.execute(target, source, amount);
 			AttackerActionWhenHitPower.execute(target, source, amount);
@@ -235,18 +231,17 @@ public class ApoliPowerEventHandler {
 
 	@SubscribeEvent
 	public static void onLivingKilled(LivingDeathEvent event) {
-		IPowerDataCache.get(event.getEntity()).map(IPowerDataCache::getDamage).ifPresent(x -> {
-			if (event.getSource().getEntity() instanceof LivingEntity living)
-				SelfCombatActionPower.onKill(living, event.getEntity(), event.getSource(), x);
-		});
-		if (event.getEntity() instanceof ServerPlayer serverPlayer && ((ModifyPlayerSpawnCache)serverPlayer).getActiveSpawnPower() != null) {
-			ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new S2CActiveSpawnPowerPacket(Optional.of(((ModifyPlayerSpawnCache)serverPlayer).getActiveSpawnPower())));
+		Float damage = event.getEntity().getData(ApoliAttachments.DAMAGE_CACHE);
+		if (event.getSource().getEntity() instanceof LivingEntity living)
+			SelfCombatActionPower.onKill(living, event.getEntity(), event.getSource(), damage);
+		if (event.getEntity() instanceof ServerPlayer serverPlayer && ((ModifyPlayerSpawnCache) serverPlayer).getActiveSpawnPower() != null) {
+			ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new S2CActiveSpawnPowerPacket(Optional.of(((ModifyPlayerSpawnCache) serverPlayer).getActiveSpawnPower())));
 		}
 	}
 
 	@SubscribeEvent
 	public static void updateHealAmount(LivingHealEvent event) {
-		event.setAmount(IPowerContainer.modify(event.getEntity(), ApoliPowers.MODIFY_HEALING.get(), event.getAmount()));
+		event.setAmount(PowerContainer.modify(event.getEntity(), ApoliPowers.MODIFY_HEALING.get(), event.getAmount()));
 	}
 
 
@@ -265,14 +260,14 @@ public class ApoliPowerEventHandler {
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onPlayerDeath(LivingDeathEvent event) {
 		if (event.getEntity() instanceof Player player) {
-			if (event.getEntity() instanceof ServerPlayer serverPlayer && IPowerContainer.hasPower(serverPlayer, ApoliPowers.MODIFY_PLAYER_SPAWN.get()))
+			if (event.getEntity() instanceof ServerPlayer serverPlayer && PowerContainer.hasPower(serverPlayer, ApoliPowers.MODIFY_PLAYER_SPAWN.get()))
 				ApoliPowers.MODIFY_PLAYER_SPAWN.get().checkSpawn(serverPlayer);
 
 			if (!player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
-				IPowerContainer.getPowers(player, ApoliPowers.INVENTORY.get()).stream().map(Holder::value).forEach(inventory -> {
+				PowerContainer.getPowers(player, ApoliPowers.INVENTORY.get()).stream().map(Holder::value).forEach(inventory -> {
 					InventoryPower.tryDropItemsOnDeath(inventory, player);
 				});
-				IPowerContainer.getPowers(player, ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.value().getFactory().captureItems(power.value(), player));
+				PowerContainer.getPowers(player, ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.value().getFactory().captureItems(power.value(), player));
 			}
 		}
 	}
@@ -281,7 +276,7 @@ public class ApoliPowerEventHandler {
 	public static void onTooltip(ItemTooltipEvent event) {
 		List<Component> tooltips = event.getToolTip();
 		int flags = event.getItemStack().hasTag() &&
-					Objects.requireNonNull(event.getItemStack().getTag()).contains("HideFlags", 99) ?
+				Objects.requireNonNull(event.getItemStack().getTag()).contains("HideFlags", 99) ?
 				event.getItemStack().getTag().getInt("HideFlags") :
 				event.getItemStack().getItem().getDefaultTooltipHideFlags(event.getItemStack());
 
@@ -383,12 +378,11 @@ public class ApoliPowerEventHandler {
 	public static void preventLivingDeath(LivingDeathEvent event) {
 		//I don't know at what priority I should fire this, but as a precaution, I'm firing it at the highest priority,
 		//as actions that happen when you die shouldn't actually happen if you survive.
-		IPowerDataCache.get(event.getEntity()).map(IPowerDataCache::getDamage).ifPresent(x -> {
-			if (PreventDeathPower.tryPreventDeath(event.getEntity(), event.getSource(), x)) {
-				event.getEntity().setHealth(1.0F);
-				event.setCanceled(true);
-			}
-		});
+		Float damage = event.getEntity().getData(ApoliAttachments.DAMAGE_CACHE);
+		if (PreventDeathPower.tryPreventDeath(event.getEntity(), event.getSource(), damage)) {
+			event.getEntity().setHealth(1.0F);
+			event.setCanceled(true);
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

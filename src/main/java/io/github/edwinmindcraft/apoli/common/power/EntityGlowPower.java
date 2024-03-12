@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
@@ -15,10 +15,10 @@ import java.util.stream.Stream;
 public class EntityGlowPower extends PowerFactory<EntityGlowConfiguration> {
 
 	private static Stream<Holder<ConfiguredPower<EntityGlowConfiguration, EntityGlowPower>>> getGlowPowers(Entity actor, Entity target, boolean isPlayer) {
-		var selfGlow = IPowerContainer.getPowers(target, ApoliPowers.SELF_GLOW.get());
+		var selfGlow = PowerContainer.getPowers(target, ApoliPowers.SELF_GLOW.get());
 		if (isPlayer)
 			return selfGlow.stream();
-		var entityGlow = IPowerContainer.getPowers(actor, ApoliPowers.ENTITY_GLOW.get());
+		var entityGlow = PowerContainer.getPowers(actor, ApoliPowers.ENTITY_GLOW.get());
 		return Stream.concat(
 				entityGlow.stream(),
 				selfGlow.stream()

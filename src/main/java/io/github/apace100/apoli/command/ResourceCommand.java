@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -78,7 +78,7 @@ public class ResourceCommand {
 	// This is a cleaner method than sticking it into every subcommand
 	private static int resource(CommandContext<CommandSourceStack> command, SubCommand sub) throws CommandSyntaxException {
 		Entity player = EntityArgument.getEntity(command, "target");
-		LazyOptional<IPowerContainer> optional = IPowerContainer.get(player);
+		LazyOptional<PowerContainer> optional = PowerContainer.get(player);
 		ResourceLocation power = command.getArgument("power", ResourceLocation.class);
 		ResourceKey<ConfiguredPower<?, ?>> powerKey = PowerTypeArgumentType.getConfiguredPower(command, "power");
 		Holder<ConfiguredPower<?, ?>> configuredPower = ApoliAPI.getPowers(command.getSource().getServer()).getHolderOrThrow(powerKey);
@@ -108,7 +108,7 @@ public class ResourceCommand {
 			case SET, CHANGE, OPERATION -> () -> Component.translatable("argument.scoreHolder.empty");
 		};
 		if (sub == SubCommand.SET || sub == SubCommand.GET || sub == SubCommand.CHANGE)
-			IPowerContainer.sync(player);
+			PowerContainer.sync(player);
 		return extract(result, command, success, failure, sub != SubCommand.GET);
 	}
 

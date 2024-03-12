@@ -13,14 +13,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.NonNullSupplier;
+
 
 public class ModifyFluidRenderPower extends PowerFactory<ModifyFluidRenderConfiguration> {
 	public ModifyFluidRenderPower() {
 		super(ModifyFluidRenderConfiguration.CODEC, false);
 	}
 
-	public boolean check(ConfiguredPower<ModifyFluidRenderConfiguration, ?> power, LevelReader world, BlockPos pos, NonNullSupplier<BlockState> state, FluidState fluid) {
+	public boolean check(ConfiguredPower<ModifyFluidRenderConfiguration, ?> power, LevelReader world, BlockPos pos, Supplier<@NotNull BlockState> state, FluidState fluid) {
 		return ConfiguredBlockCondition.check(power.getConfiguration().blockCondition(), world, pos, state) && ConfiguredFluidCondition.check(power.getConfiguration().fluidCondition(), fluid);
 	}
 

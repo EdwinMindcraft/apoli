@@ -1,7 +1,7 @@
 package io.github.apace100.apoli.mixin;
 
 import io.github.apace100.apoli.access.ModifiableFoodEntity;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.ModifyFoodPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
@@ -57,10 +57,10 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 
 	@Inject(method = "updateSwimming", at = @At("TAIL"))
 	private void updateSwimmingPower(CallbackInfo ci) {
-		LazyOptional<IPowerContainer> lazyContainer = IPowerContainer.get(this);
+		LazyOptional<PowerContainer> lazyContainer = PowerContainer.get(this);
 		if (!lazyContainer.isPresent())
 			return;
-		IPowerContainer container = lazyContainer.orElseThrow(RuntimeException::new);
+		PowerContainer container = lazyContainer.orElseThrow(RuntimeException::new);
 		if (container.hasPower(ApoliPowers.SWIMMING.get())) {
 			this.setSwimming(this.isSprinting() && !this.isPassenger());
 			this.wasTouchingWater = this.isSwimming();
@@ -75,7 +75,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 
 	@Inject(method = "getFlyingSpeed", at = @At("RETURN"), cancellable = true)
 	private void modifyFlySpeed(CallbackInfoReturnable<Float> cir) {
-		cir.setReturnValue(IPowerContainer.modify(this, ApoliPowers.MODIFY_AIR_SPEED.get(), cir.getReturnValue()));
+		cir.setReturnValue(PowerContainer.modify(this, ApoliPowers.MODIFY_AIR_SPEED.get(), cir.getReturnValue()));
 	}
 
 	@ModifyVariable(method = "eat", at = @At("HEAD"), argsOnly = true)
@@ -91,7 +91,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 	// ModifyExhaustion
 	@ModifyVariable(at = @At("HEAD"), method = "causeFoodExhaustion", ordinal = 0, name = "exhaustion", argsOnly = true)
 	private float modifyExhaustion(float exhaustionIn) {
-		return IPowerContainer.modify(this, ApoliPowers.MODIFY_EXHAUSTION.get(), exhaustionIn);
+		return PowerContainer.modify(this, ApoliPowers.MODIFY_EXHAUSTION.get(), exhaustionIn);
 	}
 
 	// Prevent healing if DisableRegenPower

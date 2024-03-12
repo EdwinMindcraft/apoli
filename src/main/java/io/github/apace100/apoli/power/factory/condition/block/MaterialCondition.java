@@ -7,7 +7,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.NonNullSupplier;
+
 import org.jetbrains.annotations.NotNull;
 
 public class MaterialCondition extends BlockCondition<ListConfiguration<LegacyMaterial>> {
@@ -17,7 +17,7 @@ public class MaterialCondition extends BlockCondition<ListConfiguration<LegacyMa
 	}
 
 	@Override
-	protected boolean check(@NotNull ListConfiguration<LegacyMaterial> configuration, @NotNull LevelReader reader, @NotNull BlockPos position, @NotNull NonNullSupplier<BlockState> stateGetter) {
+	protected boolean check(@NotNull ListConfiguration<LegacyMaterial> configuration, @NotNull LevelReader reader, @NotNull BlockPos position, @NotNull Supplier<@NotNull BlockState> stateGetter) {
 		return configuration.getContent().stream().anyMatch(lm -> lm.blockStateIsOfMaterial(stateGetter.get()));
 	}
 }

@@ -2,7 +2,7 @@ package io.github.edwinmindcraft.apoli.common.power;
 
 import com.google.common.collect.ImmutableList;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class AttributeModifyTransferPower extends PowerFactory<AttributeModifyTransferConfiguration> {
 	public static List<ConfiguredModifier<?>> apply(Entity entity, PowerFactory<?> power) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.ATTRIBUTE_MODIFY_TRANSFER.get()).stream().flatMap(cp -> cp.value().getFactory().apply(cp.value(), entity, power).stream()).collect(Collectors.toList());
+		return PowerContainer.getPowers(entity, ApoliPowers.ATTRIBUTE_MODIFY_TRANSFER.get()).stream().flatMap(cp -> cp.value().getFactory().apply(cp.value(), entity, power).stream()).collect(Collectors.toList());
 	}
 
 	public AttributeModifyTransferPower() {

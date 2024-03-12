@@ -3,7 +3,7 @@ package io.github.apace100.apoli.mixin;
 import io.github.apace100.apoli.access.MovingEntity;
 import io.github.apace100.apoli.access.SubmergableEntity;
 import io.github.apace100.apoli.access.WaterMovingEntity;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
@@ -30,7 +30,7 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 
 	@Inject(method = "fireImmune", at = @At("HEAD"), cancellable = true)
 	private void makeFullyFireImmune(CallbackInfoReturnable<Boolean> cir) {
-		if (IPowerContainer.hasPower((Entity) (Object) this, ApoliPowers.FIRE_IMMUNITY.get())) {
+		if (PowerContainer.hasPower((Entity) (Object) this, ApoliPowers.FIRE_IMMUNITY.get())) {
 			cir.setReturnValue(true);
 		}
 	}
@@ -54,7 +54,7 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 
 	@Inject(method = "isInWater", at = @At("HEAD"), cancellable = true)
 	private void makeEntitiesIgnoreWater(CallbackInfoReturnable<Boolean> cir) {
-		if (IPowerContainer.hasPower((Entity) (Object) this, ApoliPowers.IGNORE_WATER.get())) {
+		if (PowerContainer.hasPower((Entity) (Object) this, ApoliPowers.IGNORE_WATER.get())) {
 			if (this instanceof WaterMovingEntity) {
 				if (((WaterMovingEntity) this).isInMovementPhase()) {
 					cir.setReturnValue(false);
@@ -65,7 +65,7 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 
 	@Redirect(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;isInWaterRainOrBubble()Z"))
 	private boolean preventExtinguishingFromSwimming(Entity entity) {
-		if (entity.isSwimming() && this.getFluidHeight(FluidTags.WATER) <= 0 && IPowerContainer.hasPower(entity, ApoliPowers.SWIMMING.get()))
+		if (entity.isSwimming() && this.getFluidHeight(FluidTags.WATER) <= 0 && PowerContainer.hasPower(entity, ApoliPowers.SWIMMING.get()))
 			return false;
 		return entity.isInWaterRainOrBubble();
 	}
@@ -88,7 +88,7 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 
 	@Inject(at = @At("HEAD"), method = "isInvisible", cancellable = true)
 	private void phantomInvisibility(CallbackInfoReturnable<Boolean> info) {
-		if (IPowerContainer.hasPower((Entity) (Object) this, ApoliPowers.INVISIBILITY.get()))
+		if (PowerContainer.hasPower((Entity) (Object) this, ApoliPowers.INVISIBILITY.get()))
 			info.setReturnValue(true);
 	}
 
@@ -119,19 +119,19 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 
 	@ModifyVariable(method = "move", at = @At(value = "HEAD"), argsOnly = true)
 	private Vec3 modifyMovementVelocityXZ(Vec3 vec, MoverType movementType) {
-		if(!IPowerContainer.hasPower((Entity)(Object)this, ApoliPowers.MODIFY_VELOCITY.get()) || movementType != MoverType.SELF) {
+		if(!PowerContainer.hasPower((Entity)(Object)this, ApoliPowers.MODIFY_VELOCITY.get()) || movementType != MoverType.SELF) {
 			return vec;
 		}
 		// Forge: We do not set the Y value for this, as that is handled through modifications to the `forge:gravity` attribute.
-		double x = IPowerContainer.modify((Entity)(Object)this, ApoliPowers.MODIFY_VELOCITY.get(), (float)vec.x, p -> p.value().getConfiguration().axes().contains(Direction.Axis.X));
-		double y = IPowerContainer.modify((Entity)(Object)this, ApoliPowers.MODIFY_VELOCITY.get(), (float)vec.y, p -> p.value().getConfiguration().axes().contains(Direction.Axis.Y));
-		double z = IPowerContainer.modify((Entity)(Object)this, ApoliPowers.MODIFY_VELOCITY.get(), (float)vec.z, p -> p.value().getConfiguration().axes().contains(Direction.Axis.Z));
+		double x = PowerContainer.modify((Entity)(Object)this, ApoliPowers.MODIFY_VELOCITY.get(), (float)vec.x, p -> p.value().getConfiguration().axes().contains(Direction.Axis.X));
+		double y = PowerContainer.modify((Entity)(Object)this, ApoliPowers.MODIFY_VELOCITY.get(), (float)vec.y, p -> p.value().getConfiguration().axes().contains(Direction.Axis.Y));
+		double z = PowerContainer.modify((Entity)(Object)this, ApoliPowers.MODIFY_VELOCITY.get(), (float)vec.z, p -> p.value().getConfiguration().axes().contains(Direction.Axis.Z));
 		return new Vec3(x, y, z);
 	}
 
     @Inject(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getOnPosLegacy()Lnet/minecraft/core/BlockPos;"))
     private void forceGrounded(MoverType pType, Vec3 pPos, CallbackInfo ci) {
-        if(IPowerContainer.hasPower((Entity)(Object)this, ApoliPowers.GROUNDED.get())) {
+        if(PowerContainer.hasPower((Entity)(Object)this, ApoliPowers.GROUNDED.get())) {
             this.onGround = true;
         }
     }

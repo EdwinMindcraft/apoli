@@ -44,6 +44,6 @@ public final class ConfiguredBiEntityCondition<C extends IDynamicFeatureConfigur
 
 	@Override
 	public String toString() {
-		return "CBEC:" + ApoliRegistries.BIENTITY_CONDITION.get().getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
+		return "CBEC:" + ApoliRegistries.BIENTITY_CONDITION.getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
 	}
 }

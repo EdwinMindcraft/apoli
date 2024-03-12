@@ -1,7 +1,7 @@
 package io.github.apace100.apoli.mixin;
 
 import com.google.common.collect.ImmutableList;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.ModifyBlockRenderPower;
 import io.github.edwinmindcraft.apoli.common.power.ModifyFluidRenderPower;
@@ -42,7 +42,7 @@ public abstract class ChunkRendererRegionMixin {
 		Minecraft client = Minecraft.getInstance();
 		if (client.level != null && client.player != null) {
 			if (this.apoli$blockRender == null)
-				this.apoli$blockRender = IPowerContainer.getPowers(client.player, ApoliPowers.MODIFY_BLOCK_RENDER.get()).stream().filter(Holder::isBound).map(Holder::value).collect(ImmutableList.toImmutableList());
+				this.apoli$blockRender = PowerContainer.getPowers(client.player, ApoliPowers.MODIFY_BLOCK_RENDER.get()).stream().filter(Holder::isBound).map(Holder::value).collect(ImmutableList.toImmutableList());
 			if (this.apoli$blockRender.isEmpty()) return;
 			this.apoli$blockRender.stream()
 					.filter(x -> x.getFactory().check(x, client.level, pos, cir::getReturnValue))
@@ -56,7 +56,7 @@ public abstract class ChunkRendererRegionMixin {
 		Minecraft client = Minecraft.getInstance();
 		if (client.level != null && client.player != null) {
 			if (this.apoli$fluidRender == null)
-				this.apoli$fluidRender = IPowerContainer.getPowers(client.player, ApoliPowers.MODIFY_FLUID_RENDER.get()).stream().filter(Holder::isBound).map(Holder::value).collect(ImmutableList.toImmutableList());
+				this.apoli$fluidRender = PowerContainer.getPowers(client.player, ApoliPowers.MODIFY_FLUID_RENDER.get()).stream().filter(Holder::isBound).map(Holder::value).collect(ImmutableList.toImmutableList());
 			if (this.apoli$fluidRender.isEmpty()) return;
 			this.apoli$fluidRender.stream()
 					.filter(x -> x.getFactory().check(x, client.level, pos, () -> this.getBlockState(pos), cir.getReturnValue()))

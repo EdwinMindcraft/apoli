@@ -2,7 +2,7 @@ package io.github.apace100.apoli.util;
 
 import io.github.apace100.apoli.mixin.ItemSlotArgumentTypeAccessor;
 import io.github.apace100.calio.util.ArgumentWrapper;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemAction;
@@ -151,7 +151,7 @@ public class InventoryUtil {
         }
 
         else {
-            ConfiguredPower<?, ?> power = IPowerContainer.get(entity).resolve()
+            ConfiguredPower<?, ?> power = PowerContainer.get(entity).resolve()
                     .map(x -> x.getPower(powerId.get())).map(Holder::value).orElse(null);
             if (power == null || !(power.getFactory() instanceof InventoryPower)) return;
             ConfiguredPower<InventoryConfiguration, InventoryPower> inventoryPower = (ConfiguredPower<InventoryConfiguration, InventoryPower>)power;
@@ -203,7 +203,7 @@ public class InventoryUtil {
         }
 
         else {
-            ConfiguredPower<?, ?> power = IPowerContainer.get(entity).resolve()
+            ConfiguredPower<?, ?> power = PowerContainer.get(entity).resolve()
                     .map(x -> x.getPower(powerId.get())).map(Holder::value).orElse(null);
             if (power == null || !(power.getFactory() instanceof InventoryPower)) return;
             ConfiguredPower<InventoryConfiguration, InventoryPower> inventoryPower = (ConfiguredPower<InventoryConfiguration, InventoryPower>)power;
@@ -261,7 +261,7 @@ public class InventoryUtil {
         }
 
         else {
-            ConfiguredPower<?, ?> power = IPowerContainer.get(entity).resolve()
+            ConfiguredPower<?, ?> power = PowerContainer.get(entity).resolve()
                     .map(x -> x.getPower(powerId.get())).map(Holder::value).orElse(null);
             if (power == null || !(power.getFactory() instanceof InventoryPower)) return;
             ConfiguredPower<InventoryConfiguration, InventoryPower> inventoryPower = (ConfiguredPower<InventoryConfiguration, InventoryPower>)power;
@@ -365,9 +365,9 @@ public class InventoryUtil {
             itemStackConsumer.accept(stackReference);
         }
 
-        Optional<IPowerContainer> optionalPowerContainer = IPowerContainer.get(entity).resolve();
+        Optional<PowerContainer> optionalPowerContainer = PowerContainer.get(entity).resolve();
         if(optionalPowerContainer.isPresent()) {
-            IPowerContainer phc = optionalPowerContainer.get();
+            PowerContainer phc = optionalPowerContainer.get();
             List<ConfiguredPower<InventoryConfiguration, InventoryPower>> inventoryPowers = phc.getPowers(ApoliPowers.INVENTORY.get()).stream().filter(Holder::isBound).map(Holder::value).toList();
             for(ConfiguredPower<InventoryConfiguration, InventoryPower> inventoryPower : inventoryPowers) {
                 int inventorySize = inventoryPower.getFactory().getSize(inventoryPower, entity);

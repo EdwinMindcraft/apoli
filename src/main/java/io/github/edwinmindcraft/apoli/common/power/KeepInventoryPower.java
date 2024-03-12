@@ -1,7 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.apace100.apoli.Apoli;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.KeepInventoryConfiguration;
@@ -20,7 +20,7 @@ public class KeepInventoryPower extends PowerFactory<KeepInventoryConfiguration>
 	}
 
 
-	private NonNullList<ItemStack> access(ConfiguredPower<KeepInventoryConfiguration, ?> power, IPowerContainer container) {
+	private NonNullList<ItemStack> access(ConfiguredPower<KeepInventoryConfiguration, ?> power, PowerContainer container) {
 		return power.getPowerData(container, NonNullList::create);
 	}
 
@@ -66,12 +66,12 @@ public class KeepInventoryPower extends PowerFactory<KeepInventoryConfiguration>
 	}
 
 	@Override
-	public void serialize(ConfiguredPower<KeepInventoryConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+	public void serialize(ConfiguredPower<KeepInventoryConfiguration, ?> configuration, PowerContainer container, CompoundTag tag) {
 		ContainerHelper.saveAllItems(tag, this.access(configuration, container));
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<KeepInventoryConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+	public void deserialize(ConfiguredPower<KeepInventoryConfiguration, ?> configuration, PowerContainer container, CompoundTag tag) {
 		NonNullList<ItemStack> access = this.access(configuration, container);
 		while (access.size() <= Inventory.SLOT_OFFHAND)
 			access.add(ItemStack.EMPTY);

@@ -10,7 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 
 public abstract class BlockAction<T extends IDynamicFeatureConfiguration> implements IFactory<T, ConfiguredBlockAction<T, ?>, BlockAction<T>> {
-	public static final Codec<BlockAction<?>> CODEC = ApoliRegistries.codec(() -> ApoliRegistries.BLOCK_ACTION.get());
+	public static final Codec<BlockAction<?>> CODEC = ApoliRegistries.BLOCK_ACTION.byNameCodec();
 
 	private final Codec<ConfiguredBlockAction<T, ?>> codec;
 

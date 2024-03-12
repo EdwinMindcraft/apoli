@@ -44,6 +44,6 @@ public final class ConfiguredDamageCondition<C extends IDynamicFeatureConfigurat
 
 	@Override
 	public String toString() {
-		return "CDC:" + ApoliRegistries.DAMAGE_CONDITION.get().getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
+		return "CDC:" + ApoliRegistries.DAMAGE_CONDITION.getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
 	}
 }

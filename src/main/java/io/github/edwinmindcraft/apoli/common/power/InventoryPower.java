@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import io.github.edwinmindcraft.apoli.api.power.IInventoryPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
@@ -19,7 +19,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
@@ -91,7 +90,7 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 	}
 
 
-	protected DataContainer getData(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer player) {
+	protected DataContainer getData(ConfiguredPower<InventoryConfiguration, ?> configuration, PowerContainer player) {
         return configuration.getPowerData(player, () -> new DataContainer(configuration.getConfiguration()));
 	}
 
@@ -100,12 +99,12 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 	}
 
 	@Override
-	public void serialize(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+	public void serialize(ConfiguredPower<InventoryConfiguration, ?> configuration, PowerContainer container, CompoundTag tag) {
 		this.getData(configuration, container).serialize(tag);
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+	public void deserialize(ConfiguredPower<InventoryConfiguration, ?> configuration, PowerContainer container, CompoundTag tag) {
         this.getData(configuration, container).deserialize(tag);
 	}
 

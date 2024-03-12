@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public class IngredientCondition extends ItemCondition<FieldConfiguration<Ingredient>> {
 
 	public IngredientCondition() {
-		super(FieldConfiguration.codec(SerializableDataTypes.EITHER_INGREDIENTS, "ingredient"));
+		super(FieldConfiguration.codec(SerializableDataTypes.INGREDIENT, "ingredient"));
 	}
 
 	@Override

@@ -8,13 +8,9 @@ import io.github.apace100.apoli.screen.PowerHudRenderer;
 import io.github.edwinmindcraft.apoli.client.ApoliClientEventHandler;
 import io.github.edwinmindcraft.apoli.client.screen.ApoliOverlays;
 import net.minecraft.client.KeyMapping;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
-@OnlyIn(Dist.CLIENT)
 public class ApoliClient {
 
 	public static boolean shouldReloadWorldRenderer = false;
@@ -24,10 +20,9 @@ public class ApoliClient {
 		ApoliClientEventHandler.registerPowerKeybinding(keyId, keyBinding);
 	}
 
-	public static void initialize() {
-		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-		modEventBus.addListener(ApoliClient::setupClient);
-		modEventBus.addListener(ApoliOverlays::registerOverlays);
+	public static void initialize(IEventBus bus) {
+		bus.addListener(ApoliClient::setupClient);
+		bus.addListener(ApoliOverlays::registerOverlays);
 
 		ApoliClassDataClient.registerAll();
 

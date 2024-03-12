@@ -7,7 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.NonNullSupplier;
+
 
 import java.util.Arrays;
 
@@ -17,7 +17,7 @@ public class AdjacentCondition extends BlockCondition<AdjacentConfiguration> {
 	}
 
 	@Override
-	protected boolean check(AdjacentConfiguration configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
+	protected boolean check(AdjacentConfiguration configuration, LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> stateGetter) {
 		int count = Math.toIntExact(Arrays.stream(Direction.values())
 				.filter(x -> ConfiguredBlockCondition.check(configuration.condition(), reader, position.relative(x))).count());
 		return configuration.comparison().check(count);

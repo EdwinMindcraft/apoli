@@ -4,7 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.client.Minecraft;
@@ -31,7 +31,7 @@ public class S2CSynchronizePowerContainer {
 
 	@Nullable
 	public static S2CSynchronizePowerContainer forEntity(Entity living) {
-		return IPowerContainer.get(living).map(container -> {
+		return PowerContainer.get(living).map(container -> {
 			Multimap<ResourceLocation, ResourceLocation> powerSources = HashMultimap.create();
 			Map<ResourceLocation, CompoundTag> data = new HashMap<>();
 			for (ResourceKey<ConfiguredPower<?, ?>> power : container.getPowerTypes(true)) {
@@ -107,7 +107,7 @@ public class S2CSynchronizePowerContainer {
 			return;
 		Entity entity = level.getEntity(this.entity);
 		if (entity instanceof LivingEntity living)
-			IPowerContainer.get(living).ifPresent(x -> x.handle(this.powerSources, this.data));
+			PowerContainer.get(living).ifPresent(x -> x.handle(this.powerSources, this.data));
 	}
 
 	public void handle(Supplier<NetworkEvent.Context> contextSupplier) {

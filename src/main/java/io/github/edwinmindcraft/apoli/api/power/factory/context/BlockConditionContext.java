@@ -3,7 +3,9 @@ package io.github.edwinmindcraft.apoli.api.power.factory.context;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.NonNullSupplier;
+import org.jetbrains.annotations.NotNull;
 
-public record BlockConditionContext(LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
+import java.util.function.Supplier;
+
+public record BlockConditionContext(LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> stateGetter) {
 }
