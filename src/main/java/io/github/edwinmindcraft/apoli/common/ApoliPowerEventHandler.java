@@ -179,7 +179,7 @@ public class ApoliPowerEventHandler {
 		if (amount > 0 && pdc.map(IPowerDataCache::shouldExecuteActions).orElse(true)) {
 			// PowerDataCache having this value is to ensure that we can replicate Origins Fabric's logic.
 			// See https://github.com/EdwinMindcraft/origins-architectury/issues/422#issuecomment-1988053821 for more info.
-			boolean canRunAgain = !event.isCanceled() && (!validate && target.invulnerableTime > 10F && !event.getSource().is(DamageTypeTags.BYPASSES_COOLDOWN) && prevDamage <= amount);
+			boolean canRunAgain = !event.isCanceled() && (!validate && target.invulnerableTime > 10F && prevDamage <= amount);
 			pdc.ifPresent(cache -> cache.setShouldExecuteActions(canRunAgain));
 			SelfActionWhenHitPower.execute(target, source, amount);
 			AttackerActionWhenHitPower.execute(target, source, amount);
@@ -285,12 +285,15 @@ public class ApoliPowerEventHandler {
 		Player player = event.getPlayer();
 		if (player.isSpectator()) return;
 		Entity target = event.getTarget();
-		Optional<InteractionResult> result = Stream.concat(
-				ActionOnEntityUsePower.tryInteract(player, target, event.getHand()).stream(),
-				ActionOnBeingUsedPower.tryInteract(target, player, event.getHand()).stream()).reduce(InteractionPowerConfiguration::reduce);
+		Optional<InteractionResult> result = ActionOnEntityUsePower.tryPrevent(player, target, event.getHand());
+		if (result.isEmpty() || result.get() == InteractionResult.PASS) {
+			result = ActionOnBeingUsedPower.tryPrevent(target, player, event.getHand());
+		}
 		result.ifPresent(res -> {
-			event.setCancellationResult(res);
-			event.setCanceled(true);
+			if (res != InteractionResult.PASS) {
+				event.setCancellationResult(res);
+				event.setCanceled(true);
+			}
 		});
 	}
 
@@ -343,11 +346,16 @@ public class ApoliPowerEventHandler {
 		Player player = event.getPlayer();
 		if (player.isSpectator()) return;
 		Entity target = event.getTarget();
-		ActionOnEntityUsePower.tryPrevent(player, target, event.getHand())
-				.or(() -> ActionOnBeingUsedPower.tryPrevent(target, player, event.getHand())).ifPresent(res -> {
-					event.setCancellationResult(res);
-					event.setCanceled(true);
-				});
+		Optional<InteractionResult> result = ActionOnEntityUsePower.tryPrevent(player, target, event.getHand());
+		if (result.isEmpty() || result.get() == InteractionResult.PASS) {
+			result = ActionOnBeingUsedPower.tryPrevent(target, player, event.getHand());
+		}
+		result.ifPresent(res -> {
+			if (res != InteractionResult.PASS) {
+				event.setCancellationResult(res);
+				event.setCanceled(true);
+			}
+		});
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

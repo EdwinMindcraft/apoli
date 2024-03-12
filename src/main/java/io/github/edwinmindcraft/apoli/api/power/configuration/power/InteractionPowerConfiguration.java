@@ -67,7 +67,6 @@ public record InteractionPowerConfiguration(EnumSet<InteractionHand> hands, Inte
 		boolean modified = this.itemResult() != null;
 		if (this.resultItemAction().isBound()) {
 			this.resultItemAction().value().execute(actor.level, resultingStack);
-			modified = true;
 		}
 		if (modified) {
 			if (heldStack.getValue().isEmpty())
