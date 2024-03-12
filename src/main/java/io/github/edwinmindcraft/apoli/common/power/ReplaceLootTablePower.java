@@ -1,7 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.access.IdentifiedLootTable;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ReplaceLootTableConfiguration;
 import net.minecraft.resources.ResourceLocation;
@@ -59,7 +58,7 @@ public class ReplaceLootTablePower extends PowerFactory<ReplaceLootTableConfigur
         int count = 0;
         while(!REPLACEMENT_STACK.isEmpty()) {
             LootTable t = pop();
-            stringBuilder.append(t == null ? "null" : ((IdentifiedLootTable)t).getId());
+            stringBuilder.append(t == null ? "null" : t.getLootTableId());
             if(!REPLACEMENT_STACK.isEmpty()) {
                 stringBuilder.append(", ");
             }
@@ -72,7 +71,7 @@ public class ReplaceLootTablePower extends PowerFactory<ReplaceLootTableConfigur
         }
         while(BACKTRACK_STACK.size() > 0) {
             LootTable t = restore();
-            stringBuilder.append(t == null ? "null" : ((IdentifiedLootTable)t).getId());
+            stringBuilder.append(t == null ? "null" : t.getLootTableId());
             if(!BACKTRACK_STACK.isEmpty()) {
                 stringBuilder.append(", ");
             }

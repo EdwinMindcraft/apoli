@@ -1,7 +1,6 @@
 package io.github.apace100.apoli.mixin;
 
 import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.access.IdentifiedLootTable;
 import io.github.edwinmindcraft.apoli.common.power.ReplaceLootTablePower;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootTable;
