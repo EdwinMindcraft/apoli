@@ -145,31 +145,6 @@ function initializeCoreMod() {
 				node.instructions.insert(ls);
 				return node;
 			}
-		},
-		'apoli_modify_loot_table': {
-			'target': {
-				'type': 'METHOD',
-				'class': 'net.minecraft.world.level.storage.loot.LootDataResolver',
-				'methodName': 'getLootTable',
-				'methodDesc': '(Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/world/level/storage/loot/LootTable'
-			},
-			'transformer': function(node) {
-				//return CoreUtils.setLootTableId(prev, this, pLocation);
-				var ls = new InsnList();
-				ls.add(new VarInsnNode(Opcodes.ALOAD, 0));
-				ls.add(new VarInsnNode(Opcodes.ALOAD, 1));
-
-                var iterator = node.instructions.iterator();
-                var insertionSlot = null;
-                while (iterator.hasNext()) {
-                	var ain = iterator.next();
-                	if (ain.getOpcode() === Opcodes.ARETURN)
-                    	insertionSlot = ain;
-                }
-                if (insertionSlot != null)
-                	node.instructions.insertBefore(insertionSlot, ls);
-                return node;
-			}
 		}
 	}
 }
