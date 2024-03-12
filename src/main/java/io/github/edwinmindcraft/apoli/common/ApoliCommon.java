@@ -26,7 +26,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public class ApoliCommon {
-	public static final String NETWORK_VERSION = "1.2";
+	public static final String NETWORK_VERSION = "1.3";
 
 	public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder.named(Apoli.identifier("channel"))
 			.networkProtocolVersion(() -> NETWORK_VERSION)
