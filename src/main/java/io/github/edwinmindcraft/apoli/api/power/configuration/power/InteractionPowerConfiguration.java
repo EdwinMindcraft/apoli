@@ -66,11 +66,10 @@ public record InteractionPowerConfiguration(EnumSet<InteractionHand> hands, Inte
 		Mutable<ItemStack> resultingStack = this.itemResult() == null ? heldStack : new MutableObject<>(this.itemResult().copy());
 		boolean modified = this.itemResult() != null;
 		if (this.resultItemAction().isBound()) {
-			this.resultItemAction().value().execute(actor.level, resultingStack);
-			modified = true;
+			ConfiguredItemAction.execute(this.resultItemAction(), actor.level, resultingStack);
 		}
 		if (modified) {
-			if (heldStack.getValue().isEmpty())
+			if (resultingStack.getValue().isEmpty())
 				actor.setItemInHand(hand, resultingStack.getValue());
 			else if (actor instanceof Player player)
 				player.getInventory().placeItemBackInInventory(resultingStack.getValue());
