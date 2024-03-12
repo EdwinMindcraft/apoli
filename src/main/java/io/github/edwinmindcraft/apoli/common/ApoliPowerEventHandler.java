@@ -404,11 +404,16 @@ public class ApoliPowerEventHandler {
 		Player player = event.getEntity();
 		if (player.isSpectator()) return;
 		Entity target = event.getTarget();
-		ActionOnEntityUsePower.tryPrevent(player, target, event.getHand())
-				.or(() -> ActionOnBeingUsedPower.tryPrevent(target, player, event.getHand())).ifPresent(res -> {
-					event.setCancellationResult(res);
-					event.setCanceled(true);
-				});
+		Optional<InteractionResult> result = ActionOnEntityUsePower.tryPrevent(player, target, event.getHand());
+		if (result.isEmpty() || result.get() == InteractionResult.PASS) {
+			result = ActionOnBeingUsedPower.tryPrevent(target, player, event.getHand());
+		}
+		result.ifPresent(res -> {
+			if (res != InteractionResult.PASS) {
+				event.setCancellationResult(res);
+				event.setCanceled(true);
+			}
+		});
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
