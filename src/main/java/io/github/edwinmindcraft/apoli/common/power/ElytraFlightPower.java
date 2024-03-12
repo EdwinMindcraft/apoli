@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ElytraFlightConfiguration;
@@ -20,11 +20,11 @@ public class ElytraFlightPower extends PowerFactory<ElytraFlightConfiguration> {
 	public static final AttributeModifier FLIGHT_MODIFIER = new AttributeModifier(UUID.fromString("29eb14ca-c803-4af6-81e2-86e9bf1d4857"), "Elytra modifier", 1.0F, AttributeModifier.Operation.ADDITION);
 
 	public static boolean shouldRenderElytra(Entity entity) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.ELYTRA_FLIGHT.get()).stream().anyMatch(x -> x.value().getConfiguration().render());
+		return PowerContainer.getPowers(entity, ApoliPowers.ELYTRA_FLIGHT.get()).stream().anyMatch(x -> x.value().getConfiguration().render());
 	}
 
 	public static Optional<ResourceLocation> getElytraTexture(Entity entity) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.ELYTRA_FLIGHT.get()).stream().map(x -> x.value().getConfiguration().texture()).filter(Objects::nonNull).findFirst();
+		return PowerContainer.getPowers(entity, ApoliPowers.ELYTRA_FLIGHT.get()).stream().map(x -> x.value().getConfiguration().texture()).filter(Objects::nonNull).findFirst();
 	}
 
 	public static void enableFlight(Entity entity) {

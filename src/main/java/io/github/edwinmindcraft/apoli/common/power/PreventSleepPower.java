@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
@@ -18,7 +18,7 @@ public class PreventSleepPower extends PowerFactory<PreventSleepConfiguration> {
 
 	public static boolean tryPreventSleep(Player player, Level world, BlockPos pos) {
 		boolean flag = false;
-		for (Holder<ConfiguredPower<PreventSleepConfiguration, PreventSleepPower>> p : IPowerContainer.getPowers(player, ApoliPowers.PREVENT_SLEEP.get())) {
+		for (Holder<ConfiguredPower<PreventSleepConfiguration, PreventSleepPower>> p : PowerContainer.getPowers(player, ApoliPowers.PREVENT_SLEEP.get())) {
 			if (p.value().getFactory().doesPrevent(p.value(), world, pos)) {
 				if (p.value().getConfiguration().allowSpawn() && player instanceof ServerPlayer spe)
 					spe.setRespawnPosition(world.dimension(), pos, spe.getYRot(), false, true);

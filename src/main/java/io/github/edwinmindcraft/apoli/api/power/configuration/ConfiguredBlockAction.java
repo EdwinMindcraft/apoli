@@ -48,6 +48,6 @@ public final class ConfiguredBlockAction<C extends IDynamicFeatureConfiguration,
 
 	@Override
 	public String toString() {
-		return "CBA:" + ApoliRegistries.BLOCK_ACTION.get().getKey(this.getFactory()) + "-" + this.getConfiguration();
+		return "CBA:" + ApoliRegistries.BLOCK_ACTION.getKey(this.getFactory()) + "-" + this.getConfiguration();
 	}
 }

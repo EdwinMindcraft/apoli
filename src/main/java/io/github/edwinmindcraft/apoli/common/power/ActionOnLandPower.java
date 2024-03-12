@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.HolderConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Entity;
 
 public class ActionOnLandPower extends PowerFactory<HolderConfiguration<ConfiguredEntityAction<?, ?>>> {
 	public static void execute(Entity player) {
-		var ls = IPowerContainer.getPowers(player, ApoliPowers.ACTION_ON_LAND.get());
+		var ls = PowerContainer.getPowers(player, ApoliPowers.ACTION_ON_LAND.get());
 		ls.forEach(x -> x.value().getFactory().executeAction(x.value(), player));
 	}
 

@@ -1,7 +1,7 @@
 package io.github.apace100.apoli.util;
 
 import com.google.common.collect.Lists;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliRecipeSerializers;
 import net.minecraft.core.RegistryAccess;
@@ -21,8 +21,8 @@ import java.util.Optional;
 
 public class PowerRestrictedCraftingRecipe extends CustomRecipe {
 
-	public PowerRestrictedCraftingRecipe(ResourceLocation id, CraftingBookCategory category) {
-		super(id, category);
+	public PowerRestrictedCraftingRecipe(CraftingBookCategory category) {
+		super(category);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class PowerRestrictedCraftingRecipe extends CustomRecipe {
 	private List<Recipe<CraftingContainer>> getRecipes(TransientCraftingContainer inv) {
 		Player player = this.getPlayerFromHandler(inv.menu);
 		if (player != null) {
-			return IPowerContainer.getPowers(player, ApoliPowers.RECIPE.get()).stream().map(x -> (Recipe<CraftingContainer>) x.value().getConfiguration().value()).toList();
+			return PowerContainer.getPowers(player, ApoliPowers.RECIPE.get()).stream().map(x -> (Recipe<CraftingContainer>) x.value().getConfiguration().value()).toList();
 		}
 		return Lists.newArrayList();
 	}

@@ -2,7 +2,7 @@ package io.github.apace100.apoli.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.power.InvisibilityPower;
 import io.github.edwinmindcraft.apoli.common.power.PreventFeatureRenderPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
@@ -35,7 +35,7 @@ public abstract class LivingEntityRendererMixin extends EntityRenderer<LivingEnt
 
 	@Inject(method = "isShaking", at = @At("HEAD"), cancellable = true)
 	private void letPlayersShakeTheirBodies(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
-		if (IPowerContainer.hasPower(entity, ApoliPowers.SHAKING.get()))
+		if (PowerContainer.hasPower(entity, ApoliPowers.SHAKING.get()))
 			cir.setReturnValue(true);
 	}
 

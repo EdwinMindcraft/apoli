@@ -3,7 +3,7 @@ package io.github.apace100.apoli.util;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliLootConditions;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -35,13 +35,13 @@ public class PowerLootCondition implements LootItemCondition {
 
 	public boolean test(LootContext lootContext) {
 
-		Optional<IPowerContainer> optionalPowerHolderComponent = IPowerContainer.get(
+		Optional<PowerContainer> optionalPowerHolderComponent = PowerContainer.get(
 				lootContext.getParam(LootContextParams.THIS_ENTITY)
 		).resolve();
 
 		if (optionalPowerHolderComponent.isPresent()) {
 
-			IPowerContainer powerHolderComponent = optionalPowerHolderComponent.get();
+			PowerContainer powerHolderComponent = optionalPowerHolderComponent.get();
 
 			if (powerSourceId != null) return powerHolderComponent.hasPower(powerId, powerSourceId);
 			else return powerHolderComponent.hasPower(powerId);

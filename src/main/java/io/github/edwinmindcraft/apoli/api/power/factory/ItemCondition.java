@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ItemCondition<T extends IDynamicFeatureConfiguration> implements IConditionFactory<T, ConfiguredItemCondition<T, ?>, ItemCondition<T>> {
-	public static final Codec<ItemCondition<?>> CODEC = ApoliRegistries.codec(() -> ApoliRegistries.ITEM_CONDITION.get());
+	public static final Codec<ItemCondition<?>> CODEC = ApoliRegistries.ITEM_CONDITION.byNameCodec();
 	private final Codec<ConfiguredItemCondition<T, ?>> codec;
 
 	protected ItemCondition(Codec<T> codec) {

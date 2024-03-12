@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredDamageCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -12,8 +12,8 @@ import net.minecraft.world.entity.Entity;
 
 public class CombatHitActionPower extends CooldownPowerFactory.Simple<CombatHitActionConfiguration> {
 	public static void perform(Entity attacker, Entity target, DamageSource source, float amount) {
-		IPowerContainer.getPowers(attacker, ApoliPowers.ACTION_ON_HIT.get()).forEach(x -> x.value().getFactory().onHit(x.value(), attacker, target, source, amount));
-		IPowerContainer.getPowers(target, ApoliPowers.ACTION_WHEN_HIT.get()).forEach(x -> x.value().getFactory().whenHit(x.value(), target, attacker, source, amount));
+		PowerContainer.getPowers(attacker, ApoliPowers.ACTION_ON_HIT.get()).forEach(x -> x.value().getFactory().onHit(x.value(), attacker, target, source, amount));
+		PowerContainer.getPowers(target, ApoliPowers.ACTION_WHEN_HIT.get()).forEach(x -> x.value().getFactory().whenHit(x.value(), target, attacker, source, amount));
 	}
 
 	public CombatHitActionPower() {
@@ -24,8 +24,8 @@ public class CombatHitActionPower extends CooldownPowerFactory.Simple<CombatHitA
 		if (this.canUse(power, self)) {
 			if (ConfiguredBiEntityCondition.check(power.getConfiguration().biEntityCondition(), attacker, self) &&
 				ConfiguredDamageCondition.check(power.getConfiguration().damageCondition(), damageSource, damageAmount)) {
-				power.getConfiguration().biEntityAction().value().execute(attacker, self);
 				this.use(power, self);
+				power.getConfiguration().biEntityAction().value().execute(attacker, self);
 			}
 		}
 	}

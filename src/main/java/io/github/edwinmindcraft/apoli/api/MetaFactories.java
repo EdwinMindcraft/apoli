@@ -8,8 +8,7 @@ import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguratio
 import io.github.edwinmindcraft.apoli.common.condition.meta.IDelegatedConditionConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import net.minecraft.core.Holder;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
@@ -28,7 +27,7 @@ public class MetaFactories {
 	 * Registers default actions for the given type.
 	 * Actions are registered with the namespace of the registry.
 	 *
-	 * @param registry       The {@link IForgeRegistry} to register the actions for.
+	 * @param registry       The {@link DeferredRegister} to register the actions for.
 	 * @param func           The that creates a factory from a {@link IDelegatedActionConfiguration}
 	 * @param actionCodec    The codec to serialize the action type.
 	 * @param conditionCodec The codec to serialize the condition type.

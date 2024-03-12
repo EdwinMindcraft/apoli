@@ -1,7 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ActiveCooldownPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.FireProjectileConfiguration;
@@ -15,7 +15,7 @@ public class FireProjectilePower extends ActiveCooldownPowerFactory<FireProjecti
 		this.ticking();
 	}
 
-	protected DataContainer access(ConfiguredPower<FireProjectileConfiguration, ?> configuration, IPowerContainer container) {
+	protected DataContainer access(ConfiguredPower<FireProjectileConfiguration, ?> configuration, PowerContainer container) {
 		return configuration.getPowerData(container, DataContainer::new);
 	}
 
@@ -26,25 +26,25 @@ public class FireProjectilePower extends ActiveCooldownPowerFactory<FireProjecti
 	}
 
 	@Override
-	protected long getLastUseTime(ConfiguredPower<FireProjectileConfiguration, ?> configuration, @Nullable IPowerContainer container) {
+	protected long getLastUseTime(ConfiguredPower<FireProjectileConfiguration, ?> configuration, @Nullable PowerContainer container) {
 		if (container != null)
 			return this.access(configuration, container).lastUseTime;
 		return Long.MAX_VALUE;
 	}
 
 	@Override
-	protected void setLastUseTime(ConfiguredPower<FireProjectileConfiguration, ?> configuration, @Nullable IPowerContainer container, long value) {
+	protected void setLastUseTime(ConfiguredPower<FireProjectileConfiguration, ?> configuration, @Nullable PowerContainer container, long value) {
 		if (container != null)
 			this.access(configuration, container).lastUseTime = value;
 	}
 
 	@Override
-	public void serialize(ConfiguredPower<FireProjectileConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+	public void serialize(ConfiguredPower<FireProjectileConfiguration, ?> configuration, PowerContainer container, CompoundTag tag) {
 		this.access(configuration, container).serialize(tag);
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<FireProjectileConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+	public void deserialize(ConfiguredPower<FireProjectileConfiguration, ?> configuration, PowerContainer container, CompoundTag tag) {
 		this.access(configuration, container).deserialize(tag);
 	}
 

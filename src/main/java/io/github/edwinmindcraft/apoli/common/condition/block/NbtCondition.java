@@ -9,7 +9,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.NonNullSupplier;
+
 
 public class NbtCondition extends BlockCondition<FieldConfiguration<CompoundTag>> {
 	public NbtCondition() {
@@ -17,7 +17,7 @@ public class NbtCondition extends BlockCondition<FieldConfiguration<CompoundTag>
 	}
 
 	@Override
-	protected boolean check(FieldConfiguration<CompoundTag> configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
+	protected boolean check(FieldConfiguration<CompoundTag> configuration, LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> stateGetter) {
 		CompoundTag nbt = new CompoundTag();
 		BlockEntity blockEntity = reader.getBlockEntity(position);
 		if (blockEntity != null)

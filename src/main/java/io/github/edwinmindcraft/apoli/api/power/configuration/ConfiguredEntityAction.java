@@ -45,6 +45,6 @@ public final class ConfiguredEntityAction<C extends IDynamicFeatureConfiguration
 
 	@Override
 	public String toString() {
-		return "CEA:" + ApoliRegistries.ENTITY_ACTION.get().getKey(this.getFactory()) + "-" + this.getConfiguration();
+		return "CEA:" + ApoliRegistries.ENTITY_ACTION.getKey(this.getFactory()) + "-" + this.getConfiguration();
 	}
 }

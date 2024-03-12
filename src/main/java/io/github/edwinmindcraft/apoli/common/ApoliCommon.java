@@ -4,6 +4,7 @@ import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.common.data.GlobalPowerSetLoader;
 import io.github.edwinmindcraft.apoli.common.data.PowerLoader;
 import io.github.edwinmindcraft.apoli.common.global.GlobalPowerSet;
@@ -24,6 +25,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.bus.api.IEventBus;
 
 public class ApoliCommon {
 	public static final String NETWORK_VERSION = "1.3";
@@ -77,10 +79,11 @@ public class ApoliCommon {
 		Apoli.LOGGER.debug("Registered {} newtork messages.", messageId);
 	}
 
-	public static void initialize() {
+	public static void initialize(IEventBus bus) {
 		//Initialises registries.
-		ApoliRegisters.initialize();
-		ApoliDynamicRegisters.initialize();
+		ApoliRegistries.bootstrap(bus);
+		ApoliRegisters.initialize(bus);
+		ApoliDynamicRegisters.initialize(bus);
 
 		//Vanilla stuff
 		ApoliRecipeSerializers.bootstrap();
@@ -108,12 +111,12 @@ public class ApoliCommon {
 
 		//Modifier operations
 		ApoliModifierOperations.bootstrap();
+		ApoliAttachments.bootstrap();
 
 		//Dynamic registries
 		ApoliDefaultActions.bootstrap();
 		ApoliDefaultConditions.bootstrap();
 
-		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		bus.addListener(ApoliCommon::commonSetup);
 		bus.addListener(ApoliCommon::initalizeDynamicRegistries);
 	}
@@ -123,16 +126,16 @@ public class ApoliCommon {
 		ApoliCompat.apply();
 		initializeNetwork();
 
-        CraftingHelper.register(AnyNamespacesLoadedCondition.Serializer.INSTANCE);
-        CraftingHelper.register(AllNamespacesLoadedCondition.Serializer.INSTANCE);
+		CraftingHelper.register(AnyNamespacesLoadedCondition.Serializer.INSTANCE);
+		CraftingHelper.register(AllNamespacesLoadedCondition.Serializer.INSTANCE);
 	}
 
 	@SubscribeEvent
 	public static void initalizeDynamicRegistries(CalioDynamicRegistryEvent.Initialize event) {
 		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, ApoliBuiltinRegistries.CONFIGURED_POWERS, ConfiguredPower.CODEC);
-        event.getRegistryManager().addForge(ApoliDynamicRegistries.GLOBAL_POWER_SET, ApoliBuiltinRegistries.GLOBAL_POWER_SET, GlobalPowerSet.CODEC);
+		event.getRegistryManager().addForge(ApoliDynamicRegistries.GLOBAL_POWER_SET, ApoliBuiltinRegistries.GLOBAL_POWER_SET, GlobalPowerSet.CODEC);
 
-        event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BIENTITY_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_BIENTITY_ACTIONS, ConfiguredBiEntityAction.CODEC);
+		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BIENTITY_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_BIENTITY_ACTIONS, ConfiguredBiEntityAction.CODEC);
 		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BLOCK_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_BLOCK_ACTIONS, ConfiguredBlockAction.CODEC);
 		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ENTITY_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_ENTITY_ACTIONS, ConfiguredEntityAction.CODEC);
 		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ITEM_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_ITEM_ACTIONS, ConfiguredItemAction.CODEC);
@@ -149,7 +152,7 @@ public class ApoliCommon {
 
 		event.getRegistryManager().addReload(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, "powers", PowerLoader.INSTANCE);
 		event.getRegistryManager().addValidation(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, PowerLoader.INSTANCE, ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);
-        event.getRegistryManager().addReload(ApoliDynamicRegistries.GLOBAL_POWER_SET, "global_powers", GlobalPowerSetLoader.INSTANCE);
-        event.getRegistryManager().addValidation(ApoliDynamicRegistries.GLOBAL_POWER_SET, GlobalPowerSetLoader.INSTANCE, ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
+		event.getRegistryManager().addReload(ApoliDynamicRegistries.GLOBAL_POWER_SET, "global_powers", GlobalPowerSetLoader.INSTANCE);
+		event.getRegistryManager().addValidation(ApoliDynamicRegistries.GLOBAL_POWER_SET, GlobalPowerSetLoader.INSTANCE, ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
 	}
 }

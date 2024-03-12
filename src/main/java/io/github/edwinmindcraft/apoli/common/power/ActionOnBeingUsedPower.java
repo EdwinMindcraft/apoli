@@ -1,7 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import com.mojang.serialization.Codec;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.InteractionPowerConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public class ActionOnBeingUsedPower extends PowerFactory<BiEntityInteractionConfiguration> {
 	public static Optional<InteractionResult> tryPrevent(Entity self, Entity other, InteractionHand hand) {
-		for (Holder<ConfiguredPower<BiEntityInteractionConfiguration, ActionOnBeingUsedPower>> power : IPowerContainer.getPowers(self, ApoliPowers.PREVENT_BEING_USED.get())) {
+		for (Holder<ConfiguredPower<BiEntityInteractionConfiguration, ActionOnBeingUsedPower>> power : PowerContainer.getPowers(self, ApoliPowers.PREVENT_BEING_USED.get())) {
 			Optional<InteractionResult> result = power.value().getFactory().tryExecute(power.value(), self, other, hand);
 			if (result.isPresent())
 				return result;
@@ -27,7 +27,7 @@ public class ActionOnBeingUsedPower extends PowerFactory<BiEntityInteractionConf
 	}
 
 	public static Optional<InteractionResult> tryInteract(Entity self, Entity other, InteractionHand hand) {
-		return IPowerContainer.getPowers(self, ApoliPowers.ACTION_ON_BEING_USED.get()).stream().filter(p -> p.value().getConfiguration().priority() >= 0).sorted(Comparator.comparing(p -> p.value().getConfiguration().priority(), Comparator.reverseOrder())).flatMap(x -> x.value().getFactory().tryExecute(x.value(), self, other, hand).stream()).reduce(InteractionPowerConfiguration::reduce);
+		return PowerContainer.getPowers(self, ApoliPowers.ACTION_ON_BEING_USED.get()).stream().filter(p -> p.value().getConfiguration().priority() >= 0).sorted(Comparator.comparing(p -> p.value().getConfiguration().priority(), Comparator.reverseOrder())).flatMap(x -> x.value().getFactory().tryExecute(x.value(), self, other, hand).stream()).reduce(InteractionPowerConfiguration::reduce);
 	}
 
 	public ActionOnBeingUsedPower(Codec<BiEntityInteractionConfiguration> codec) {

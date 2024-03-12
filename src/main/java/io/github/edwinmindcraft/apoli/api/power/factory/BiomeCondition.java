@@ -10,7 +10,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.Biome;
 
 public abstract class BiomeCondition<T extends IDynamicFeatureConfiguration> implements IConditionFactory<T, ConfiguredBiomeCondition<T, ?>, BiomeCondition<T>> {
-	public static final Codec<BiomeCondition<?>> CODEC = ApoliRegistries.codec(() -> ApoliRegistries.BIOME_CONDITION.get());
+	public static final Codec<BiomeCondition<?>> CODEC = ApoliRegistries.BIOME_CONDITION.byNameCodec();
 
 	private final Codec<ConfiguredBiomeCondition<T, ?>> codec;
 

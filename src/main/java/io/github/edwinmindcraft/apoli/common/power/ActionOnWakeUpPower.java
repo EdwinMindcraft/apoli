@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
@@ -15,7 +15,7 @@ import net.minecraft.world.level.LevelReader;
 
 public class ActionOnWakeUpPower extends PowerFactory<ActionOnWakeUpConfiguration> {
 	public static void execute(Entity player, BlockPos pos) {
-		IPowerContainer.getPowers(player, ApoliPowers.ACTION_ON_WAKE_UP.get()).stream()
+		PowerContainer.getPowers(player, ApoliPowers.ACTION_ON_WAKE_UP.get()).stream()
 				.filter(power -> power.value().getFactory().doesApply(power.value(), player, player.level(), pos))
 				.forEach(aobbp -> aobbp.value().getFactory().executeActions(aobbp.value(), player, pos, Direction.DOWN));
 	}

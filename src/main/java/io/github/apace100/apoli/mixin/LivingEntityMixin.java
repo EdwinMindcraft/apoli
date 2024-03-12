@@ -7,7 +7,7 @@ import io.github.apace100.apoli.access.ModifiableFoodEntity;
 import io.github.apace100.apoli.util.StackPowerUtil;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.VariableAccess;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
@@ -89,8 +89,8 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		int originalAmp = effect.getAmplifier();
 		int originalDur = effect.getDuration();
 
-		int amplifier = Math.round(IPowerContainer.modify(this, ApoliPowers.MODIFY_STATUS_EFFECT_AMPLIFIER.get(), originalAmp, power -> ModifyStatusEffectPower.doesApply(power.value(), effectType)));
-		int duration = Math.round(IPowerContainer.modify(this, ApoliPowers.MODIFY_STATUS_EFFECT_DURATION.get(), originalDur, power -> ModifyStatusEffectPower.doesApply(power.value(), effectType)));
+		int amplifier = Math.round(PowerContainer.modify(this, ApoliPowers.MODIFY_STATUS_EFFECT_AMPLIFIER.get(), originalAmp, power -> ModifyStatusEffectPower.doesApply(power.value(), effectType)));
+		int duration = Math.round(PowerContainer.modify(this, ApoliPowers.MODIFY_STATUS_EFFECT_DURATION.get(), originalDur, power -> ModifyStatusEffectPower.doesApply(power.value(), effectType)));
 
 		if (amplifier != originalAmp || duration != originalDur) {
 			return new MobEffectInstance(effectType, duration, amplifier, effect.isAmbient(), effect.isVisible(), effect.showIcon(), ((HiddenEffectStatus) effect).getHiddenEffect(), effect.getFactorData());
@@ -110,7 +110,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		List<StackPowerUtil.StackPower> powers = StackPowerUtil.getPowers(itemStack3, equipmentSlot);
 		if (powers.size() > 0) {
 			ResourceLocation source = new ResourceLocation(Apoli.MODID, equipmentSlot.getName());
-			IPowerContainer.get(this).ifPresent(container -> {
+			PowerContainer.get(this).ifPresent(container -> {
 				powers.forEach(sp -> container.removePower(sp.powerId, source));
 				container.sync();
 			});
@@ -122,18 +122,18 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		List<StackPowerUtil.StackPower> powers = StackPowerUtil.getPowers(itemStack4, equipmentSlot);
 		if (powers.size() > 0) {
 			ResourceLocation source = new ResourceLocation(Apoli.MODID, equipmentSlot.getName());
-			IPowerContainer.get(this).ifPresent(container -> {
+			PowerContainer.get(this).ifPresent(container -> {
 				powers.forEach(sp -> container.addPower(sp.powerId, source));
 				container.sync();
 			});
 		} else if (StackPowerUtil.getPowers(itemStack3, equipmentSlot).size() > 0) {
-			IPowerContainer.sync(this);
+			PowerContainer.sync(this);
 		}
 	}
 
 	@Inject(method = "canStandOnFluid", at = @At("HEAD"), cancellable = true)
 	private void modifyWalkableFluids(FluidState fluid, CallbackInfoReturnable<Boolean> cir) {
-		if (IPowerContainer.getPowers(this, ApoliPowers.WALK_ON_FLUID.get()).stream().anyMatch(p -> fluid.is(p.value().getConfiguration().value())))
+		if (PowerContainer.getPowers(this, ApoliPowers.WALK_ON_FLUID.get()).stream().anyMatch(p -> fluid.is(p.value().getConfiguration().value())))
 			cir.setReturnValue(true);
 	}
 
@@ -193,7 +193,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 
 	@Redirect(method = "baseTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isInWaterRainOrBubble()Z"))
 	private boolean preventExtinguishingFromSwimming(LivingEntity livingEntity) {
-		if (livingEntity.isSwimming() && this.getFluidTypeHeight(ForgeMod.WATER_TYPE.get()) <= 0 && IPowerContainer.hasPower(livingEntity, ApoliPowers.SWIMMING.get()))
+		if (livingEntity.isSwimming() && this.getFluidTypeHeight(ForgeMod.WATER_TYPE.get()) <= 0 && PowerContainer.hasPower(livingEntity, ApoliPowers.SWIMMING.get()))
 			return false;
 		return livingEntity.isInWaterRainOrBubble();
 	}
@@ -203,7 +203,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 
 	@Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getTicksFrozen()I"))
 	private void freezeEntityFromPower(CallbackInfo ci) {
-		if (IPowerContainer.hasPower(this, ApoliPowers.FREEZE.get())) {
+		if (PowerContainer.hasPower(this, ApoliPowers.FREEZE.get())) {
 			this.prevPowderSnowState = this.isInPowderSnow;
 			this.isInPowderSnow = true;
 		}
@@ -219,7 +219,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 
     @ModifyVariable(method = "aiStep", at = @At(value = "STORE", ordinal = 0), ordinal = 0)
     private FluidType allowJumpingInIgnoredWater(FluidType fluidType) {
-        if (IPowerContainer.hasPower(this, ApoliPowers.IGNORE_WATER.get())) {
+        if (PowerContainer.hasPower(this, ApoliPowers.IGNORE_WATER.get())) {
             return ForgeMod.EMPTY_TYPE.get();
         }
         return fluidType;
@@ -227,12 +227,12 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 
 	@Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;removeFrost()V"))
 	private void unfreezeEntityFromPower(CallbackInfo ci) {
-		if (IPowerContainer.hasPower(this, ApoliPowers.FREEZE.get())) this.isInPowderSnow = this.prevPowderSnowState;
+		if (PowerContainer.hasPower(this, ApoliPowers.FREEZE.get())) this.isInPowderSnow = this.prevPowderSnowState;
 	}
 
 	@Inject(method = "canFreeze", at = @At("RETURN"), cancellable = true)
 	private void allowFreezingPower(CallbackInfoReturnable<Boolean> cir) {
-		if (IPowerContainer.hasPower(this, ApoliPowers.FREEZE.get())) cir.setReturnValue(true);
+		if (PowerContainer.hasPower(this, ApoliPowers.FREEZE.get())) cir.setReturnValue(true);
 	}
 
 	// Moved from PlayerEntityMixin.
@@ -246,7 +246,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 	// SetEntityGroupPower
 	@Inject(at = @At("HEAD"), method = "getMobType", cancellable = true)
 	public void getGroup(CallbackInfoReturnable<MobType> info) {
-		List<Holder<ConfiguredPower<FieldConfiguration<MobType>, EntityGroupPower>>> powers = IPowerContainer.getPowers(this, ApoliPowers.ENTITY_GROUP.get());
+		List<Holder<ConfiguredPower<FieldConfiguration<MobType>, EntityGroupPower>>> powers = PowerContainer.getPowers(this, ApoliPowers.ENTITY_GROUP.get());
 		if (powers.size() > 0) {
 			if (powers.size() > 1) {
 				Apoli.LOGGER.warn("Entity " + this.getDisplayName() + " has two instances of SetEntityGroupPower.");
@@ -258,7 +258,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 	@Inject(method = "getAttributeValue(Lnet/minecraft/world/entity/ai/attributes/Attribute;)D", at = @At("RETURN"), cancellable = true)
 	private void modifyAttributeValue(Attribute attribute, CallbackInfoReturnable<Double> cir) {
 		double originalValue = this.getAttributes().getValue(attribute);
-		double modified = IPowerContainer.modify(this, ApoliPowers.MODIFY_ATTRIBUTE.get(), (float) originalValue, p -> p.get().getConfiguration().attribute() == attribute);
+		double modified = PowerContainer.modify(this, ApoliPowers.MODIFY_ATTRIBUTE.get(), (float) originalValue, p -> p.get().getConfiguration().attribute() == attribute);
 		if (originalValue != modified) {
 			cir.setReturnValue(modified);
 		}
@@ -372,7 +372,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
     @Inject(method = "getFrictionInfluencedSpeed(F)F", at = @At("RETURN"), cancellable = true)
 	private void modifyFlySpeed(float slipperiness, CallbackInfoReturnable<Float> cir) {
 		if (!this.onGround())
-			cir.setReturnValue(IPowerContainer.modify(this, ApoliPowers.MODIFY_AIR_SPEED.get(), this.getFlyingSpeed()));
+			cir.setReturnValue(PowerContainer.modify(this, ApoliPowers.MODIFY_AIR_SPEED.get(), this.getFlyingSpeed()));
 	}
 
 	@Unique

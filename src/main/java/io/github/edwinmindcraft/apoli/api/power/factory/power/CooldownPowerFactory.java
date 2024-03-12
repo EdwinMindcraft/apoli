@@ -2,7 +2,7 @@ package io.github.edwinmindcraft.apoli.api.power.factory.power;
 
 import com.mojang.serialization.Codec;
 import io.github.apace100.apoli.util.HudRender;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.ICooldownPower;
 import io.github.edwinmindcraft.apoli.api.power.IHudRenderedPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -27,7 +27,7 @@ public abstract class CooldownPowerFactory<T extends ICooldownPowerConfiguration
 	@Override
 	public void use(ConfiguredPower<T, ?> configuration, Entity entity) {
 		this.setLastUseTime(configuration, entity, entity.getCommandSenderWorld().getGameTime());
-		IPowerContainer.sync(entity);
+		PowerContainer.sync(entity);
 	}
 
 	@Override
@@ -56,16 +56,16 @@ public abstract class CooldownPowerFactory<T extends ICooldownPowerConfiguration
 	}
 
 	protected long getLastUseTime(ConfiguredPower<T, ?> configuration, Entity entity) {
-		return this.getLastUseTime(configuration, IPowerContainer.get(entity).resolve().orElse(null));
+		return this.getLastUseTime(configuration, PowerContainer.get(entity).resolve().orElse(null));
 	}
 
-	protected abstract long getLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container);
+	protected abstract long getLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable PowerContainer container);
 
 	protected void setLastUseTime(ConfiguredPower<T, ?> configuration, Entity entity, long value) {
-		this.setLastUseTime(configuration, IPowerContainer.get(entity).resolve().orElse(null), value);
+		this.setLastUseTime(configuration, PowerContainer.get(entity).resolve().orElse(null), value);
 	}
 
-	protected abstract void setLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container, long value);
+	protected abstract void setLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable PowerContainer container, long value);
 
 	protected long getElapsedDuration(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return Math.max(entity.getCommandSenderWorld().getGameTime() - this.getLastUseTime(configuration, entity), 0);
@@ -109,31 +109,31 @@ public abstract class CooldownPowerFactory<T extends ICooldownPowerConfiguration
 			super(codec, allowConditions);
 		}
 
-		protected MutableLong getUseTime(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
+		protected MutableLong getUseTime(ConfiguredPower<T, ?> configuration, PowerContainer container) {
 			return configuration.getPowerData(container, () -> new MutableLong(0));
 		}
 
 		@Override
-		protected long getLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container) {
+		protected long getLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable PowerContainer container) {
 			if (container == null)
 				return 0;
 			return this.getUseTime(configuration, container).getValue();
 		}
 
 		@Override
-		protected void setLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container, long value) {
+		protected void setLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable PowerContainer container, long value) {
 			if (container == null)
 				return;
 			this.getUseTime(configuration, container).setValue(value);
 		}
 
 		@Override
-		public void serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+		public void serialize(ConfiguredPower<T, ?> configuration, PowerContainer container, CompoundTag tag) {
 			tag.putLong("LastUseTime", this.getLastUseTime(configuration, container));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+		public void deserialize(ConfiguredPower<T, ?> configuration, PowerContainer container, CompoundTag tag) {
 			this.setLastUseTime(configuration, container, tag.getLong("LastUseTime"));
 		}
 	}

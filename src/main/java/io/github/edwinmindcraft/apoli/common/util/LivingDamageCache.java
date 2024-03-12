@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.util;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.ModifyDamageDealtPower;
 import io.github.edwinmindcraft.apoli.common.power.ModifyDamageTakenPower;
@@ -32,11 +32,11 @@ public interface LivingDamageCache {
 
 	default void gatherDamagePowers(Entity entity, DamageSource source, float amount) {
 		//This method is basically a grouping of everything that needs to be computed when an entity is attacked.
-		this.setModifyDamageTakenPowers(IPowerContainer.getPowers(entity,
+		this.setModifyDamageTakenPowers(PowerContainer.getPowers(entity,
 				ApoliPowers.MODIFY_DAMAGE_TAKEN.get(),
 				x -> x.value().isActive(entity) && x.value().getFactory().check(x.value(), entity, source, amount)));
         ModifyDamageDealtPower dealtFactory = source.is(DamageTypeTags.IS_PROJECTILE) ? ApoliPowers.MODIFY_PROJECTILE_DAMAGE.get() : ApoliPowers.MODIFY_DAMAGE_DEALT.get();
-        this.setModifyDamageDealtPowers(IPowerContainer.getPowers(source.getEntity(),
+        this.setModifyDamageDealtPowers(PowerContainer.getPowers(source.getEntity(),
                 dealtFactory,
 				x -> x.value().isActive(Objects.requireNonNull(source.getEntity())) && dealtFactory.check(x.value(), Objects.requireNonNull(source.getEntity()), entity, source, amount)));
 		this.bypassDamageCheck(false);

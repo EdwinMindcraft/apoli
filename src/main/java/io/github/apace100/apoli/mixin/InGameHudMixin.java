@@ -1,6 +1,6 @@
 package io.github.apace100.apoli.mixin;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.OverrideHudTexturePower;
@@ -27,7 +27,7 @@ public class InGameHudMixin {
     @ModifyArg(method = "renderPlayerHealth", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"), index = 0)
     public ResourceLocation changeStatusBarTextures(ResourceLocation original) {
         if (GUI_ICONS_LOCATION.equals(original)) {
-            Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = IPowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
+            Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = PowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
             if (first.isPresent()) {
                 return first.get().value().getConfiguration().value().orElse(null);
             }
@@ -38,7 +38,7 @@ public class InGameHudMixin {
     @ModifyArg(method = "renderHeart", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"), index = 0)
     public ResourceLocation changeHearts(ResourceLocation original) {
         if (GUI_ICONS_LOCATION.equals(original)) {
-            Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = IPowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
+            Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = PowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
             if (first.isPresent()) {
                 return first.get().value().getConfiguration().value().orElse(null);
             }
@@ -49,7 +49,7 @@ public class InGameHudMixin {
     @ModifyArg(method = "renderExperienceBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"), index = 0)
     public ResourceLocation changeXpBarTextures(ResourceLocation original) {
         if (GUI_ICONS_LOCATION.equals(original)) {
-            Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = IPowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
+            Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = PowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
             if (first.isPresent()) {
                 return first.get().value().getConfiguration().value().orElse(null);
             }
@@ -60,7 +60,7 @@ public class InGameHudMixin {
     @ModifyArg(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"), index = 0)
     public ResourceLocation changeCrosshair(ResourceLocation original) {
         if (GUI_ICONS_LOCATION.equals(original)) {
-            Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = IPowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
+            Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = PowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
             if (first.isPresent()) {
                 return first.get().value().getConfiguration().value().orElse(null);
             }
@@ -71,7 +71,7 @@ public class InGameHudMixin {
     @ModifyArg(method = "renderJumpMeter", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"), index = 0)
     public ResourceLocation changeMountJumpBar(ResourceLocation original) {
         if (GUI_ICONS_LOCATION.equals(original)) {
-            Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = IPowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
+            Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = PowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
             if (first.isPresent()) {
                 return first.get().value().getConfiguration().value().orElse(null);
             }
@@ -82,7 +82,7 @@ public class InGameHudMixin {
     @ModifyArg(method = "renderVehicleHealth", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"), index = 0)
     public ResourceLocation changeMountHealth(ResourceLocation original) {
         if (GUI_ICONS_LOCATION.equals(original)) {
-            Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = IPowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
+            Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = PowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
             if (first.isPresent()) {
                 return first.get().value().getConfiguration().value().orElse(null);
             }

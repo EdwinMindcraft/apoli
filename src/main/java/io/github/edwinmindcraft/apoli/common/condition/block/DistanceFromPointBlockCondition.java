@@ -8,7 +8,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.NonNullSupplier;
+
 
 public class DistanceFromPointBlockCondition extends BlockCondition<DistanceFromPointConfiguration> {
 	public DistanceFromPointBlockCondition(Codec<DistanceFromPointConfiguration> codec) {
@@ -16,7 +16,7 @@ public class DistanceFromPointBlockCondition extends BlockCondition<DistanceFrom
 	}
 
 	@Override
-	protected boolean check(DistanceFromPointConfiguration configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
+	protected boolean check(DistanceFromPointConfiguration configuration, LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> stateGetter) {
 		return reader instanceof Level level ? configuration.test(null, Vec3.atLowerCornerOf(position), level) : configuration.comparison().check(Double.POSITIVE_INFINITY);
 	}
 }

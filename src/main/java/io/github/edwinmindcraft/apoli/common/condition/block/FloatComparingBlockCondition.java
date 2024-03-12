@@ -5,7 +5,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.NonNullSupplier;
+
 
 public class FloatComparingBlockCondition extends BlockCondition<FloatComparisonConfiguration> {
 	private final BlockFloatFunction function;
@@ -16,7 +16,7 @@ public class FloatComparingBlockCondition extends BlockCondition<FloatComparison
 	}
 
 	@Override
-	protected boolean check(FloatComparisonConfiguration configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
+	protected boolean check(FloatComparisonConfiguration configuration, LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> stateGetter) {
 		float apply = this.function.apply(reader, position, stateGetter);
 		return !Float.isNaN(apply) && configuration.check(apply);
 	}

@@ -1,13 +1,13 @@
 package io.github.apace100.apoli.util;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class ApoliConfigServer {
 	public final ExecuteCommand executeCommand;
-	public final ForgeConfigSpec.BooleanValue enforceFoodRestrictions;
-	public final ForgeConfigSpec.BooleanValue separateSpawnFindingThread;
+	public final ModConfigSpec.BooleanValue enforceFoodRestrictions;
+	public final ModConfigSpec.BooleanValue separateSpawnFindingThread;
 
-	public ApoliConfigServer(ForgeConfigSpec.Builder builder) {
+	public ApoliConfigServer(ModConfigSpec.Builder builder) {
 		builder.push("execute_command");
 		this.executeCommand = new ExecuteCommand(builder);
 		builder.pop();
@@ -23,10 +23,10 @@ public class ApoliConfigServer {
 	 * Putting this on the server allows for world specific configurations.
 	 */
 	public static class ExecuteCommand {
-		public final ForgeConfigSpec.IntValue permissionLevel;
-		public final ForgeConfigSpec.BooleanValue showOutput;
+		public final ModConfigSpec.IntValue permissionLevel;
+		public final ModConfigSpec.BooleanValue showOutput;
 
-		public ExecuteCommand(ForgeConfigSpec.Builder builder) {
+		public ExecuteCommand(ModConfigSpec.Builder builder) {
 			this.permissionLevel = builder
 					.translation("text.autoconfig.power_config.option.executeCommand.permissionLevel")
 					.comment("Permission level used. 2 is enough for everything except server and debug commands.")

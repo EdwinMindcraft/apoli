@@ -5,13 +5,11 @@ import io.github.apace100.apoli.access.EntityLinkedItemStack;
 import io.github.apace100.apoli.command.PowerCommand;
 import io.github.apace100.apoli.command.ResourceCommand;
 import io.github.apace100.apoli.util.InventoryUtil;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.component.EntityLinkedItemStackImpl;
-import io.github.edwinmindcraft.apoli.common.component.PowerContainer;
-import io.github.edwinmindcraft.apoli.common.component.PowerDataCache;
+import io.github.edwinmindcraft.apoli.common.component.PowerContainerImpl;
 import io.github.edwinmindcraft.apoli.common.network.S2CCachedSpawnsPacket;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
@@ -43,7 +41,6 @@ import net.minecraftforge.network.PacketDistributor;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -56,8 +53,7 @@ public class ApoliEventHandler {
 	@SubscribeEvent
 	public static void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {
 		if (event.getObject() instanceof LivingEntity living) {
-			event.addCapability(IPowerContainer.KEY, new PowerContainer(living));
-			event.addCapability(IPowerDataCache.KEY, new PowerDataCache());
+			event.addCapability(PowerContainer.KEY, new PowerContainerImpl(living));
 		}
 	}
 
@@ -116,21 +112,21 @@ public class ApoliEventHandler {
 	public static void onDataSync(OnDatapackSyncEvent event) {
 		if (event.getPlayer() == null) {
 			for (ServerPlayer player : event.getPlayerList().getPlayers()) {
-				IPowerContainer.get(player).ifPresent(IPowerContainer::rebuildCache);
-				IPowerContainer.sync(player);
+				PowerContainer.get(player).ifPresent(PowerContainer::rebuildCache);
+				PowerContainer.sync(player);
 			}
 		}
 	}
 
 	@SubscribeEvent
 	public static void playerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-		IPowerContainer.get(event.getEntity()).ifPresent(x -> x.getPowers().forEach(y -> y.value().onRemoved(event.getEntity())));
+		PowerContainer.get(event.getEntity()).ifPresent(x -> x.getPowers().forEach(y -> y.value().onRemoved(event.getEntity())));
 	}
 
 	@SubscribeEvent
 	public static void livingTick(LivingEvent.LivingTickEvent event) {
 		if (!event.getEntity().level().isClientSide())
-			IPowerContainer.get(event.getEntity()).ifPresent(IPowerContainer::serverTick);
+			PowerContainer.get(event.getEntity()).ifPresent(PowerContainer::serverTick);
 
         InventoryUtil.forEachStack(event.getEntity(), (slot) -> {
             if (slot.get().isEmpty() || slot.get().getCapability(ApoliCapabilities.ENTITY_LINKED_ITEM_STACK).map(eli -> eli.getEntity() == event.getEntity()).orElse(false)) {
@@ -146,15 +142,15 @@ public class ApoliEventHandler {
 	public static void playerClone(PlayerEvent.Clone event) {
 		event.getOriginal().reviveCaps(); // Revive capabilities.
 
-		LazyOptional<IPowerContainer> original = IPowerContainer.get(event.getOriginal());
-		LazyOptional<IPowerContainer> player = IPowerContainer.get(event.getEntity());
+		LazyOptional<PowerContainer> original = PowerContainer.get(event.getOriginal());
+		LazyOptional<PowerContainer> player = PowerContainer.get(event.getEntity());
 		if (original.isPresent() != player.isPresent()) {
 			Apoli.LOGGER.info("Capability mismatch: original:{}, new:{}", original.isPresent(), player.isPresent());
 		}
 		original.ifPresent(x -> x.getPowers().forEach(y -> y.value().onRemoved(event.getOriginal())));
         player.ifPresent(p -> original.ifPresent(o -> p.readFromNbt(o.writeToNbt(new CompoundTag()))));
 		if (!event.getEntity().level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
-			IPowerContainer.getPowers(event.getEntity(), ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.value().getFactory().restoreItems(power.value(), event.getEntity()));
+			PowerContainer.getPowers(event.getEntity(), ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.value().getFactory().restoreItems(power.value(), event.getEntity()));
 
 		if (event.getEntity() instanceof ServerPlayer)
 			((ModifyPlayerSpawnCache)event.getEntity()).setActiveSpawnPower(((ModifyPlayerSpawnCache)event.getOriginal()).getActiveSpawnPower());
@@ -165,10 +161,10 @@ public class ApoliEventHandler {
 	@SubscribeEvent
 	public static void playerRespawn(PlayerEvent.PlayerRespawnEvent event) {
 		if (event.getEntity() instanceof ServerPlayer sp) {
-			IPowerContainer.sync(sp);
+			PowerContainer.sync(sp);
 			if (!event.isEndConquered()) {
 				ApoliPowers.MODIFY_PLAYER_SPAWN.get().schedulePlayerToSpawn(sp);
-				IPowerContainer.get(sp).ifPresent(x -> x.getPowers().forEach(y -> y.value().onRespawn(sp)));
+				PowerContainer.get(sp).ifPresent(x -> x.getPowers().forEach(y -> y.value().onRespawn(sp)));
 			}
 		}
 	}
@@ -176,7 +172,7 @@ public class ApoliEventHandler {
 	@SubscribeEvent
 	public static void playerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
 		if (event.getEntity() instanceof ServerPlayer)
-			IPowerContainer.sync(event.getEntity());
+			PowerContainer.sync(event.getEntity());
 	}
 
 	@SubscribeEvent
@@ -184,13 +180,13 @@ public class ApoliEventHandler {
 		if (event.getLevel().isClientSide())
 			return;
 		if (event.getEntity() instanceof LivingEntity le)
-			IPowerContainer.sync(le);
+			PowerContainer.sync(le);
 	}
 
 	@SubscribeEvent
 	public static void trackEntity(PlayerEvent.StartTracking event) {
 		if (event.getEntity() instanceof ServerPlayer se && event.getTarget() instanceof LivingEntity target)
-			IPowerContainer.sync(target, se);
+			PowerContainer.sync(target, se);
 	}
 
 	@SubscribeEvent

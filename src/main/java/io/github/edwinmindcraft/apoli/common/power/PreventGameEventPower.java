@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class PreventGameEventPower extends PowerFactory<PreventGameEventConfiguration> {
 	public static boolean tryPreventGameEvent(Entity entity, GameEvent event) {
-		List<ConfiguredPower<PreventGameEventConfiguration, PreventGameEventPower>> powers = IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_GAME_EVENT.get()).stream().map(Holder::value).filter(x -> x.getFactory().doesPrevent(x, event)).toList();
+		List<ConfiguredPower<PreventGameEventConfiguration, PreventGameEventPower>> powers = PowerContainer.getPowers(entity, ApoliPowers.PREVENT_GAME_EVENT.get()).stream().map(Holder::value).filter(x -> x.getFactory().doesPrevent(x, event)).toList();
 		powers.forEach(x -> x.getFactory().execute(x, entity));
 		return !powers.isEmpty();
 	}

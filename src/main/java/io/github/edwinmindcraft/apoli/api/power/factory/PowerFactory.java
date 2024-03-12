@@ -9,7 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IFactory;
 import io.github.edwinmindcraft.apoli.api.power.PowerData;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -21,9 +21,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.Lazy;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.common.util.Lazy;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,7 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
-	public static final Codec<PowerFactory<?>> CODEC = ApoliRegistries.codec(() -> ApoliRegistries.POWER_FACTORY.get());
+	public static final Codec<PowerFactory<?>> CODEC = ApoliRegistries.POWER_FACTORY.byNameCodec();
 	private static final Map<String, ResourceLocation> ALIASES = Util.make(() -> {
 		ImmutableMap.Builder<String, ResourceLocation> builder = ImmutableMap.builder();
 		try (InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(PowerFactory.class.getResourceAsStream("/data/apoli/power_class_registry.json")))) {
@@ -52,24 +50,30 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 		return IFactory.unionCodec(IFactory.asMap(codec), PowerData.CODEC, factory::configure, ConfiguredPower::getConfiguration, ConfiguredPower::getData);
 	}
 
-	public static final Codec<PowerFactory<?>> IGNORE_NAMESPACE_CODEC = Codec.STRING.comapFlatMap(val -> {
+	public static final Codec<PowerFactory<?>> IGNORE_NAMESPACE_CODEC = Codec.STRING.flatXmap(val -> {
 		if (val.startsWith("io.github.apace100.apoli.power."))
 			val = val.substring("io.github.apace100.apoli.power.".length());
 		ResourceLocation temp = ALIASES.get(val);
 		ResourceLocation id = temp != null ? temp : ResourceLocation.tryParse(val);
 		if (id == null) {
-            String failedString = val;
-            return DataResult.error(() -> "Failed to convert \"" + failedString + "\" to a resource location");
-        }
-		PowerFactory<?> value = ApoliRegistries.POWER_FACTORY.get().getValue(id);
+			String failedString = val;
+			return DataResult.error(() -> "Failed to convert \"" + failedString + "\" to a resource location");
+		}
+		PowerFactory<?> value = ApoliRegistries.POWER_FACTORY.get(id);
 		if (value != null)
 			return DataResult.success(value); //Avoid the slow code if we can.
-		return ApoliRegistries.POWER_FACTORY.get().getEntries().stream()
+		return ApoliRegistries.POWER_FACTORY.entrySet().stream()
 				.filter(entry -> entry.getKey().location().getPath().equals(id.getPath()))
 				.findFirst().map(Map.Entry::getValue)
 				.map(DataResult::success)
 				.orElseGet(() -> DataResult.error(() -> "Failed to find power factory with path: " + id.getPath()));
-	}, x -> ApoliRegistries.POWER_FACTORY.get().getKey(x).toString());
+	}, factory -> {
+		var key = ApoliRegistries.POWER_FACTORY.getKey(factory);
+		if (key != null)
+			return DataResult.success(key.toString());
+		else
+			return DataResult.error(() -> "Unregistered power factory: %s".formatted(factory));
+	});
 
 	private final Codec<ConfiguredPower<T, ?>> codec;
 	private final boolean allowConditions;
@@ -85,7 +89,6 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 	 *
 	 * @param codec           The codec used to serialize the configuration of this power.
 	 * @param allowConditions Determines whether this power will use the global field {@link PowerData#conditions()} or not.
-	 *
 	 * @see #PowerFactory(Codec) for a version with allow conditions true by default.
 	 */
 	protected PowerFactory(Codec<T> codec, boolean allowConditions) {
@@ -98,7 +101,6 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 	 * the mod won't bother calling the {@link #tick(ConfiguredPower, Entity)} function.
 	 *
 	 * @param whenInactive If true, tick will bypass the check to {@link #isActive(ConfiguredPower, Entity)}
-	 *
 	 * @see #ticking() for a version that sets whenInactive to false.
 	 */
 	protected final void ticking(boolean whenInactive) {
@@ -126,7 +128,6 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 	 * Should only be used during loading as subpowers to provide subpowers
 	 *
 	 * @param configuration The configuration of this power.
-	 *
 	 * @return A map containing children of this power.
 	 */
 	public Map<String, Holder<ConfiguredPower<?, ?>>> getContainedPowers(ConfiguredPower<T, ?> configuration) {
@@ -143,11 +144,6 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 			return ImmutableSet.of();
 		}
 		return contained.keySet().stream().map(suffix -> ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, new ResourceLocation(key.getNamespace(), key.getPath() + suffix))).collect(Collectors.toUnmodifiableSet());
-	}
-
-	@Nullable
-	public ICapabilityProvider initCapabilities() {
-		return null;
 	}
 
 	public ConfiguredPower<T, ?> configure(T input, PowerData data) {
@@ -198,29 +194,39 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 		return this.tickInterval(configuration.getConfiguration(), entity);
 	}
 
-	protected void tick(T configuration, Entity entity) {}
+	protected void tick(T configuration, Entity entity) {
+	}
 
-	protected void onGained(T configuration, Entity entity) {}
+	protected void onGained(T configuration, Entity entity) {
+	}
 
-	protected void onLost(T configuration, Entity entity) {}
+	protected void onLost(T configuration, Entity entity) {
+	}
 
-	protected void onAdded(T configuration, Entity entity) {}
+	protected void onAdded(T configuration, Entity entity) {
+	}
 
-	protected void onRemoved(T configuration, Entity entity) {}
+	protected void onRemoved(T configuration, Entity entity) {
+	}
 
-	protected void onRespawn(T configuration, Entity entity) {}
+	protected void onRespawn(T configuration, Entity entity) {
+	}
 
-	protected int tickInterval(T configuration, Entity entity) {return 1;}
+	protected int tickInterval(T configuration, Entity entity) {
+		return 1;
+	}
 
 	public boolean isActive(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return !this.shouldCheckConditions(configuration, entity) || configuration.getData().conditions().stream().allMatch(condition -> condition.check(entity));
 	}
 
-	public void serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {}
+	public void serialize(ConfiguredPower<T, ?> configuration, PowerContainer container, CompoundTag tag) {
+	}
 
-	public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {}
+	public void deserialize(ConfiguredPower<T, ?> configuration, PowerContainer container, CompoundTag tag) {
+	}
 
-	private final Lazy<io.github.apace100.apoli.power.factory.PowerFactory<?>> legacyType = Lazy.of(() -> new io.github.apace100.apoli.power.factory.PowerFactory<>(ApoliRegistries.POWER_FACTORY.get().getKey(this), this));
+	private final Lazy<io.github.apace100.apoli.power.factory.PowerFactory<?>> legacyType = Lazy.of(() -> new io.github.apace100.apoli.power.factory.PowerFactory<>(ApoliRegistries.POWER_FACTORY.getKey(this), this));
 
 	public io.github.apace100.apoli.power.factory.PowerFactory<?> getLegacyFactory() {
 		return this.legacyType.get();

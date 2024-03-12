@@ -8,8 +8,6 @@ import net.minecraftforge.registries.IForgeRegistry;
 import java.util.function.Supplier;
 
 public class ApoliBuiltinRegistries {
-	public static final Class<ConfiguredPower<?, ?>> CONFIGURED_POWER_CLASS = ClassUtil.get();
-
 	public static Supplier<IForgeRegistry<ConfiguredPower<?, ?>>> CONFIGURED_POWERS;
     public static Supplier<IForgeRegistry<GlobalPowerSet>> GLOBAL_POWER_SET;
 

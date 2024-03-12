@@ -6,7 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.NonNullSupplier;
+
 
 public class SimpleBlockCondition extends BlockCondition<NoConfiguration> {
 
@@ -25,7 +25,7 @@ public class SimpleBlockCondition extends BlockCondition<NoConfiguration> {
 	}
 
 	@Override
-	protected boolean check(NoConfiguration configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
+	protected boolean check(NoConfiguration configuration, LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> stateGetter) {
 		return this.blockPredicate.test(reader, position, stateGetter);
 	}
 }

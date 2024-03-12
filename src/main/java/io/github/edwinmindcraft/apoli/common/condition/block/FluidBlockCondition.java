@@ -6,7 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.NonNullSupplier;
+
 
 public class FluidBlockCondition extends BlockCondition<FieldConfiguration<ConfiguredFluidCondition<?, ?>>> {
 
@@ -15,7 +15,7 @@ public class FluidBlockCondition extends BlockCondition<FieldConfiguration<Confi
 	}
 
 	@Override
-	protected boolean check(FieldConfiguration<ConfiguredFluidCondition<?, ?>> configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
+	protected boolean check(FieldConfiguration<ConfiguredFluidCondition<?, ?>> configuration, LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> stateGetter) {
 		return configuration.value().check(stateGetter.get().getFluidState());
 	}
 }

@@ -1,7 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.edwinmindcraft.apoli.api.VariableAccess;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ItemOnItemConfiguration;
@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ItemOnItemPower extends PowerFactory<ItemOnItemConfiguration> {
 	public static boolean execute(Entity entity, Slot self, SlotAccess other) {
-		List<ConfiguredPower<ItemOnItemConfiguration, ItemOnItemPower>> powers = IPowerContainer.getPowers(entity, ApoliPowers.ITEM_ON_ITEM.get()).stream().filter(x -> x.value().getFactory().check(x.value(), entity, self.getItem(), other.get())).map(Holder::value).toList();
+		List<ConfiguredPower<ItemOnItemConfiguration, ItemOnItemPower>> powers = PowerContainer.getPowers(entity, ApoliPowers.ITEM_ON_ITEM.get()).stream().filter(x -> x.value().getFactory().check(x.value(), entity, self.getItem(), other.get())).map(Holder::value).toList();
 		powers.forEach(x -> x.getFactory().apply(x, entity, self, other));
 		return !powers.isEmpty();
 	}

@@ -20,9 +20,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.common.util.NonNullSupplier;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 //FIXME Reintroduce PowerHolderComponent
 
@@ -41,13 +40,13 @@ import java.util.function.Predicate;
  * Please note that there is no warranty of mutability for any output, as such, please expect
  * every collection to be either immutable, or unmodifiable.
  */
-public interface IPowerContainer {
+public interface PowerContainer {
 	//region Static Methods
 	ResourceLocation KEY = Apoli.identifier("powers");
 
-	@NotNull
-	static LazyOptional<IPowerContainer> get(@Nullable Entity entity) {
-		return entity == null ? LazyOptional.empty() : entity.getCapability(ApoliCapabilities.POWER_CONTAINER);
+	@Nullable
+	static PowerContainer get(@Nullable Entity entity) {
+		return entity.getCapability(ApoliCapabilities.POWER_CONTAINER);
 	}
 
 	static void sync(Entity entity) {
@@ -59,7 +58,15 @@ public interface IPowerContainer {
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> void withPower(Entity entity, F factory, @Nullable Predicate<Holder<ConfiguredPower<T, F>>> power, Consumer<Holder<ConfiguredPower<T, F>>> with) {
-		get(entity).ifPresent(x -> x.getPowers(factory).stream().filter(p -> power == null || power.test(p)).findAny().ifPresent(with));
+		PowerContainer container = get(entity);
+		if (container != null) {
+			for (Holder<ConfiguredPower<T, F>> holder : container.getPowers(factory)) {
+				if (power != null && !power.test(holder))
+					continue;
+				with.accept(holder);
+				break;
+			}
+		}
 	}
 
 	/**
@@ -72,19 +79,21 @@ public interface IPowerContainer {
 	 * @param filter  The conditions that a power needs to validate in order to be included.
 	 * @param <T>     The type of the configuration used.
 	 * @param <F>     The type of the factory used.
-	 *
 	 * @return A list of powers, obtained
 	 */
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> List<Holder<ConfiguredPower<T, F>>> getPowers(Entity entity, F factory, @NotNull Predicate<Holder<ConfiguredPower<T, F>>> filter) {
-		return get(entity).map(x -> x.getPowers(factory, filter)).orElseGet(ImmutableList::of);
+		PowerContainer container = get(entity);
+		return container != null ? container.getPowers(factory, filter) : ImmutableList.of();
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> List<Holder<ConfiguredPower<T, F>>> getPowers(Entity entity, F factory) {
-		return get(entity).map(x -> x.getPowers(factory)).orElseGet(ImmutableList::of);
+		PowerContainer container = get(entity);
+		return container != null ? container.getPowers(factory) : ImmutableList.of();
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> boolean hasPower(Entity entity, F factory) {
-		return get(entity).map(x -> x.hasPower(factory)).orElse(false);
+		PowerContainer container = get(entity);
+		return container != null && container.hasPower(factory);
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> float modify(Entity entity, F factory, float baseValue) {
@@ -104,7 +113,7 @@ public interface IPowerContainer {
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> double modify(Entity entity, F factory, double baseValue, Predicate<Holder<ConfiguredPower<T, F>>> powerFilter, Consumer<Holder<ConfiguredPower<T, F>>> powerAction) {
-		List<Holder<ConfiguredPower<T, F>>> powers = IPowerContainer.getPowers(entity, factory, powerFilter == null ? x -> x.value().isActive(entity) : x -> x.value().isActive(entity) && powerFilter.test(x));
+		List<Holder<ConfiguredPower<T, F>>> powers = PowerContainer.getPowers(entity, factory, powerFilter == null ? x -> x.value().isActive(entity) : x -> x.value().isActive(entity) && powerFilter.test(x));
 		return modify(entity, factory, powers, baseValue, powerAction);
 	}
 
@@ -118,7 +127,7 @@ public interface IPowerContainer {
 		}
 		modifiers.addAll(AttributeModifyTransferPower.apply(entity, factory));
 		ModifyValueEvent event = new ModifyValueEvent(entity, factory, baseValue, modifiers);
-		MinecraftForge.EVENT_BUS.post(event);
+		NeoForge.EVENT_BUS.post(event);
 		return ModifierUtil.applyModifiers(entity, event.getModifiers(), baseValue);
 	}
 
@@ -148,7 +157,6 @@ public interface IPowerContainer {
 	 * Removes all powers associated with the given source.
 	 *
 	 * @param source The source of the powers.
-	 *
 	 * @return The amount of powers that were removed.
 	 */
 	@Contract(mutates = "this")
@@ -158,7 +166,6 @@ public interface IPowerContainer {
 	 * Returns a list the names of all powers for the given source.
 	 *
 	 * @param source The source of the powers.
-	 *
 	 * @return A {@link List} of powers.
 	 */
 	@NotNull
@@ -169,7 +176,6 @@ public interface IPowerContainer {
 	 *
 	 * @param power  The power to add.
 	 * @param source The source of this power.
-	 *
 	 * @return {@code true} if the power was added, {@code false} if it was already present.
 	 */
 	@Contract(mutates = "this")
@@ -182,7 +188,6 @@ public interface IPowerContainer {
 	 *
 	 * @param power  The power to add.
 	 * @param source The source of this power.
-	 *
 	 * @return {@code true} if the power was added, {@code false} if it was already present.
 	 */
 	@Contract(mutates = "this")
@@ -192,7 +197,6 @@ public interface IPowerContainer {
 	 * Checks if the entity has the given power.
 	 *
 	 * @param power The power to check for.
-	 *
 	 * @return {@code true} if the player has the power, {@code false} otherwise
 	 */
 	@Contract(pure = true)
@@ -204,7 +208,6 @@ public interface IPowerContainer {
 	 * Checks if the entity has the given power.
 	 *
 	 * @param power The power to check for.
-	 *
 	 * @return {@code true} if the player has the power, {@code false} otherwise
 	 */
 	@Contract(pure = true)
@@ -214,7 +217,6 @@ public interface IPowerContainer {
 	 * Checks if the player has any active power of the given type.
 	 *
 	 * @param factory The type of power to check.
-	 *
 	 * @return {@code true} if the player has a matching power, {@code false} otherwise.
 	 */
 	boolean hasPower(PowerFactory<?> factory);
@@ -224,7 +226,6 @@ public interface IPowerContainer {
 	 *
 	 * @param power  The power to check for.
 	 * @param source The requested source of this power.
-	 *
 	 * @return {@code true} if the player has the power with the given source, {@code false} otherwise
 	 */
 	@Contract(pure = true)
@@ -237,7 +238,6 @@ public interface IPowerContainer {
 	 *
 	 * @param power  The power to check for.
 	 * @param source The requested source of this power.
-	 *
 	 * @return {@code true} if the player has the power with the given source, {@code false} otherwise
 	 */
 	@Contract(pure = true)
@@ -249,7 +249,6 @@ public interface IPowerContainer {
 	 * @param power The {@link ResourceLocation} of the power to get.
 	 * @param <C>   The type of the {@link IDynamicFeatureConfiguration} of this power.
 	 * @param <F>   The type of the {@link PowerFactory} of this power.
-	 *
 	 * @return The {@link ConfiguredPower} with the given name if this entity has it, {@code null} otherwise.
 	 */
 	@Nullable
@@ -266,7 +265,6 @@ public interface IPowerContainer {
 	 * @param power The {@link ResourceLocation} of the power to get.
 	 * @param <C>   The type of the {@link IDynamicFeatureConfiguration} of this power.
 	 * @param <F>   The type of the {@link PowerFactory} of this power.
-	 *
 	 * @return The {@link ConfiguredPower} with the given name if this entity has it, {@code null} otherwise.
 	 */
 	@Nullable
@@ -301,7 +299,6 @@ public interface IPowerContainer {
 	 *
 	 * @param includeSubPowers if this is true, all powers, including lower level ones will be included.
 	 *                         Otherwise, only the top level powers will be included
-	 *
 	 * @return A {@link Set} containing the names of all powers currently on this entity.
 	 */
 	@NotNull
@@ -314,9 +311,7 @@ public interface IPowerContainer {
 	 * @param factory The type of power to get.
 	 * @param <C>     The type of the {@link IDynamicFeatureConfiguration} of the powers.
 	 * @param <F>     The type of the {@link PowerFactory} of the powers.
-	 *
 	 * @return A {@link List} containing all {@link ConfiguredPower} of the given type currently active on this entity.
-	 *
 	 * @see #getPowers(PowerFactory, boolean) For a version that allows inactive powers to be accessed.
 	 */
 	@NotNull
@@ -336,9 +331,7 @@ public interface IPowerContainer {
 	 * @param includeInactive If {@code true}, inactive powers will be included in the returned set.
 	 * @param <C>             The type of the {@link IDynamicFeatureConfiguration} of the powers.
 	 * @param <F>             The type of the {@link PowerFactory} of the powers.
-	 *
 	 * @return A {@link List} containing all {@link ConfiguredPower} of the given type currently on this entity.
-	 *
 	 * @see #getPowers(PowerFactory) For a version that get all active powers.
 	 */
 	@NotNull
@@ -351,7 +344,6 @@ public interface IPowerContainer {
 	 * Returns a list of all sources for the given power.
 	 *
 	 * @param power The power to get the source for.
-	 *
 	 * @return A {@link List} of all sources of this power.
 	 */
 	@NotNull
@@ -364,7 +356,6 @@ public interface IPowerContainer {
 	 * Returns a list of all sources for the given power.
 	 *
 	 * @param power The power to get the source for.
-	 *
 	 * @return A {@link List} of all sources of this power.
 	 */
 	@NotNull
@@ -429,10 +420,9 @@ public interface IPowerContainer {
 	 * @param power    The power to create the data for.
 	 * @param supplier The default value of the entry
 	 * @param <T>      The type of the stored data. Should be mutable, you can use Atomic types.
-	 *
 	 * @return Either the stored data for this power, or a new instance of the data.
 	 */
-	@NotNull <T> T getPowerData(ResourceKey<ConfiguredPower<?, ?>> power, NonNullSupplier<? extends T> supplier);
+	@NotNull <T> T getPowerData(ResourceKey<ConfiguredPower<?, ?>> power, Supplier<@NotNull T> supplier);
 
 	/**
 	 * This is a replacement for the system used by fabric in which data is stored with the powers.<br/>
@@ -441,10 +431,9 @@ public interface IPowerContainer {
 	 * @param power    The power to create the data for.
 	 * @param supplier The default value of the entry
 	 * @param <T>      The type of the stored data. Should be mutable, you can use Atomic types.
-	 *
 	 * @return Either the stored data for this power, or a new instance of the data.
 	 */
-	default @NotNull <T> T getPowerData(Holder<ConfiguredPower<?, ?>> power, NonNullSupplier<? extends T> supplier) {
+	default @NotNull <T> T getPowerData(Holder<ConfiguredPower<?, ?>> power, Supplier<@NotNull T> supplier) {
 		ResourceKey<ConfiguredPower<?, ?>> key = power.unwrap()
 				.map(Optional::of, pow -> ApoliAPI.getPowers(this.getOwner().getServer()).getResourceKey(pow))
 				.orElseThrow(() -> new IllegalArgumentException("Cannot create data for unregistered power: " + power));

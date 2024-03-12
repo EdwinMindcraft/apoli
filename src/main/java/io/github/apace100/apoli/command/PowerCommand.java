@@ -8,7 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.commands.CommandRuntimeException;
@@ -151,7 +151,7 @@ public class PowerCommand {
     }
 
 	private static boolean grantPower(LivingEntity entity, ResourceKey<ConfiguredPower<?, ?>> power, ResourceLocation source) {
-		return IPowerContainer.get(entity).map(component -> {
+		return PowerContainer.get(entity).map(component -> {
 			boolean success = component.addPower(power, source);
 			if (success)
 				component.sync();
@@ -214,7 +214,7 @@ public class PowerCommand {
 
 
 	private static boolean revokePower(LivingEntity entity, ResourceKey<ConfiguredPower<?, ?>> power, ResourceLocation source) {
-		return IPowerContainer.get(entity).map(component -> {
+		return PowerContainer.get(entity).map(component -> {
 			if (component.hasPower(power, source)) {
 				component.removePower(power, source);
 				component.sync();
@@ -275,7 +275,7 @@ public class PowerCommand {
     }
 
     private static int revokeAllPowersFromSource(LivingEntity entity, ResourceLocation source) {
-        return IPowerContainer.get(entity).map(component -> {
+        return PowerContainer.get(entity).map(component -> {
             int i = component.removeAllPowersFromSource(source);
             if (i > 0) {
                 component.sync();
@@ -296,7 +296,7 @@ public class PowerCommand {
             return powerCount;
         }
 
-        IPowerContainer component = ApoliAPI.getPowerContainer(livingTarget);
+        PowerContainer component = ApoliAPI.getPowerContainer(livingTarget);
         if (component == null) {
             source.sendFailure(Component.translatable("commands.apoli.list.fail", target.getDisplayName()));
             return powerCount;
@@ -361,11 +361,11 @@ public class PowerCommand {
     }
 
     private static boolean hasPower(LivingEntity entity, ResourceKey<ConfiguredPower<?, ?>> power) {
-        return IPowerContainer.get(entity).map(x -> x.hasPower(power)).orElse(false);
+        return PowerContainer.get(entity).map(x -> x.hasPower(power)).orElse(false);
     }
 
     private static boolean hasPower(LivingEntity entity, ResourceKey<ConfiguredPower<?, ?>> power, ResourceLocation powerSource) {
-        return IPowerContainer.get(entity).map(x -> x.hasPower(power, powerSource)).orElse(false);
+        return PowerContainer.get(entity).map(x -> x.hasPower(power, powerSource)).orElse(false);
     }
 
     private static int getSourcesFromPower(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -383,7 +383,7 @@ public class PowerCommand {
             return powerSourceCount;
         }
 
-        IPowerContainer component = ApoliAPI.getPowerContainer(livingTarget);
+        PowerContainer component = ApoliAPI.getPowerContainer(livingTarget);
         if (component != null) {
             String separator = "";
             for (ResourceLocation powerSource : component.getSources(power)) {
@@ -425,7 +425,7 @@ public class PowerCommand {
 
             livingTargets.add(livingTarget);
 
-            IPowerContainer component = ApoliAPI.getPowerContainer(livingTarget);
+            PowerContainer component = ApoliAPI.getPowerContainer(livingTarget);
             if (component == null) {
                 continue;
             }
@@ -459,7 +459,7 @@ public class PowerCommand {
     }
 
     private static boolean revokePowerAllSources(LivingEntity entity, ResourceKey<ConfiguredPower<?, ?>> power) {
-        return IPowerContainer.get(entity).map(component -> {
+        return PowerContainer.get(entity).map(component -> {
             List<ResourceLocation> sources = component.getSources(power);
             if (sources.isEmpty()) {
                 return false;
@@ -524,7 +524,7 @@ public class PowerCommand {
     }
 
     private static int clearAllPowers(LivingEntity entity) {
-        return IPowerContainer.get(entity).map(component -> {
+        return PowerContainer.get(entity).map(component -> {
             @NotNull Set<ResourceKey<ConfiguredPower<?, ?>>> powers = component.getPowerTypes(false);
             for (ResourceKey<ConfiguredPower<?, ?>> power : powers) {
                 revokePowerAllSources(entity, power);

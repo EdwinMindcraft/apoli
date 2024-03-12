@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
@@ -13,11 +13,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.NonNullSupplier;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Supplier;
 
 public class ActionOnBlockBreakPower extends PowerFactory<ActionOnBlockBreakConfiguration> {
-	public static void execute(Entity player, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter, boolean successful) {
-		IPowerContainer.getPowers(player, ApoliPowers.ACTION_ON_BLOCK_BREAK.get()).stream()
+	public static void execute(Entity player, LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> stateGetter, boolean successful) {
+		PowerContainer.getPowers(player, ApoliPowers.ACTION_ON_BLOCK_BREAK.get()).stream()
 				.filter(p -> p.value().getFactory().doesApply(p.value(), player, reader, position, stateGetter))
 				.forEach(aobbp -> aobbp.value().getFactory().executeActions(aobbp.value(), player, successful, position, Direction.UP));
 	}
@@ -26,7 +28,7 @@ public class ActionOnBlockBreakPower extends PowerFactory<ActionOnBlockBreakConf
 		super(ActionOnBlockBreakConfiguration.CODEC);
 	}
 
-	public boolean doesApply(ConfiguredPower<ActionOnBlockBreakConfiguration, ?> config, Entity player, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
+	public boolean doesApply(ConfiguredPower<ActionOnBlockBreakConfiguration, ?> config, Entity player, LevelReader reader, BlockPos position, Supplier<@NotNull BlockState> stateGetter) {
 		return ConfiguredBlockCondition.check(config.getConfiguration().blockCondition(), reader, position, stateGetter);
 	}
 

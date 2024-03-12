@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFogTypeConfiguration;
@@ -13,7 +13,7 @@ import static io.github.edwinmindcraft.apoli.common.registry.ApoliPowers.MODIFY_
 
 public class ModifyCameraSubmersionTypePower extends PowerFactory<ModifyFogTypeConfiguration> {
 	public static Optional<FogType> tryReplace(Entity entity, FogType original) {
-		return IPowerContainer.getPowers(entity, MODIFY_CAMERA_SUBMERSION.get()).stream().flatMap(x -> x.value().getFactory().tryReplace(x.value(), entity, original).stream()).findFirst();
+		return PowerContainer.getPowers(entity, MODIFY_CAMERA_SUBMERSION.get()).stream().flatMap(x -> x.value().getFactory().tryReplace(x.value(), entity, original).stream()).findFirst();
 	}
 
 	public ModifyCameraSubmersionTypePower() {

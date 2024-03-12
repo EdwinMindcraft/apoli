@@ -8,7 +8,7 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.entity.Entity;
 
 public abstract class BiEntityAction<T extends IDynamicFeatureConfiguration> implements IFactory<T, ConfiguredBiEntityAction<T, ?>, BiEntityAction<T>> {
-	public static final Codec<BiEntityAction<?>> CODEC = ApoliRegistries.codec(() -> ApoliRegistries.BIENTITY_ACTION.get());
+	public static final Codec<BiEntityAction<?>> CODEC = ApoliRegistries.BIENTITY_ACTION.byNameCodec();
 
 	private final Codec<ConfiguredBiEntityAction<T, ?>> codec;
 

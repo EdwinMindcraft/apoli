@@ -44,6 +44,6 @@ public final class ConfiguredBiomeCondition<C extends IDynamicFeatureConfigurati
 
 	@Override
 	public String toString() {
-		return "CBiC:" + ApoliRegistries.BIOME_CONDITION.get().getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
+		return "CBiC:" + ApoliRegistries.BIOME_CONDITION.getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
 	}
 }

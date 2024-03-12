@@ -44,6 +44,6 @@ public final class ConfiguredEntityCondition<C extends IDynamicFeatureConfigurat
 
 	@Override
 	public String toString() {
-		return "CEC:" + ApoliRegistries.ENTITY_CONDITION.get().getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
+		return "CEC:" + ApoliRegistries.ENTITY_CONDITION.getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
 	}
 }

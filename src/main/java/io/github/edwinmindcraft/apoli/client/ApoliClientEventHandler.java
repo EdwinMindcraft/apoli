@@ -6,11 +6,10 @@ import io.github.apace100.apoli.ApoliClient;
 import io.github.apace100.apoli.util.MiscUtil;
 import io.github.apace100.calio.Calio;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import io.github.edwinmindcraft.apoli.common.network.C2SFetchActiveSpawnPowerPacket;
-import io.github.edwinmindcraft.apoli.common.power.InvisibilityPower;
 import io.github.edwinmindcraft.apoli.common.power.ParticlePower;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.PhasingConfiguration;
@@ -53,7 +52,7 @@ public class ApoliClientEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void onBlockOverlay(RenderBlockScreenEffectEvent event) {
-		if (IPowerContainer.hasPower(event.getPlayer(), ApoliPowers.PHASING.get()))
+		if (PowerContainer.hasPower(event.getPlayer(), ApoliPowers.PHASING.get()))
 			event.setCanceled(true);
 	}
 
@@ -107,7 +106,7 @@ public class ApoliClientEventHandler {
 			}
 			LocalPlayer player = instance.player;
 			if (player != null) {
-				IPowerContainer.get(player).ifPresent(container -> {
+				PowerContainer.get(player).ifPresent(container -> {
 					HashMap<String, Boolean> currentKeyBindingStates = new HashMap<>();
 					Set<ResourceLocation> pressedPowers = new HashSet<>();
 					Registry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers();

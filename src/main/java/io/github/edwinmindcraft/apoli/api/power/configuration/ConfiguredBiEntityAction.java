@@ -44,6 +44,6 @@ public final class ConfiguredBiEntityAction<C extends IDynamicFeatureConfigurati
 
 	@Override
 	public String toString() {
-		return "CBEA:" + ApoliRegistries.BIENTITY_ACTION.get().getKey(this.getFactory()) + "-" + this.getConfiguration();
+		return "CBEA:" + ApoliRegistries.BIENTITY_ACTION.getKey(this.getFactory()) + "-" + this.getConfiguration();
 	}
 }

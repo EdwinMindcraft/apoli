@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.action.entity;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.PowerReference;
 import io.github.edwinmindcraft.apoli.api.power.ICooldownPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -18,7 +18,7 @@ public class TriggerCooldownAction extends EntityAction<PowerReference> {
 	@SuppressWarnings("unchecked")
 	public void execute(PowerReference configuration, Entity entity) {
 		if (entity instanceof LivingEntity living) {
-			ConfiguredPower<?, ?> power = IPowerContainer.get(living).resolve()
+			ConfiguredPower<?, ?> power = PowerContainer.get(living).resolve()
 					.map(x -> x.getPower(configuration.power())).map(Holder::value).orElse(null);
 			if (power != null && power.getFactory() instanceof ICooldownPower cp)
 				cp.use(power, living);

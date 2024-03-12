@@ -3,7 +3,7 @@ package io.github.apace100.apoli.integration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.event.entity.EntityEvent;
+import net.neoforged.neoforge.event.entity.EntityEvent;
 
 import java.util.List;
 

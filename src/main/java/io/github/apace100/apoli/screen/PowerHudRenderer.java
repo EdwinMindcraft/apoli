@@ -2,7 +2,7 @@ package io.github.apace100.apoli.screen;
 
 import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.apace100.apoli.util.HudRender;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -26,7 +26,7 @@ public class PowerHudRenderer implements GameHudRender {
 		LocalPlayer player = client.player;
 		if (player == null)
 			return;
-		IPowerContainer.get(player).ifPresent(component -> {
+		PowerContainer.get(player).ifPresent(component -> {
 			int x = client.getWindow().getGuiScaledWidth() / 2 + 20 + ApoliConfigs.CLIENT.resourcesAndCooldowns.hudOffsetX.get();
 			int y = client.getWindow().getGuiScaledHeight() - 47 + ApoliConfigs.CLIENT.resourcesAndCooldowns.hudOffsetY.get();
 			if (player.getVehicle() instanceof LivingEntity vehicle)

@@ -44,6 +44,6 @@ public final class ConfiguredFluidCondition<C extends IDynamicFeatureConfigurati
 
 	@Override
 	public String toString() {
-		return "CFC:" + ApoliRegistries.FLUID_CONDITION.get().getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
+		return "CFC:" + ApoliRegistries.FLUID_CONDITION.getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
 	}
 }

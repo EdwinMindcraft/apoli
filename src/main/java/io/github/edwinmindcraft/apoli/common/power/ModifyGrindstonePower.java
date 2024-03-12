@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -31,7 +31,7 @@ public class ModifyGrindstonePower extends PowerFactory<ModifyGrindstoneConfigur
     }
 
     public static List<Holder<ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower>>> tryGetApplyingPowers(Entity entity, ItemStack top, ItemStack bottom, ItemStack original, Optional<BlockPos> pos) {
-        return IPowerContainer.getPowers(entity, ApoliPowers.MODIFY_GRINDSTONE.get()).stream().filter(holder -> holder.value().getConfiguration().doesApply(holder.value(), entity.level(), top, bottom, original, pos)).toList();
+        return PowerContainer.getPowers(entity, ApoliPowers.MODIFY_GRINDSTONE.get()).stream().filter(holder -> holder.value().getConfiguration().doesApply(holder.value(), entity.level(), top, bottom, original, pos)).toList();
     }
 
     public static ItemStack tryCreateOutput(List<Holder<ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower>>> holders, Level level, ItemStack top, ItemStack bottom, ItemStack currentOutput) {

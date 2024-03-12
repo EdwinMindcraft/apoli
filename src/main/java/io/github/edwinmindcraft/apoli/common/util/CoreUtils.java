@@ -4,7 +4,7 @@ import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.access.IdentifiedLootTable;
 import io.github.apace100.apoli.access.ModifiableFoodEntity;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -53,12 +53,12 @@ public class CoreUtils {
 		if (!(entity instanceof LivingEntity living))
 			return false;
 		return RestrictArmorPower.isForbidden(living, slot, stack) ||
-			   (stack.is(Items.ELYTRA) && IPowerContainer.hasPower(living, ApoliPowers.ELYTRA_FLIGHT.get()));
+			   (stack.is(Items.ELYTRA) && PowerContainer.hasPower(living, ApoliPowers.ELYTRA_FLIGHT.get()));
 	}
 
 	public static float modifyFriction(float friction, LevelReader level, BlockPos pos, @Nullable Entity entity, BlockState state) {
 		if (entity != null)
-			return IPowerContainer.modify(entity, ApoliPowers.MODIFY_SLIPPERINESS.get(), friction, p -> ConfiguredBlockCondition.check(p.value().getConfiguration().condition(), level, pos, () -> state));
+			return PowerContainer.modify(entity, ApoliPowers.MODIFY_SLIPPERINESS.get(), friction, p -> ConfiguredBlockCondition.check(p.value().getConfiguration().condition(), level, pos, () -> state));
 		return friction;
 	}
 
@@ -106,7 +106,7 @@ public class CoreUtils {
 	}
 
     public static boolean shouldIgnoreWater(LivingEntity living, FluidState state) {
-        return IPowerContainer.hasPower(living, ApoliPowers.IGNORE_WATER.get()) && state.getFluidType() == ForgeMod.WATER_TYPE.get();
+        return PowerContainer.hasPower(living, ApoliPowers.IGNORE_WATER.get()) && state.getFluidType() == ForgeMod.WATER_TYPE.get();
     }
 
     public static LootTable setLootTableId(LootTable original, LootDataResolver resolver, ResourceLocation id) {

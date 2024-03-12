@@ -1,6 +1,6 @@
 package io.github.apace100.apoli.mixin.forge;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
@@ -28,7 +28,7 @@ public class FoodDataMixin {
 	 */
 	@ModifyVariable(method = "tick", at = @At(value = "STORE"))
 	private boolean preventNaturalRegeneration(boolean bool) {
-		if (IPowerContainer.hasPower(this.player, ApoliPowers.DISABLE_REGEN.get()))
+		if (PowerContainer.hasPower(this.player, ApoliPowers.DISABLE_REGEN.get()))
 			return false;
 		return bool;
 	}

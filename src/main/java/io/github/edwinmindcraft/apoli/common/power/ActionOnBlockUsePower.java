@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.InteractionPowerConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
@@ -18,7 +18,7 @@ import java.util.Optional;
 public class ActionOnBlockUsePower extends PowerFactory<BlockInteractionConfiguration> {
 
 	public static Optional<InteractionResult> tryInteract(Entity entity, BlockPos pos, Direction direction, InteractionHand hand) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.ACTION_ON_BLOCK_USE.get()).stream().flatMap(x -> x.value().getFactory().tryExecute(x.value(), entity, pos, direction, hand).stream()).reduce(InteractionPowerConfiguration::reduce);
+		return PowerContainer.getPowers(entity, ApoliPowers.ACTION_ON_BLOCK_USE.get()).stream().flatMap(x -> x.value().getFactory().tryExecute(x.value(), entity, pos, direction, hand).stream()).reduce(InteractionPowerConfiguration::reduce);
 	}
 
 	public ActionOnBlockUsePower() {

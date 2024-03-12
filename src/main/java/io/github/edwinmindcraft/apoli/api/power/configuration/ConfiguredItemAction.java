@@ -46,6 +46,6 @@ public final class ConfiguredItemAction<C extends IDynamicFeatureConfiguration, 
 
 	@Override
 	public String toString() {
-		return "CIA:" + ApoliRegistries.ITEM_ACTION.get().getKey(this.getFactory()) + "-" + this.getConfiguration();
+		return "CIA:" + ApoliRegistries.ITEM_ACTION.getKey(this.getFactory()) + "-" + this.getConfiguration();
 	}
 }
