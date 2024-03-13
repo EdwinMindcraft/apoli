@@ -93,8 +93,8 @@ public record ReplaceLootTableConfiguration(Map<String, ResourceLocation> replac
         }
         if(lootContext.hasParam(LootContextParams.ORIGIN)) {
             Vec3 origin = lootContext.getParam(LootContextParams.ORIGIN);
-            BlockPos blockPos = new BlockPos((int) origin.x(), (int) origin.y(), (int) origin.z());
-            return ConfiguredBlockCondition.check(blockCondition(), lootContext.getLevel(), blockPos);
+            BlockPos blockPos = BlockPos.containing(origin);
+            return ConfiguredBlockCondition.check(blockCondition(), lootContext.getLevel(), blockPos, () -> lootContext.getParam(LootContextParams.BLOCK_STATE));
         }
         return true;
     }
