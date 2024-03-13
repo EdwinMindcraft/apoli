@@ -131,7 +131,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 
     @Redirect(method = "baseTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isInWaterRainOrBubble()Z"))
     private boolean preventExtinguishingFromSwimming(LivingEntity livingEntity) {
-        if (IPowerContainer.hasPower(livingEntity, ApoliPowers.SWIMMING.get()) && livingEntity.isSwimming() && this.getFluidHeight(FluidTags.WATER) <= 0)
+        if (livingEntity.isSwimming() && this.getFluidHeight(FluidTags.WATER) <= 0 && IPowerContainer.hasPower(livingEntity, ApoliPowers.SWIMMING.get()))
             return false;
         return livingEntity.isInWaterRainOrBubble();
     }

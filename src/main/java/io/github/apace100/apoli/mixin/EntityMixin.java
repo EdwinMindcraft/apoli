@@ -66,7 +66,7 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 
 	@Redirect(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;isInWaterRainOrBubble()Z"))
 	private boolean preventExtinguishingFromSwimming(Entity entity) {
-		if (IPowerContainer.hasPower(entity, ApoliPowers.SWIMMING.get()) && entity.isSwimming() && !(this.getFluidHeight(FluidTags.WATER) > 0))
+		if (entity.isSwimming() && !(this.getFluidHeight(FluidTags.WATER) > 0) && IPowerContainer.hasPower(entity, ApoliPowers.SWIMMING.get()))
 			return false;
 		return entity.isInWaterRainOrBubble();
 	}
