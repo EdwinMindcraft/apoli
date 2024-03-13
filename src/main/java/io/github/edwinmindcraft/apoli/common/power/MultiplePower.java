@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonElement;
 import io.github.apace100.apoli.integration.PowerLoadEvent;
@@ -8,8 +9,11 @@ import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.power.configuration.MultipleConfiguration;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -34,7 +38,20 @@ public class MultiplePower extends PowerFactory<MultipleConfiguration<Configured
 	 * Additionally, this will post the event to {@link PowerLoadEvent.Post} which will be used to handle additional data.
 	 */
 	private static <C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> ConfiguredPower<C, ?> reconfigure(String suffix, ConfiguredPower<C, F> source, JsonElement root) {
-		MinecraftForge.EVENT_BUS.post(new PowerLoadEvent.Post(new ResourceLocation(SerializableData.CURRENT_NAMESPACE, SerializableData.CURRENT_PATH + suffix), root, source));
+		ResourceLocation name = new ResourceLocation(SerializableData.CURRENT_NAMESPACE, SerializableData.CURRENT_PATH + suffix);
+		MinecraftForge.EVENT_BUS.post(new PowerLoadEvent.Post(name, root, source));
 		return source.getFactory().configure(source.getConfiguration(), source.getData().copyOf().hidden().build());
+	}
+
+	@Override
+	public MultipleConfiguration<ConfiguredPower<?, ?>> complete(ResourceLocation identifier, MultipleConfiguration<ConfiguredPower<?, ?>> configuration) {
+		ImmutableMap.Builder<String, Holder<ConfiguredPower<?, ?>>> builder = ImmutableMap.builder();
+		Registry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers();
+		for (String entry : configuration.children().keySet()) {
+			ResourceLocation powerName = new ResourceLocation(identifier.getNamespace(), identifier.getPath() + entry);
+			Holder<ConfiguredPower<?, ?>> holder = powers.getOrCreateHolder(ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, powerName));
+			builder.put(entry, holder);
+		}
+		return new MultipleConfiguration<>(builder.build());
 	}
 }

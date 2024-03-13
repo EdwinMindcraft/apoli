@@ -61,16 +61,19 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	private final C configuration;
 	private final PowerData data;
 
+	private final Supplier<F> factorySupplier;
+
 	public ConfiguredPower(Supplier<F> factory, C configuration, PowerData data) {
 		super(ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);
 		this.configuration = configuration;
 		this.data = data;
+		this.factorySupplier = factory;
 		this.factory = Lazy.of(() -> {
 			F f = factory.get();
 			this.gatherCapabilities(f::initCapabilities);
 			return f;
 		});
-		if (!(factory instanceof RegistryObject<F> ro) || !ro.isPresent())
+		if (!(factory instanceof RegistryObject<F> ro) || ro.isPresent())
 			this.factory.get(); //Should be mostly safe.
 	}
 
@@ -271,7 +274,10 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	}
 
 	public ConfiguredPower<C, F> complete(ResourceLocation name) {
-		return new ConfiguredPower<>(this::getFactory, this.getConfiguration(), this.getData().complete(name));
+		ConfiguredPower<C, F> power = new ConfiguredPower<>(this.factorySupplier, this.factorySupplier.get().complete(name, this.getConfiguration()), this.getData().complete(name));
+		power.setRegistryName(name);
+		this.invalidateCaps(); //Free capabilities that are now unused.
+		return power;
 	}
 
 	public F getFactory() {

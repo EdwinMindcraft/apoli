@@ -205,4 +205,8 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 	public io.github.apace100.apoli.power.factory.PowerFactory<?> getLegacyFactory() {
 		return this.legacyType.get();
 	}
+
+	public T complete(ResourceLocation identifier, T configuration) {
+		return configuration;
+	}
 }
