@@ -92,7 +92,7 @@ public record ReplaceLootTableConfiguration(Map<String, ResourceLocation> replac
         }
         if(lootContext.hasParam(LootContextParams.ORIGIN)) {
             BlockPos blockPos = new BlockPos(lootContext.getParam(LootContextParams.ORIGIN));
-            return ConfiguredBlockCondition.check(blockCondition(), lootContext.getLevel(), blockPos, () -> lootContext.getParam(LootContextParams.BLOCK_STATE));
+            return ConfiguredBlockCondition.check(blockCondition(), lootContext.getLevel(), blockPos);
         }
         return true;
     }
