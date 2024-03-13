@@ -8,6 +8,7 @@ import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.calio.api.ability.PlayerAbility;
 import io.github.edwinmindcraft.calio.api.registry.PlayerAbilities;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -155,7 +156,18 @@ public class ApoliDataTypes {
 
 	public static final SerializableDataType<PlayerAbility> PLAYER_ABILITY = SerializableDataType.wrap(
 			PlayerAbility.class, SerializableDataTypes.IDENTIFIER,
-			PlayerAbility::getRegistryName, id -> PlayerAbilities.REGISTRY.get().getValue(id));
+			ability -> PlayerAbilities.REGISTRY.get().getKey(ability), id -> {
+				ResourceLocation resolvedId = id;
+				if (id.getNamespace().equals("minecraft")) {
+					resolvedId = new ResourceLocation("calio", id.getPath());
+				}
+				PlayerAbility ability = PlayerAbilities.REGISTRY.get().getValue(resolvedId);
+				if (ability == null) {
+					throw new NullPointerException(id + " has not been registered");
+				}
+				return ability;
+			});
+
 
     /*public static <T> SerializableDataType<ConditionFactory<T>.Instance> condition(Class<ConditionFactory<T>.Instance> dataClass, ConditionType<T> conditionType) {
         return new SerializableDataType<>(dataClass, conditionType::write, conditionType::read, conditionType::read);
