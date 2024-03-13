@@ -2,6 +2,7 @@ package io.github.apace100.apoli;
 
 import io.github.apace100.apoli.command.EntityConditionArgument;
 import io.github.apace100.apoli.command.PowerOperation;
+import io.github.apace100.apoli.command.PowerSourceArgumentType;
 import io.github.apace100.apoli.command.PowerTypeArgumentType;
 import io.github.apace100.apoli.util.ApoliConfig;
 import io.github.apace100.apoli.util.ApoliConfigs;
@@ -45,6 +46,7 @@ public class Apoli {
 		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ApoliConfigs.CLIENT_SPECS);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ApoliConfigs.SERVER_SPECS);
 		ArgumentTypes.register(MODID + ":power", PowerTypeArgumentType.class, new EmptyArgumentSerializer<>(PowerTypeArgumentType::power));
+		ArgumentTypes.register(MODID + ":power_source", PowerSourceArgumentType.class, new PowerSourceArgumentType.Serializer());
 		ArgumentTypes.register(MODID + ":power_operation", PowerOperation.class, new EmptyArgumentSerializer<>(PowerOperation::operation));
 		ArgumentTypes.register(MODID + ":entity_condition", EntityConditionArgument.class, new EmptyArgumentSerializer<>(EntityConditionArgument::entityCondition));
 
