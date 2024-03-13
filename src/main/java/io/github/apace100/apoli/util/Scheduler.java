@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,7 @@ public class Scheduler {
 
 	public Scheduler() {
 		MinecraftForge.EVENT_BUS.addListener((TickEvent.ServerTickEvent event) -> {
-			MinecraftServer server = event.getServer();
+			MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 			if (event.phase == TickEvent.Phase.END) {
 				this.currentTick = server.getTickCount();
 				List<Consumer<MinecraftServer>> runnables = this.taskQueue.remove(this.currentTick);
