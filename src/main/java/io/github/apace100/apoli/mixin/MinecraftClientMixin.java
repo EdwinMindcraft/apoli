@@ -24,7 +24,7 @@ public class MinecraftClientMixin {
 		if (!cir.getReturnValue()) {
 			if (this.player != null) {
 				//EntityGlowPower incorporates both Self and Other glow powers.
-				if (this.player != entity && EntityGlowPower.shouldGlow(this.player, entity))
+				if (EntityGlowPower.shouldGlow(this.player, entity, this.player == entity))
 					cir.setReturnValue(true);
 			}
 		}

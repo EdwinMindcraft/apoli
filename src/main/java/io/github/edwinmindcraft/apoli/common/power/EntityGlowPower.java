@@ -13,19 +13,23 @@ import java.util.stream.Stream;
 
 public class EntityGlowPower extends PowerFactory<EntityGlowConfiguration> {
 
-	private static Stream<ConfiguredPower<EntityGlowConfiguration, EntityGlowPower>> getGlowPowers(Entity actor, Entity target) {
+	private static Stream<ConfiguredPower<EntityGlowConfiguration, EntityGlowPower>> getGlowPowers(Entity actor, Entity target, boolean isPlayer) {
+		var selfGlow = IPowerContainer.getPowers(target, ApoliPowers.SELF_GLOW.get());
+		if (isPlayer)
+			return selfGlow.stream();
+		var entityGlow = IPowerContainer.getPowers(actor, ApoliPowers.ENTITY_GLOW.get());
 		return Stream.concat(
-				IPowerContainer.getPowers(actor, ApoliPowers.ENTITY_GLOW.get()).stream(),
-				IPowerContainer.getPowers(target, ApoliPowers.SELF_GLOW.get()).stream()
+				entityGlow.stream(),
+				selfGlow.stream()
 		);
 	}
 
-	public static boolean shouldGlow(Entity actor, Entity target) {
-		return getGlowPowers(actor, target).anyMatch(x -> x.getFactory().doesApply(x.getConfiguration(), actor, target));
+	public static boolean shouldGlow(Entity actor, Entity target, boolean isPlayer) {
+		return getGlowPowers(actor, target, isPlayer).anyMatch(x -> x.getFactory().doesApply(x.getConfiguration(), actor, target));
 	}
 
 	public static Optional<ColorConfiguration> getGlowColor(Entity actor, Entity target) {
-		return getGlowPowers(actor, target).flatMap(x -> x.getFactory().getColor(x.getConfiguration(), actor, target).stream()).findFirst();
+		return getGlowPowers(actor, target, false).flatMap(x -> x.getFactory().getColor(x.getConfiguration(), actor, target).stream()).findFirst();
 	}
 
 	private final boolean targetSelf;
