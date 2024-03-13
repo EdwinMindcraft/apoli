@@ -50,7 +50,7 @@ public record RaycastSettingsConfiguration(double distance, boolean block, boole
 			}
 		}
 		if (result == null)
-			return BlockHitResult.miss(origin, Direction.getNearest(direction.x, direction.y, direction.z), new BlockPos(target));
+			return BlockHitResult.miss(target, Direction.getNearest(direction.x, direction.y, direction.z), new BlockPos(target));
 		return result;
 	}
 
