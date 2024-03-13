@@ -96,7 +96,6 @@ public abstract class LootTableMixin {
     private void setReplacedLootTable(LootContext context, Consumer<ItemStack> lootConsumer, CallbackInfo ci) {
         if (this.lootTableId.equals(ReplaceLootTablePower.REPLACED_TABLE_UTIL_ID)) {
             LootTable replace = ReplaceLootTablePower.peek();
-            Apoli.LOGGER.info("Replacing " + ReplaceLootTablePower.REPLACED_TABLE_UTIL_ID + " with " + replace.getLootTableId());
             replace.getRandomItemsRaw(context, lootConsumer);
             ci.cancel();
         }
