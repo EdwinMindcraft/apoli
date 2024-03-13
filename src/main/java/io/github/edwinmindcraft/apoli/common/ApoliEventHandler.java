@@ -122,8 +122,8 @@ public class ApoliEventHandler {
 		if (original.isPresent() != player.isPresent()) {
 			Apoli.LOGGER.info("Capability mismatch: original:{}, new:{}", original.isPresent(), player.isPresent());
 		}
-		player.ifPresent(p -> original.ifPresent(o -> p.readFromNbt(o.writeToNbt(new CompoundTag()))));
 		original.ifPresent(x -> x.getPowers().forEach(y -> y.onRemoved(event.getOriginal())));
+		player.ifPresent(p -> original.ifPresent(o -> p.readFromNbt(o.writeToNbt(new CompoundTag()))));
 		if (!event.getEntityLiving().level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
 			IPowerContainer.getPowers(event.getPlayer(), ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.getFactory().restoreItems(power, event.getPlayer()));
 
