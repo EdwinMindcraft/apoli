@@ -1,6 +1,5 @@
 package io.github.edwinmindcraft.apoli.common.action.item;
 
-import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.ItemAction;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;

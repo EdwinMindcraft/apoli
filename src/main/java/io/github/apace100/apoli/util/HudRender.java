@@ -5,14 +5,11 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
-import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-
-import java.util.Optional;
 
 public record HudRender(boolean shouldRender, int barIndex, ResourceLocation spriteLocation,
 						Holder<ConfiguredEntityCondition<?, ?>> condition, boolean inverted) implements IDynamicFeatureConfiguration {

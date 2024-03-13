@@ -5,7 +5,6 @@ import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import io.github.edwinmindcraft.apoli.common.power.configuration.BiEntityConditionConfiguration;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiPredicate;
 

@@ -9,8 +9,6 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntity
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
 
-import java.util.Optional;
-
 public record AreaOfEffectConfiguration(double radius, @MustBeBound Holder<ConfiguredBiEntityAction<?, ?>> action,
 										Holder<ConfiguredBiEntityCondition<?, ?>> condition,
 										boolean includeTarget) implements IDynamicFeatureConfiguration {

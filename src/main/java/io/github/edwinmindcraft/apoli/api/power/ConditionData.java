@@ -1,6 +1,5 @@
 package io.github.edwinmindcraft.apoli.api.power;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;

@@ -3,7 +3,6 @@ package io.github.apace100.apoli.mixin.forge;
 import io.github.edwinmindcraft.apoli.common.power.EntityActionPower;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.world.entity.LivingEntity;
-import org.checkerframework.checker.units.qual.A;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
