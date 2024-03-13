@@ -26,6 +26,10 @@ public interface IActivePower<T extends IDynamicFeatureConfiguration> {
 				CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "continuous", false).forGetter(Key::continuous)
 		).apply(instance, Key::new));
 
-		public static final Codec<Key> BACKWARD_COMPATIBLE_CODEC = Codec.either(CODEC, Codec.STRING).xmap(x -> x.map(Function.identity(), string -> new Key(string.equals("secondary") ? SECONDARY.key() : PRIMARY.key(), false)), Either::left);
+		public static final Codec<Key> BACKWARD_COMPATIBLE_CODEC = Codec.either(CODEC, Codec.STRING).xmap(x -> x.map(Function.identity(), string -> switch (string) {
+            case "secondary" -> SECONDARY;
+            case "primary" -> PRIMARY;
+            default -> new Key(string, false);
+        }), Either::left);
 	}
 }
