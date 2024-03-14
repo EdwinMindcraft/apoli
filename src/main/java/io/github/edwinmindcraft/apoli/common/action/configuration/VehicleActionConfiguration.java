@@ -17,6 +17,6 @@ public record VehicleActionConfiguration(Holder<ConfiguredEntityAction<?, ?>> ac
 			ConfiguredEntityAction.optional("action").forGetter(VehicleActionConfiguration::action),
 			ConfiguredBiEntityAction.optional("bientity_action").forGetter(VehicleActionConfiguration::biEntityAction),
 			ConfiguredBiEntityCondition.optional("bientity_condition").forGetter(VehicleActionConfiguration::biEntityCondition),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "recursive", false).forGetter(VehicleActionConfiguration::recursive)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "recursive", false).forGetter(VehicleActionConfiguration::recursive)
 	).apply(instance, VehicleActionConfiguration::new));
 }

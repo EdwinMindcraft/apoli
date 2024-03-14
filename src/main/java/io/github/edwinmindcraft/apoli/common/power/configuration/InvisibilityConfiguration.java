@@ -7,7 +7,7 @@ import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
 public record InvisibilityConfiguration(boolean renderArmor, boolean renderOutline) implements IDynamicFeatureConfiguration {
     public static final Codec<InvisibilityConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "render_armor", false).forGetter(InvisibilityConfiguration::renderArmor),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "render_outline", false).forGetter(InvisibilityConfiguration::renderOutline)
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "render_armor", false).forGetter(InvisibilityConfiguration::renderArmor),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "render_outline", false).forGetter(InvisibilityConfiguration::renderOutline)
     ).apply(instance, InvisibilityConfiguration::new));
 }

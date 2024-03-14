@@ -36,17 +36,17 @@ public record FireProjectileConfiguration(int cooldown, HudRender hudRender, Ent
                                           Holder<ConfiguredEntityAction<?, ?>> shooterAction) implements IActiveCooldownPowerConfiguration {
 
 	public static final Codec<FireProjectileConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "cooldown", 1).forGetter(FireProjectileConfiguration::cooldown),
-			CalioCodecHelper.optionalField(ApoliDataTypes.HUD_RENDER, "hud_render", HudRender.DONT_RENDER).forGetter(FireProjectileConfiguration::hudRender),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "cooldown", 1).forGetter(FireProjectileConfiguration::cooldown),
+			ExtraCodecs.strictOptionalField(ApoliDataTypes.HUD_RENDER, "hud_render", HudRender.DONT_RENDER).forGetter(FireProjectileConfiguration::hudRender),
 			BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity_type").forGetter(FireProjectileConfiguration::entityType),
-			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "count", 1).forGetter(FireProjectileConfiguration::projectileCount),
-			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "speed", 1.5F).forGetter(FireProjectileConfiguration::speed),
-			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "divergence", 1.0F).forGetter(FireProjectileConfiguration::divergence),
-			CalioCodecHelper.optionalField(SerializableDataTypes.SOUND_EVENT, "sound").forGetter(x -> Optional.ofNullable(x.soundEvent())),
-			CalioCodecHelper.optionalField(SerializableDataTypes.NBT, "tag").forGetter(x -> Optional.ofNullable(x.tag())),
-			CalioCodecHelper.optionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(FireProjectileConfiguration::key),
-			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "interval", 0).forGetter(FireProjectileConfiguration::interval),
-			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "start_delay", 0).forGetter(FireProjectileConfiguration::startDelay),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "count", 1).forGetter(FireProjectileConfiguration::projectileCount),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.FLOAT, "speed", 1.5F).forGetter(FireProjectileConfiguration::speed),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.FLOAT, "divergence", 1.0F).forGetter(FireProjectileConfiguration::divergence),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.SOUND_EVENT, "sound").forGetter(x -> Optional.ofNullable(x.soundEvent())),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.NBT, "tag").forGetter(x -> Optional.ofNullable(x.tag())),
+			ExtraCodecs.strictOptionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(FireProjectileConfiguration::key),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "interval", 0).forGetter(FireProjectileConfiguration::interval),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "start_delay", 0).forGetter(FireProjectileConfiguration::startDelay),
             ConfiguredEntityAction.optional("projectile_action").forGetter(FireProjectileConfiguration::projectileAction),
             ConfiguredEntityAction.optional("shooter_action").forGetter(FireProjectileConfiguration::shooterAction)
 	).apply(instance, (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) -> new FireProjectileConfiguration(t1, t2, t3, t4, t5, t6, t7.orElse(null), t8.orElse(null), t9, t10, t11, t12, t13)));

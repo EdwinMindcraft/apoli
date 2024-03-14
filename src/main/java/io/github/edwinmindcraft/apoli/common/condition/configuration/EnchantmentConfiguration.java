@@ -26,7 +26,7 @@ public record EnchantmentConfiguration(IntegerComparisonConfiguration comparison
 									   Calculation calculation) implements IDynamicFeatureConfiguration {
     public static final Codec<EnchantmentConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             IntegerComparisonConfiguration.MAP_CODEC.forGetter(EnchantmentConfiguration::comparison),
-            CalioCodecHelper.optionalField(SerializableDataTypes.ENCHANTMENT, "enchantment").forGetter(EnchantmentConfiguration::enchantment),
+            ExtraCodecs.strictOptionalField(SerializableDataTypes.ENCHANTMENT, "enchantment").forGetter(EnchantmentConfiguration::enchantment),
             SerializableDataType.enumValue(Calculation.class).optionalFieldOf("calculation", Calculation.SUM).forGetter(EnchantmentConfiguration::calculation)
     ).apply(instance, EnchantmentConfiguration::new));
 

@@ -32,19 +32,19 @@ public record InteractionPowerConfiguration(EnumSet<InteractionHand> hands, Inte
 	}
 
 	public static final MapCodec<InteractionPowerConfiguration> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			CalioCodecHelper.optionalField(SerializableDataTypes.HAND_SET, "hands", (Supplier<EnumSet<InteractionHand>>) () -> EnumSet.allOf(InteractionHand.class)).forGetter(InteractionPowerConfiguration::hands),
-			CalioCodecHelper.optionalField(SerializableDataTypes.ACTION_RESULT, "action_result", InteractionResult.SUCCESS).forGetter(InteractionPowerConfiguration::actionResult),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.HAND_SET, "hands", (Supplier<EnumSet<InteractionHand>>) () -> EnumSet.allOf(InteractionHand.class)).forGetter(InteractionPowerConfiguration::hands),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.ACTION_RESULT, "action_result", InteractionResult.SUCCESS).forGetter(InteractionPowerConfiguration::actionResult),
 			ConfiguredItemCondition.optional("item_condition").forGetter(InteractionPowerConfiguration::itemCondition),
 			ConfiguredItemAction.optional("held_item_action").forGetter(InteractionPowerConfiguration::heldItemAction),
-			CalioCodecHelper.optionalField(SerializableDataTypes.ITEM_STACK, "result_stack").forGetter(x -> Optional.ofNullable(x.itemResult())),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.ITEM_STACK, "result_stack").forGetter(x -> Optional.ofNullable(x.itemResult())),
 			ConfiguredItemAction.optional("result_item_action").forGetter(InteractionPowerConfiguration::resultItemAction)
 	).apply(instance, (t1, t2, t3, t4, t5, t6) -> new InteractionPowerConfiguration(t1, t2, t3, t4, t5.orElse(null), t6)));
 
 	public static final MapCodec<InteractionPowerConfiguration> PREVENTING_MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			CalioCodecHelper.optionalField(SerializableDataTypes.HAND_SET, "hands", (Supplier<EnumSet<InteractionHand>>) () -> EnumSet.allOf(InteractionHand.class)).forGetter(InteractionPowerConfiguration::hands),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.HAND_SET, "hands", (Supplier<EnumSet<InteractionHand>>) () -> EnumSet.allOf(InteractionHand.class)).forGetter(InteractionPowerConfiguration::hands),
 			ConfiguredItemCondition.optional("item_condition").forGetter(InteractionPowerConfiguration::itemCondition),
 			ConfiguredItemAction.optional("held_item_action").forGetter(InteractionPowerConfiguration::heldItemAction),
-			CalioCodecHelper.optionalField(SerializableDataTypes.ITEM_STACK, "result_stack").forGetter(x -> Optional.ofNullable(x.itemResult())),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.ITEM_STACK, "result_stack").forGetter(x -> Optional.ofNullable(x.itemResult())),
 			ConfiguredItemAction.optional("result_item_action").forGetter(InteractionPowerConfiguration::resultItemAction)
 	).apply(instance, (t1, t3, t4, t5, t6) -> new InteractionPowerConfiguration(t1, InteractionResult.FAIL, t3, t4, t5.orElse(null), t6)));
 

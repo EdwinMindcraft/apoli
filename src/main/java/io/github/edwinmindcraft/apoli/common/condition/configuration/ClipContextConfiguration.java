@@ -10,7 +10,7 @@ import net.minecraft.world.level.ClipContext;
 public record ClipContextConfiguration(ClipContext.Block block,
 									   ClipContext.Fluid fluid) implements IDynamicFeatureConfiguration {
 	public static final Codec<ClipContextConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(SerializableDataTypes.SHAPE_TYPE, "shape_type", ClipContext.Block.VISUAL).forGetter(ClipContextConfiguration::block),
-			CalioCodecHelper.optionalField(SerializableDataTypes.FLUID_HANDLING, "fluid_handling", ClipContext.Fluid.NONE).forGetter(ClipContextConfiguration::fluid)
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.SHAPE_TYPE, "shape_type", ClipContext.Block.VISUAL).forGetter(ClipContextConfiguration::block),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.FLUID_HANDLING, "fluid_handling", ClipContext.Fluid.NONE).forGetter(ClipContextConfiguration::fluid)
 	).apply(instance, ClipContextConfiguration::new));
 }

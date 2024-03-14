@@ -30,13 +30,13 @@ public record ModifyGrindstoneConfiguration(Holder<ConfiguredItemCondition<?, ?>
 			ConfiguredItemCondition.optional("bottom_condition").forGetter(ModifyGrindstoneConfiguration::bottomItemCondition),
 			ConfiguredItemCondition.optional("output_condition").forGetter(ModifyGrindstoneConfiguration::outputItemCondition),
 			ConfiguredBlockCondition.optional("block_condition").forGetter(ModifyGrindstoneConfiguration::blockCondition),
-			CalioCodecHelper.optionalField(SerializableDataTypes.ITEM_STACK, "result_stack").forGetter(ModifyGrindstoneConfiguration::resultStack),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.ITEM_STACK, "result_stack").forGetter(ModifyGrindstoneConfiguration::resultStack),
 			ConfiguredItemAction.optional("item_action").forGetter(ModifyGrindstoneConfiguration::resultItemAction),
 			ConfiguredItemAction.optional("item_action_after_grinding").forGetter(ModifyGrindstoneConfiguration::lateItemAction),
 			ConfiguredEntityAction.optional("entity_action").forGetter(ModifyGrindstoneConfiguration::entityAction),
 			ConfiguredBlockAction.optional("block_action").forGetter(ModifyGrindstoneConfiguration::blockAction),
-			CalioCodecHelper.optionalField(SerializableDataType.enumValue(ModifyGrindstonePower.ResultType.class), "result_type", ModifyGrindstonePower.ResultType.UNCHANGED).forGetter(ModifyGrindstoneConfiguration::resultType),
-			CalioCodecHelper.optionalField(ConfiguredModifier.CODEC, "xp_modifier").forGetter(ModifyGrindstoneConfiguration::experienceModifier)
+			ExtraCodecs.strictOptionalField(SerializableDataType.enumValue(ModifyGrindstonePower.ResultType.class), "result_type", ModifyGrindstonePower.ResultType.UNCHANGED).forGetter(ModifyGrindstoneConfiguration::resultType),
+			ExtraCodecs.strictOptionalField(ConfiguredModifier.CODEC, "xp_modifier").forGetter(ModifyGrindstoneConfiguration::experienceModifier)
 	).apply(instance, ModifyGrindstoneConfiguration::new));
 
 

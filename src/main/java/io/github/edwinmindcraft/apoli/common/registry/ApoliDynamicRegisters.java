@@ -5,13 +5,13 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.*;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.global.GlobalPowerSet;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryBuilder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 public class ApoliDynamicRegisters {
 
@@ -70,9 +70,9 @@ public class ApoliDynamicRegisters {
 
 		CONFIGURED_MODIFIERS.register(bus);
 		bus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
-			event.dataPackRegistry(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, ConfiguredPower.CODEC, ConfiguredPower.CODEC);
-			event.dataPackRegistry(ApoliDynamicRegistries.GLOBAL_POWER_SET, GlobalPowerSet.CODEC, GlobalPowerSet.CODEC);
-			event.dataPackRegistry(ApoliDynamicRegistries.CONFIGURED_BIENTITY_ACTION_KEY, ConfiguredBiEntityAction.CODEC, ConfiguredBiEntityAction.CODEC);
+			event.dataPackRegistry(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, ConfiguredPower.DIRECT_CODEC, ConfiguredPower.DIRECT_CODEC);
+			event.dataPackRegistry(ApoliDynamicRegistries.GLOBAL_POWER_SET, GlobalPowerSet.DIRECT_CODEC, GlobalPowerSet.DIRECT_CODEC);
+			event.dataPackRegistry(ApoliDynamicRegistries.CONFIGURED_BIENTITY_ACTION_KEY, ConfiguredBiEntityAction.DIRECT_CODEC, ConfiguredBiEntityAction.DIRECT_CODEC);
 			event.dataPackRegistry(ApoliDynamicRegistries.CONFIGURED_BLOCK_ACTION_KEY, ConfiguredBlockAction.CODEC, ConfiguredBlockAction.CODEC);
 			event.dataPackRegistry(ApoliDynamicRegistries.CONFIGURED_ENTITY_ACTION_KEY, ConfiguredEntityAction.CODEC, ConfiguredEntityAction.CODEC);
 			event.dataPackRegistry(ApoliDynamicRegistries.CONFIGURED_ITEM_ACTION_KEY, ConfiguredItemAction.CODEC, ConfiguredItemAction.CODEC);

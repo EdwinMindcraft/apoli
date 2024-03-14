@@ -25,11 +25,11 @@ import java.util.Optional;
 public final class ExplodeConfiguration implements IDynamicFeatureConfiguration {
 	public static final Codec<ExplodeConfiguration> CODEC = RecordCodecBuilder.create(instance -> /*, t6*/ instance.group(
 			CalioCodecHelper.FLOAT.fieldOf("power").forGetter(ExplodeConfiguration::power),
-			CalioCodecHelper.optionalField(ApoliDataTypes.BACKWARDS_COMPATIBLE_DESTRUCTION_TYPE, "destruction_type", Explosion.BlockInteraction.DESTROY).forGetter(ExplodeConfiguration::destructionType),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "damage_self", true).forGetter(ExplodeConfiguration::damageSelf),
+			ExtraCodecs.strictOptionalField(ApoliDataTypes.BACKWARDS_COMPATIBLE_DESTRUCTION_TYPE, "destruction_type", Explosion.BlockInteraction.DESTROY).forGetter(ExplodeConfiguration::destructionType),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "damage_self", true).forGetter(ExplodeConfiguration::damageSelf),
 			ConfiguredBlockCondition.optional("indestructible", Apoli.identifier("deny")).forGetter(ExplodeConfiguration::indestructible),
 			ConfiguredBlockCondition.optional("destructible", Apoli.identifier("deny")).forGetter(ExplodeConfiguration::destructible),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "create_fire", false).forGetter(ExplodeConfiguration::createFire)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "create_fire", false).forGetter(ExplodeConfiguration::createFire)
 	).apply(instance, ExplodeConfiguration::new));
 	private final float power;
 	private final Explosion.BlockInteraction destructionType;

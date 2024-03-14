@@ -16,9 +16,9 @@ public record RelativeRotationConfiguration(EnumSet<Direction.Axis> axes, Rotati
 											RotationType targetRotation,
 											DoubleComparisonConfiguration comparison) implements IDynamicFeatureConfiguration {
 	public static final Codec<RelativeRotationConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(SerializableDataTypes.AXIS_SET, "axes", EnumSet.allOf(Direction.Axis.class)).forGetter(RelativeRotationConfiguration::axes),
-			CalioCodecHelper.optionalField(SerializableDataType.enumValue(RotationType.class), "actor_rotation", RotationType.HEAD).forGetter(RelativeRotationConfiguration::actorRotation),
-			CalioCodecHelper.optionalField(SerializableDataType.enumValue(RotationType.class), "target_rotation", RotationType.BODY).forGetter(RelativeRotationConfiguration::targetRotation),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.AXIS_SET, "axes", EnumSet.allOf(Direction.Axis.class)).forGetter(RelativeRotationConfiguration::axes),
+			ExtraCodecs.strictOptionalField(SerializableDataType.enumValue(RotationType.class), "actor_rotation", RotationType.HEAD).forGetter(RelativeRotationConfiguration::actorRotation),
+			ExtraCodecs.strictOptionalField(SerializableDataType.enumValue(RotationType.class), "target_rotation", RotationType.BODY).forGetter(RelativeRotationConfiguration::targetRotation),
 			DoubleComparisonConfiguration.MAP_CODEC.forGetter(RelativeRotationConfiguration::comparison)
 	).apply(instance, RelativeRotationConfiguration::new));
 }

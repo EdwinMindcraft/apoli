@@ -22,6 +22,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.common.util.Lazy;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -218,6 +219,13 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 
 	public boolean isActive(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return !this.shouldCheckConditions(configuration, entity) || configuration.getData().conditions().stream().allMatch(condition -> condition.check(entity));
+	}
+
+	/**
+	 * Returns the codec used for additional data serialization.
+	 */
+	public @Nullable Codec<?> getDataCodec() {
+		return null;
 	}
 
 	public void serialize(ConfiguredPower<T, ?> configuration, PowerContainer container, CompoundTag tag) {

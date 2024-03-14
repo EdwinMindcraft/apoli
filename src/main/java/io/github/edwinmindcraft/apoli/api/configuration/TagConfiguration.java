@@ -16,7 +16,7 @@ public record TagConfiguration<V>(TagKey<V> value) implements IDynamicFeatureCon
 	}
 
 	public static <T> MapCodec<Optional<TagConfiguration<T>>> optionalField(Codec<TagKey<T>> codec, String fieldName) {
-		return CalioCodecHelper.optionalField(codec, fieldName).xmap(x -> x.map(TagConfiguration::new), x -> x.map(TagConfiguration::value));
+		return ExtraCodecs.strictOptionalField(codec, fieldName).xmap(x -> x.map(TagConfiguration::new), x -> x.map(TagConfiguration::value));
 	}
 
 	@Override

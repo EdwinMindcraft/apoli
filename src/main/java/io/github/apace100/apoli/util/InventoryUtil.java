@@ -11,7 +11,6 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.InventoryPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.InventoryConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;

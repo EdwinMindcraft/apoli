@@ -19,7 +19,7 @@ public record EntityGlowConfiguration(Holder<ConfiguredEntityCondition<?, ?>> en
 	public static final Codec<EntityGlowConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ConfiguredEntityCondition.optional("entity_condition").forGetter(EntityGlowConfiguration::entityCondition),
 			ConfiguredBiEntityCondition.optional("bientity_condition").forGetter(EntityGlowConfiguration::biEntityCondition),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "use_teams", true).forGetter(EntityGlowConfiguration::useTeams),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "use_teams", true).forGetter(EntityGlowConfiguration::useTeams),
 			ColorConfiguration.NO_ALPHA.forGetter(EntityGlowConfiguration::color)
 	).apply(instance, EntityGlowConfiguration::new));
 

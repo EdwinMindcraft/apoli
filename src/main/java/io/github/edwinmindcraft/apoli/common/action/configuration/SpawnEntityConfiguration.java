@@ -22,7 +22,7 @@ public record SpawnEntityConfiguration(EntityType<?> type, @Nullable CompoundTag
 
 	public static final Codec<SpawnEntityConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.ENTITY_TYPE.fieldOf("entity_type").forGetter(SpawnEntityConfiguration::type),
-			CalioCodecHelper.optionalField(SerializableDataTypes.NBT, "tag").forGetter(x -> Optional.ofNullable(x.tag())),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.NBT, "tag").forGetter(x -> Optional.ofNullable(x.tag())),
 			ConfiguredEntityAction.optional("entity_action").forGetter(SpawnEntityConfiguration::action)
 	).apply(instance, (t1, t2, t3) -> new SpawnEntityConfiguration(t1, t2.orElse(null), t3)));
 

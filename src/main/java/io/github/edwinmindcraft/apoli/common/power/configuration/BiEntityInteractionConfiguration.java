@@ -22,7 +22,7 @@ public record BiEntityInteractionConfiguration(Holder<ConfiguredBiEntityConditio
 	public static Codec<BiEntityInteractionConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ConfiguredBiEntityCondition.optional("bientity_condition").forGetter(BiEntityInteractionConfiguration::biEntityCondition),
 			ConfiguredBiEntityAction.optional("bientity_action").forGetter(BiEntityInteractionConfiguration::biEntityAction),
-			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "priority", 0).forGetter(BiEntityInteractionConfiguration::priority),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "priority", 0).forGetter(BiEntityInteractionConfiguration::priority),
 			InteractionPowerConfiguration.MAP_CODEC.forGetter(BiEntityInteractionConfiguration::interaction)
 	).apply(instance, BiEntityInteractionConfiguration::new));
 

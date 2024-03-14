@@ -10,6 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 public record ShaderConfiguration(ResourceLocation shader, boolean toggleable) implements IDynamicFeatureConfiguration {
 	public static final Codec<ShaderConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.IDENTIFIER.fieldOf("shader").forGetter(ShaderConfiguration::shader),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "toggleable", true).forGetter(ShaderConfiguration::toggleable)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "toggleable", true).forGetter(ShaderConfiguration::toggleable)
 	).apply(instance, ShaderConfiguration::new));
 }

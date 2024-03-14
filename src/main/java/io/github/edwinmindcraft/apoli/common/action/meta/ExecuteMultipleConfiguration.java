@@ -5,6 +5,7 @@ import io.github.edwinmindcraft.apoli.api.configuration.IStreamConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.resources.HolderSetCodec;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

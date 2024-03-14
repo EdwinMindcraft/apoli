@@ -69,7 +69,7 @@ public record ReplaceLootTableConfiguration(Map<String, ResourceLocation> replac
 
     public static final Codec<ReplaceLootTableConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             REPLACEMENTS_DATA_TYPE.fieldOf("replace").forGetter(ReplaceLootTableConfiguration::replacements),
-            CalioCodecHelper.optionalField(CalioCodecHelper.INT, "priority", 0).forGetter(ReplaceLootTableConfiguration::priority),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "priority", 0).forGetter(ReplaceLootTableConfiguration::priority),
             ConfiguredItemCondition.optional("item_condition").forGetter(ReplaceLootTableConfiguration::itemCondition),
             ConfiguredBiEntityCondition.optional("bientity_condition").forGetter(ReplaceLootTableConfiguration::biEntityCondition),
             ConfiguredBlockCondition.optional("block_condition").forGetter(ReplaceLootTableConfiguration::blockCondition)

@@ -2,9 +2,6 @@ package io.github.edwinmindcraft.apoli.common.action.entity;
 
 import io.github.apace100.apoli.action.configuration.ExplodeConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
-import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
-import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;

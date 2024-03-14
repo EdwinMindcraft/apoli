@@ -23,8 +23,8 @@ public record ActionOnItemUseConfiguration(Holder<ConfiguredItemCondition<?, ?>>
 			ConfiguredItemCondition.optional("item_condition").forGetter(ActionOnItemUseConfiguration::itemCondition),
 			ConfiguredEntityAction.optional("entity_action").forGetter(ActionOnItemUseConfiguration::entityAction),
 			ConfiguredItemAction.optional("item_action").forGetter(ActionOnItemUseConfiguration::itemAction),
-            CalioCodecHelper.optionalField(SerializableDataType.enumValue(TriggerType.class), "trigger", TriggerType.FINISH).forGetter(ActionOnItemUseConfiguration::triggerType),
-            CalioCodecHelper.optionalField(CalioCodecHelper.INT, "priority", 0).forGetter(ActionOnItemUseConfiguration::priority)
+            ExtraCodecs.strictOptionalField(SerializableDataType.enumValue(TriggerType.class), "trigger", TriggerType.FINISH).forGetter(ActionOnItemUseConfiguration::triggerType),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "priority", 0).forGetter(ActionOnItemUseConfiguration::priority)
     ).apply(instance, ActionOnItemUseConfiguration::new));
 
     public boolean isInPhase(ActionOnItemUseConfiguration.PriorityPhase phase) {

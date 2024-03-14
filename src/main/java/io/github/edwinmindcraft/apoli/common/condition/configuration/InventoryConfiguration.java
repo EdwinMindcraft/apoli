@@ -27,11 +27,11 @@ public record InventoryConfiguration(EnumSet<InventoryUtil.InventoryType> invent
                                      IntegerComparisonConfiguration comparison) implements IDynamicFeatureConfiguration {
 
     public static final Codec<InventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            CalioCodecHelper.optionalField(ApoliDataTypes.INVENTORY_TYPE_SET, "inventory_types", EnumSet.of(InventoryUtil.InventoryType.INVENTORY)).forGetter(InventoryConfiguration::inventoryTypes),
-            CalioCodecHelper.optionalField(ApoliDataTypes.PROCESS_MODE, "process_mode", InventoryUtil.ProcessMode.ITEMS).forGetter(InventoryConfiguration::processMode),
+            ExtraCodecs.strictOptionalField(ApoliDataTypes.INVENTORY_TYPE_SET, "inventory_types", EnumSet.of(InventoryUtil.InventoryType.INVENTORY)).forGetter(InventoryConfiguration::inventoryTypes),
+            ExtraCodecs.strictOptionalField(ApoliDataTypes.PROCESS_MODE, "process_mode", InventoryUtil.ProcessMode.ITEMS).forGetter(InventoryConfiguration::processMode),
             ConfiguredItemCondition.optional("item_condition").forGetter(InventoryConfiguration::itemCondition),
             ListConfiguration.mapCodec(ApoliDataTypes.ITEM_SLOT, "slot", "slots").forGetter(InventoryConfiguration::slots),
-            CalioCodecHelper.optionalField(CalioCodecHelper.resourceKey(ApoliDynamicRegistries.CONFIGURED_POWER_KEY), "power").forGetter(InventoryConfiguration::power),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.resourceKey(ApoliDynamicRegistries.CONFIGURED_POWER_KEY), "power").forGetter(InventoryConfiguration::power),
             IntegerComparisonConfiguration.withDefaults(Comparison.GREATER_THAN_OR_EQUAL, 0).forGetter(InventoryConfiguration::comparison)
     ).apply(instance, InventoryConfiguration::new));
 

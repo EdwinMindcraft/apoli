@@ -10,8 +10,8 @@ public record AddBiEntityVelocityConfiguration(Vector3f direction, boolean clien
                                                boolean set) implements IDynamicFeatureConfiguration {
 	public static final Codec<AddBiEntityVelocityConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.VEC3F.forGetter(AddBiEntityVelocityConfiguration::direction),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "client", true).forGetter(AddBiEntityVelocityConfiguration::client),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "server", true).forGetter(AddBiEntityVelocityConfiguration::server),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "set", false).forGetter(AddBiEntityVelocityConfiguration::set)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "client", true).forGetter(AddBiEntityVelocityConfiguration::client),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "server", true).forGetter(AddBiEntityVelocityConfiguration::server),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "set", false).forGetter(AddBiEntityVelocityConfiguration::set)
 	).apply(instance, AddBiEntityVelocityConfiguration::new));
 }

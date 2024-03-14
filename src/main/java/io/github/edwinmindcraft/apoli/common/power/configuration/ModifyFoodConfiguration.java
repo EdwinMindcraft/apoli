@@ -29,9 +29,9 @@ public record ModifyFoodConfiguration(ListConfiguration<ConfiguredModifier<?>> f
 			ListConfiguration.modifierCodec("saturation_modifier").forGetter(ModifyFoodConfiguration::saturationModifiers),
 			ConfiguredItemCondition.optional("item_condition").forGetter(ModifyFoodConfiguration::itemCondition),
 			ConfiguredEntityAction.optional("entity_action").forGetter(ModifyFoodConfiguration::entityAction),
-			CalioCodecHelper.optionalField(SerializableDataTypes.ITEM_STACK, "replace_stack").forGetter(x -> Optional.ofNullable(x.replaceStack())),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.ITEM_STACK, "replace_stack").forGetter(x -> Optional.ofNullable(x.replaceStack())),
 			ConfiguredItemAction.optional("item_action").forGetter(ModifyFoodConfiguration::itemAction),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "always_edible", false).forGetter(ModifyFoodConfiguration::alwaysEdible),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "prevent_effects", false).forGetter(ModifyFoodConfiguration::preventEffects)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "always_edible", false).forGetter(ModifyFoodConfiguration::alwaysEdible),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "prevent_effects", false).forGetter(ModifyFoodConfiguration::preventEffects)
 	).apply(instance, (t1, t2, t3, t4, t5, t6, t7, t8) -> new ModifyFoodConfiguration(t1, t2, t3, t4, t5.orElse(null), t6, t7, t8)));
 }

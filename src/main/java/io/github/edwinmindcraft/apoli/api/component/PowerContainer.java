@@ -41,9 +41,6 @@ import java.util.function.Supplier;
  * every collection to be either immutable, or unmodifiable.
  */
 public interface PowerContainer {
-	//region Static Methods
-	ResourceLocation KEY = Apoli.identifier("powers");
-
 	@Nullable
 	static PowerContainer get(@Nullable Entity entity) {
 		return entity.getCapability(ApoliCapabilities.POWER_CONTAINER);

@@ -10,7 +10,7 @@ public record ToggleNightVisionConfiguration(TogglePowerConfiguration toggle,
 											 float strength) implements TogglePowerConfiguration.Wrapper {
 	public static final Codec<ToggleNightVisionConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			TogglePowerConfiguration.INACTIVE_MAP_CODEC.forGetter(ToggleNightVisionConfiguration::toggle),
-			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "strength", 1.0F).forGetter(ToggleNightVisionConfiguration::strength)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.FLOAT, "strength", 1.0F).forGetter(ToggleNightVisionConfiguration::strength)
 	).apply(instance, ToggleNightVisionConfiguration::new));
 
 	public ToggleNightVisionConfiguration(boolean defaultState, IActivePower.Key key, float strength) {

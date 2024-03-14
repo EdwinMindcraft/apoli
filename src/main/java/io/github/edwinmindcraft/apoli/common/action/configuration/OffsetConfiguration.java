@@ -13,9 +13,9 @@ public record OffsetConfiguration<T>(Holder<T> value, int x, int y, int z) imple
 	public static <T> Codec<OffsetConfiguration<T>> codec(MapCodec<Holder<T>> codec) {
 		return RecordCodecBuilder.create(instance -> instance.group(
 				codec.forGetter(OffsetConfiguration::value),
-				CalioCodecHelper.optionalField(CalioCodecHelper.INT, "x", 0).forGetter(OffsetConfiguration::x),
-				CalioCodecHelper.optionalField(CalioCodecHelper.INT, "y", 0).forGetter(OffsetConfiguration::y),
-				CalioCodecHelper.optionalField(CalioCodecHelper.INT, "z", 0).forGetter(OffsetConfiguration::z)
+				ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "x", 0).forGetter(OffsetConfiguration::x),
+				ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "y", 0).forGetter(OffsetConfiguration::y),
+				ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "z", 0).forGetter(OffsetConfiguration::z)
 		).apply(instance, OffsetConfiguration::new));
 	}
 

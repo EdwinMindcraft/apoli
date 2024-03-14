@@ -29,7 +29,6 @@ public class ApoliBiEntityConditions {
 	public static final DeferredHolder<BiEntityCondition<?>, DelegatedBiEntityCondition<ConstantConfiguration<Pair<Entity, Entity>>>> CONSTANT = of("constant");
 	public static final DeferredHolder<BiEntityCondition<?>, DelegatedBiEntityCondition<ConditionStreamConfiguration<ConfiguredBiomeCondition<?, ?>, Pair<Entity, Entity>>>> AND = of("and");
 	public static final DeferredHolder<BiEntityCondition<?>, DelegatedBiEntityCondition<ConditionStreamConfiguration<ConfiguredBiomeCondition<?, ?>, Pair<Entity, Entity>>>> OR = of("or");
-
 	public static final DeferredHolder<BiEntityCondition<?>, DualBiEntityCondition> INVERT = BIENTITY_CONDITIONS.register("invert", DualBiEntityCondition::invert);
 	public static final DeferredHolder<BiEntityCondition<?>, DispatchBiEntityCondition> ACTOR_CONDITION = BIENTITY_CONDITIONS.register("actor_condition", DispatchBiEntityCondition::actor);
 	public static final DeferredHolder<BiEntityCondition<?>, DispatchBiEntityCondition> TARGET_CONDITION = BIENTITY_CONDITIONS.register("target_condition", DispatchBiEntityCondition::target);

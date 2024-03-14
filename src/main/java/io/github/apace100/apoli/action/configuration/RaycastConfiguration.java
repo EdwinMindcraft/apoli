@@ -32,11 +32,11 @@ public record RaycastConfiguration(RaycastSettingsConfiguration settings,
 							  double commandStep,
 							  boolean commandAlongRayOnlyOnHit) implements IDynamicFeatureConfiguration {
 		private static final MapCodec<CommandInfo> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-				CalioCodecHelper.optionalField(Codec.STRING, "command_at_hit").forGetter(x -> Optional.ofNullable(x.commandAtHit())),
-				CalioCodecHelper.optionalField(CalioCodecHelper.DOUBLE, "command_hit_offset").forGetter(x -> Optional.ofNullable(x.commandHitOffset())),
-				CalioCodecHelper.optionalField(Codec.STRING, "command_along_ray").forGetter(x -> Optional.ofNullable(x.commandAlongRay())),
-				CalioCodecHelper.optionalField(CalioCodecHelper.DOUBLE, "command_step", 1.0).forGetter(CommandInfo::commandStep),
-				CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "command_along_ray_only_on_hit", false).forGetter(CommandInfo::commandAlongRayOnlyOnHit)
+				ExtraCodecs.strictOptionalField(Codec.STRING, "command_at_hit").forGetter(x -> Optional.ofNullable(x.commandAtHit())),
+				ExtraCodecs.strictOptionalField(CalioCodecHelper.DOUBLE, "command_hit_offset").forGetter(x -> Optional.ofNullable(x.commandHitOffset())),
+				ExtraCodecs.strictOptionalField(Codec.STRING, "command_along_ray").forGetter(x -> Optional.ofNullable(x.commandAlongRay())),
+				ExtraCodecs.strictOptionalField(CalioCodecHelper.DOUBLE, "command_step", 1.0).forGetter(CommandInfo::commandStep),
+				ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "command_along_ray_only_on_hit", false).forGetter(CommandInfo::commandAlongRayOnlyOnHit)
 		).apply(instance, (t1, t2, t3, t4, t5) -> new CommandInfo(t1.orElse(null), t2.orElse(null), t3.orElse(null), t4, t5)));
 	}
 

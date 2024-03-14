@@ -23,7 +23,7 @@ public record ModifierData(double value, Optional<Holder<ConfiguredPower<?, ?>>>
 
 	public static final MapCodec<ModifierData> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			CalioCodecHelper.DOUBLE.fieldOf("value").forGetter(ModifierData::value),
-			CalioCodecHelper.optionalField(ConfiguredPower.CODEC_SET.holderRef(), "resource").forGetter(ModifierData::resource),
-			CalioCodecHelper.optionalField(CalioCodecHelper.listOf(ConfiguredModifier.CODEC), "modifier", ImmutableList.of()).forGetter(ModifierData::modifiers)
+			ExtraCodecs.strictOptionalField(ConfiguredPower.CODEC_SET.holderRef(), "resource").forGetter(ModifierData::resource),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.listOf(ConfiguredModifier.CODEC), "modifier", ImmutableList.of()).forGetter(ModifierData::modifiers)
 	).apply(instance, ModifierData::new));
 }

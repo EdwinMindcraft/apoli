@@ -14,7 +14,7 @@ import java.util.Optional;
 public record ProjectileConfiguration(Optional<EntityType<?>> projectile,
                                      Holder<ConfiguredEntityCondition<?, ?>> projectileCondition) implements IDynamicFeatureConfiguration {
     public static final Codec<ProjectileConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            CalioCodecHelper.optionalField(SerializableDataTypes.ENTITY_TYPE, "projectile").forGetter(ProjectileConfiguration::projectile),
+            ExtraCodecs.strictOptionalField(SerializableDataTypes.ENTITY_TYPE, "projectile").forGetter(ProjectileConfiguration::projectile),
             ConfiguredEntityCondition.optional("projectile_condition").forGetter(ProjectileConfiguration::projectileCondition)
     ).apply(instance, ProjectileConfiguration::new));
 }

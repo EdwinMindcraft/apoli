@@ -21,11 +21,12 @@ import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import io.github.edwinmindcraft.calio.api.registry.DynamicRegistryListener;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.*;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.common.util.Lazy;
@@ -45,16 +46,24 @@ import java.util.function.Supplier;
  * @param <F> The type of the factory.
  */
 public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> extends AttachmentHolder implements IDynamicFeatureConfiguration, DynamicRegistryListener {
-	public static final Codec<ConfiguredPower<?, ?>> CODEC = PowerFactory.CODEC.dispatch(ConfiguredPower::getFactory, PowerFactory::getCodec);
-	public static final CodecSet<ConfiguredPower<?, ?>> CODEC_SET = CalioCodecHelper.forDynamicRegistry(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, SerializableDataTypes.IDENTIFIER, CODEC);
-	public static final Codec<Holder<ConfiguredPower<?, ?>>> HOLDER = CODEC_SET.holder();
+
+	/**
+	 * This codec is used to reference a power directly, meaning it doesn't support references.
+	 *
+	 * @apiNote For powers, there is no codec that allows for hybrid deserialization, and that is on purpose, the components
+	 * used for holding the powers can't deal with unnamed powers at all, meaning there is no way for us to allow unnamed
+	 * powers anywhere.
+	 */
+	public static final Codec<ConfiguredPower<?, ?>> DIRECT_CODEC = PowerFactory.CODEC.dispatch(ConfiguredPower::getFactory, PowerFactory::getCodec);
+	public static final Codec<Holder<ConfiguredPower<?, ?>>> REFERENCE_CODEC = RegistryFixedCodec.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
+	public static final Codec<HolderSet<ConfiguredPower<?, ?>>> REFERENCE_SET_CODEC = HolderSetCodec.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, REFERENCE_CODEC, true);
 
 	public static MapCodec<Holder<ConfiguredPower<?, ?>>> required(String name) {
-		return HOLDER.fieldOf(name);
+		return REFERENCE_CODEC.fieldOf(name);
 	}
 
 	public static MapCodec<Optional<Holder<ConfiguredPower<?, ?>>>> optional(String name) {
-		return CalioCodecHelper.optionalField(HOLDER, name);
+		return ExtraCodecs.strictOptionalField(REFERENCE_CODEC, name);
 	}
 
 	private final Lazy<F> factory;

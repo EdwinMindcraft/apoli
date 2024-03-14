@@ -16,6 +16,6 @@ public record ModifyVelocityConfiguration(ListConfiguration<ConfiguredModifier<?
 
 	public static final Codec<ModifyVelocityConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ListConfiguration.MODIFIER_CODEC.forGetter(ModifyVelocityConfiguration::modifiers),
-			CalioCodecHelper.optionalField(SerializableDataTypes.AXIS_SET, "axes", EnumSet.allOf(Direction.Axis.class)).forGetter(ModifyVelocityConfiguration::axes)
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.AXIS_SET, "axes", EnumSet.allOf(Direction.Axis.class)).forGetter(ModifyVelocityConfiguration::axes)
 	).apply(instance, ModifyVelocityConfiguration::new));
 }

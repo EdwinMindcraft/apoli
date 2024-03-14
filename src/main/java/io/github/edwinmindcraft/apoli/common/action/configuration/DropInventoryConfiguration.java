@@ -29,15 +29,15 @@ public record DropInventoryConfiguration(InventoryUtil.InventoryType inventoryTy
                                          int amount) implements IDynamicFeatureConfiguration {
 
     public static final Codec<DropInventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            CalioCodecHelper.optionalField(ApoliDataTypes.INVENTORY_TYPE, "inventory_type", InventoryUtil.InventoryType.INVENTORY).forGetter(DropInventoryConfiguration::inventoryType),
+            ExtraCodecs.strictOptionalField(ApoliDataTypes.INVENTORY_TYPE, "inventory_type", InventoryUtil.InventoryType.INVENTORY).forGetter(DropInventoryConfiguration::inventoryType),
             ConfiguredEntityAction.optional("entity_action").forGetter(DropInventoryConfiguration::entityAction),
             ConfiguredItemAction.optional("item_action").forGetter(DropInventoryConfiguration::itemAction),
             ConfiguredItemCondition.optional("item_condition").forGetter(DropInventoryConfiguration::itemCondition),
             ListConfiguration.mapCodec(ApoliDataTypes.ITEM_SLOT, "slot", "slots").forGetter(DropInventoryConfiguration::slots),
-            CalioCodecHelper.optionalField(SerializableDataTypes.IDENTIFIER, "power").forGetter(DropInventoryConfiguration::power),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "throw_randomly", false).forGetter(DropInventoryConfiguration::throwRandomly),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "retain_ownership", true).forGetter(DropInventoryConfiguration::retainOwnership),
-            CalioCodecHelper.optionalField(CalioCodecHelper.INT, "amount", 0).forGetter(DropInventoryConfiguration::amount)
+            ExtraCodecs.strictOptionalField(SerializableDataTypes.IDENTIFIER, "power").forGetter(DropInventoryConfiguration::power),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "throw_randomly", false).forGetter(DropInventoryConfiguration::throwRandomly),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "retain_ownership", true).forGetter(DropInventoryConfiguration::retainOwnership),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "amount", 0).forGetter(DropInventoryConfiguration::amount)
     ).apply(instance, DropInventoryConfiguration::new));
 
 }

@@ -15,8 +15,8 @@ import java.util.Optional;
 
 public final class ModifyFallingConfiguration extends ModifyAttributeConfiguration {
 	public static final Codec<ModifyFallingConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(CalioCodecHelper.DOUBLE, "velocity").forGetter(ModifyFallingConfiguration::velocity),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "take_fall_damage", true).forGetter(ModifyFallingConfiguration::takeFallDamage),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.DOUBLE, "velocity").forGetter(ModifyFallingConfiguration::velocity),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "take_fall_damage", true).forGetter(ModifyFallingConfiguration::takeFallDamage),
 			ListConfiguration.MODIFIER_CODEC.forGetter(ModifyFallingConfiguration::modifiers)
 	).apply(instance, ModifyFallingConfiguration::new));
 

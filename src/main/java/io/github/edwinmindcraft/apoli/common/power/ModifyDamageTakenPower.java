@@ -5,7 +5,6 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.*;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ValueModifyingPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageTakenConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 

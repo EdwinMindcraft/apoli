@@ -33,9 +33,9 @@ public record ModifyCraftingConfiguration(@Nullable ResourceLocation recipeIdent
 										  Holder<ConfiguredBlockAction<?, ?>> blockAction,
 										  Holder<ConfiguredItemAction<?, ?>> afterCraftingItemAction) implements IDynamicFeatureConfiguration {
 	public static final Codec<ModifyCraftingConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(SerializableDataTypes.IDENTIFIER, "recipe").forGetter(OptionalFuncs.opt(ModifyCraftingConfiguration::recipeIdentifier)),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.IDENTIFIER, "recipe").forGetter(OptionalFuncs.opt(ModifyCraftingConfiguration::recipeIdentifier)),
 			ConfiguredItemCondition.optional("item_condition").forGetter(ModifyCraftingConfiguration::itemCondition),
-			CalioCodecHelper.optionalField(SerializableDataTypes.ITEM_STACK, "result").forGetter(OptionalFuncs.opt(ModifyCraftingConfiguration::newStack)),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.ITEM_STACK, "result").forGetter(OptionalFuncs.opt(ModifyCraftingConfiguration::newStack)),
 			ConfiguredItemAction.optional("item_action").forGetter(ModifyCraftingConfiguration::itemAction),
 			ConfiguredEntityAction.optional("entity_action").forGetter(ModifyCraftingConfiguration::entityAction),
 			ConfiguredBlockAction.optional("block_action").forGetter(ModifyCraftingConfiguration::blockAction),

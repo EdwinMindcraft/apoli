@@ -12,9 +12,9 @@ public record SpawnEffectCloudConfiguration(float radius, float radiusOnUse, int
 											ListConfiguration<MobEffectInstance> effects) implements IDynamicFeatureConfiguration {
 
 	public static final Codec<SpawnEffectCloudConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "radius", 3.0F).forGetter(x -> x.radius),
-			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "radius_on_use", -0.5F).forGetter(x -> x.radiusOnUse),
-			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "wait_time", 10).forGetter(x -> x.waitTime),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.FLOAT, "radius", 3.0F).forGetter(x -> x.radius),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.FLOAT, "radius_on_use", -0.5F).forGetter(x -> x.radiusOnUse),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "wait_time", 10).forGetter(x -> x.waitTime),
 			ListConfiguration.mapCodec(SerializableDataTypes.STATUS_EFFECT_INSTANCE, "effect", "effects").forGetter(x -> x.effects)
 	).apply(instance, SpawnEffectCloudConfiguration::new));
 }

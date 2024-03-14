@@ -6,8 +6,6 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
-import io.github.edwinmindcraft.apoli.common.registry.action.ApoliDefaultActions;
-import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import net.minecraft.core.Holder;
 import org.jetbrains.annotations.Nullable;
 

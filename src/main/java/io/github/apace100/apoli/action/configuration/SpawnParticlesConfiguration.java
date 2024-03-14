@@ -13,9 +13,9 @@ public record SpawnParticlesConfiguration(ParticleOptions particle, int count, f
 	public static final Codec<SpawnParticlesConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE.fieldOf("particle").forGetter(SpawnParticlesConfiguration::particle),
 			CalioCodecHelper.INT.fieldOf("count").forGetter(SpawnParticlesConfiguration::count),
-			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "speed", 0.0F).forGetter(SpawnParticlesConfiguration::speed),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "force", false).forGetter(SpawnParticlesConfiguration::force),
-			CalioCodecHelper.optionalField(SerializableDataTypes.VECTOR, "spread", new Vec3(0.5, 0.25, 0.5)).forGetter(SpawnParticlesConfiguration::spread),
-			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "offset_y", 0.5F).forGetter(SpawnParticlesConfiguration::offsetY)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.FLOAT, "speed", 0.0F).forGetter(SpawnParticlesConfiguration::speed),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "force", false).forGetter(SpawnParticlesConfiguration::force),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.VECTOR, "spread", new Vec3(0.5, 0.25, 0.5)).forGetter(SpawnParticlesConfiguration::spread),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.FLOAT, "offset_y", 0.5F).forGetter(SpawnParticlesConfiguration::offsetY)
 	).apply(instance, SpawnParticlesConfiguration::new));
 }

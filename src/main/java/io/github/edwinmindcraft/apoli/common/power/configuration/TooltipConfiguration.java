@@ -15,7 +15,7 @@ public record TooltipConfiguration(Holder<ConfiguredItemCondition<?, ?>> itemCon
 								   ListConfiguration<Component> components) implements IDynamicFeatureConfiguration {
 	public static final Codec<TooltipConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ConfiguredItemCondition.optional("item_condition").forGetter(TooltipConfiguration::itemCondition),
-			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "order", 0).forGetter(TooltipConfiguration::order),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "order", 0).forGetter(TooltipConfiguration::order),
 			ListConfiguration.mapCodec(SerializableDataTypes.TEXT, "text", "texts").forGetter(TooltipConfiguration::components)
 	).apply(instance, TooltipConfiguration::new));
 }

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public record ItemHasPowerConfiguration(@Nullable EquipmentSlot slot,
 										ResourceLocation power) implements IDynamicFeatureConfiguration {
 	public static final Codec<ItemHasPowerConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(SerializableDataTypes.EQUIPMENT_SLOT, "slot").forGetter(OptionalFuncs.opt(ItemHasPowerConfiguration::slot)),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.EQUIPMENT_SLOT, "slot").forGetter(OptionalFuncs.opt(ItemHasPowerConfiguration::slot)),
 			SerializableDataTypes.IDENTIFIER.fieldOf("power").forGetter(ItemHasPowerConfiguration::power)
 	).apply(instance, (equipmentSlot, integerComparisonConfiguration) -> new ItemHasPowerConfiguration(equipmentSlot.orElse(null), integerComparisonConfiguration)));
 

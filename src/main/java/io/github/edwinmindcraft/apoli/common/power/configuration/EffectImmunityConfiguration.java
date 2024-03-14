@@ -11,6 +11,6 @@ import net.minecraft.world.effect.MobEffect;
 public record EffectImmunityConfiguration(ListConfiguration<MobEffect> effects, boolean inverted) implements IDynamicFeatureConfiguration {
 	public static final Codec<EffectImmunityConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ListConfiguration.mapCodec(SerializableDataTypes.STATUS_EFFECT, "effect", "effects").forGetter(EffectImmunityConfiguration::effects),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "inverted", false).forGetter(EffectImmunityConfiguration::inverted)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "inverted", false).forGetter(EffectImmunityConfiguration::inverted)
 	).apply(instance, EffectImmunityConfiguration::new));
 }

@@ -28,11 +28,11 @@ public final class ConfiguredModifier<F extends ModifierOperation> {
 	}
 
 	public static PropagatingOptionalFieldCodec<Holder<ConfiguredModifier<?>>> optional(String name) {
-		return CalioCodecHelper.optionalField(HOLDER, name);
+		return ExtraCodecs.strictOptionalField(HOLDER, name);
 	}
 
 	public static PropagatingDefaultedOptionalFieldCodec<Holder<ConfiguredModifier<?>>> optional(String name, Holder<ConfiguredModifier<?>> key) {
-		return CalioCodecHelper.optionalField(HOLDER, name, key);
+		return ExtraCodecs.strictOptionalField(HOLDER, name, key);
 	}
 
 	public static double apply(Holder<ConfiguredModifier<?>> modifier, Entity entity, double value) {

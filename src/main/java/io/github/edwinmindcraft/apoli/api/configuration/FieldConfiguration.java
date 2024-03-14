@@ -17,7 +17,7 @@ public record FieldConfiguration<T>(T value) implements IDynamicFeatureConfigura
 	}
 
 	public static <T> Codec<FieldConfiguration<T>> codec(Codec<T> codec, String fieldName, T defaultValue) {
-		return CalioCodecHelper.optionalField(codec, fieldName, defaultValue).xmap(FieldConfiguration::new, FieldConfiguration::value).codec();
+		return ExtraCodecs.strictOptionalField(codec, fieldName, defaultValue).xmap(FieldConfiguration::new, FieldConfiguration::value).codec();
 	}
 
 	public static <T> Codec<FieldConfiguration<T>> codec(MapCodec<T> codec) {
@@ -29,7 +29,7 @@ public record FieldConfiguration<T>(T value) implements IDynamicFeatureConfigura
 	}
 
 	public static <T> Codec<FieldConfiguration<Optional<T>>> optionalCodec(Codec<T> codec, String fieldName) {
-		return CalioCodecHelper.optionalField(codec, fieldName).xmap(FieldConfiguration::new, FieldConfiguration::value).codec();
+		return ExtraCodecs.strictOptionalField(codec, fieldName).xmap(FieldConfiguration::new, FieldConfiguration::value).codec();
 	}
 
 	@Override

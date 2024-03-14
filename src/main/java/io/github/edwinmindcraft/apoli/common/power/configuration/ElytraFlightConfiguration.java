@@ -14,6 +14,6 @@ public record ElytraFlightConfiguration(boolean render,
 										@Nullable ResourceLocation texture) implements IDynamicFeatureConfiguration {
 	public static final Codec<ElytraFlightConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.BOOL.fieldOf("render_elytra").forGetter(ElytraFlightConfiguration::render),
-			CalioCodecHelper.optionalField(SerializableDataTypes.IDENTIFIER, "texture_location").forGetter(x -> Optional.ofNullable(x.texture()))
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.IDENTIFIER, "texture_location").forGetter(x -> Optional.ofNullable(x.texture()))
 	).apply(instance, (t1, t2) -> new ElytraFlightConfiguration(t1, t2.orElse(null))));
 }

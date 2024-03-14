@@ -12,6 +12,6 @@ import java.util.Optional;
 public record ModifyFogTypeConfiguration(FogType to, Optional<FogType> from) implements IDynamicFeatureConfiguration {
 	public static final Codec<ModifyFogTypeConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.CAMERA_SUBMERSION_TYPE.fieldOf("to").forGetter(ModifyFogTypeConfiguration::to),
-			CalioCodecHelper.optionalField(SerializableDataTypes.CAMERA_SUBMERSION_TYPE, "from").forGetter(ModifyFogTypeConfiguration::from)
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.CAMERA_SUBMERSION_TYPE, "from").forGetter(ModifyFogTypeConfiguration::from)
 	).apply(instance, ModifyFogTypeConfiguration::new));
 }

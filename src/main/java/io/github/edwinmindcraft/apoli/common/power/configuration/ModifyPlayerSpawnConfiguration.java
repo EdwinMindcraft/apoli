@@ -44,11 +44,11 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 											 @Nullable SoundEvent sound) implements IDynamicFeatureConfiguration {
 	public static final Codec<ModifyPlayerSpawnConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.DIMENSION.fieldOf("dimension").forGetter(ModifyPlayerSpawnConfiguration::dimension),
-			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "dimension_distance_multiplier", 0F).forGetter(ModifyPlayerSpawnConfiguration::distanceMultiplier),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.FLOAT, "dimension_distance_multiplier", 0F).forGetter(ModifyPlayerSpawnConfiguration::distanceMultiplier),
 			CalioCodecHelper.resourceKey(Registries.BIOME).optionalFieldOf("biome").forGetter(x -> Optional.ofNullable(x.biome())),
-			CalioCodecHelper.optionalField(SerializableDataType.enumValue(SpawnStrategy.class), "spawn_strategy", SpawnStrategy.DEFAULT).forGetter(ModifyPlayerSpawnConfiguration::strategy),
-			CalioCodecHelper.optionalField(SerializableDataType.registryKey(Registries.STRUCTURE), "structure").forGetter(x -> Optional.ofNullable(x.structure())),
-			CalioCodecHelper.optionalField(SerializableDataTypes.SOUND_EVENT, "respawn_sound").forGetter(x -> Optional.ofNullable(x.sound()))
+			ExtraCodecs.strictOptionalField(SerializableDataType.enumValue(SpawnStrategy.class), "spawn_strategy", SpawnStrategy.DEFAULT).forGetter(ModifyPlayerSpawnConfiguration::strategy),
+			ExtraCodecs.strictOptionalField(SerializableDataType.registryKey(Registries.STRUCTURE), "structure").forGetter(x -> Optional.ofNullable(x.structure())),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.SOUND_EVENT, "respawn_sound").forGetter(x -> Optional.ofNullable(x.sound()))
 	).apply(instance, (t1, t2, t3, t4, t5, t6) -> new ModifyPlayerSpawnConfiguration(t1, t2, t3.orElse(null), t4, t5.orElse(null), t6.orElse(null))));
 
 

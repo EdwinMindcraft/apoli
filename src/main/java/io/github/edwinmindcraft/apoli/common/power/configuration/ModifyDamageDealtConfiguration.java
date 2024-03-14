@@ -5,10 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
-import io.github.edwinmindcraft.apoli.common.registry.action.ApoliDefaultActions;
-import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import net.minecraft.core.Holder;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 public record ModifyDamageDealtConfiguration(ListConfiguration<ConfiguredModifier<?>> modifiers,
 											 Holder<ConfiguredDamageCondition<?, ?>> damageCondition,

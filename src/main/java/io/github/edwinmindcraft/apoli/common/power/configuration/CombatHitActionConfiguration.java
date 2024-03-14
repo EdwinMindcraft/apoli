@@ -16,8 +16,8 @@ public record CombatHitActionConfiguration(int duration, HudRender hudRender,
 										   Holder<ConfiguredBiEntityCondition<?, ?>> biEntityCondition,
 										   @MustBeBound Holder<ConfiguredBiEntityAction<?, ?>> biEntityAction) implements ICooldownPowerConfiguration {
 	public static final Codec<CombatHitActionConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "cooldown", 1).forGetter(CombatHitActionConfiguration::duration),
-			CalioCodecHelper.optionalField(HudRender.CODEC, "hud_render", HudRender.DONT_RENDER).forGetter(CombatHitActionConfiguration::hudRender),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "cooldown", 1).forGetter(CombatHitActionConfiguration::duration),
+			ExtraCodecs.strictOptionalField(HudRender.CODEC, "hud_render", HudRender.DONT_RENDER).forGetter(CombatHitActionConfiguration::hudRender),
 			ConfiguredDamageCondition.optional("damage_condition").forGetter(CombatHitActionConfiguration::damageCondition),
 			ConfiguredBiEntityCondition.optional("bientity_condition").forGetter(CombatHitActionConfiguration::biEntityCondition),
 			ConfiguredBiEntityAction.required("bientity_action").forGetter(CombatHitActionConfiguration::biEntityAction)

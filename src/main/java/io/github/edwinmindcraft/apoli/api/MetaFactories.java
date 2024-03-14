@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguratio
 import io.github.edwinmindcraft.apoli.common.condition.meta.IDelegatedConditionConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.BiConsumer;
@@ -17,7 +18,7 @@ import java.util.function.Predicate;
 
 public class MetaFactories {
 
-	public static <F, C, V> void defineMetaConditions(DeferredRegister<F> registry, Function<Codec<? extends IDelegatedConditionConfiguration<V>>, ? extends F> func, CodecSet<C> conditionCodec, BiPredicate<C, V> predicate) {
+	public static <F, C, V> void defineMetaConditions(DeferredRegister<F> registry, Function<Codec<? extends IDelegatedConditionConfiguration<V>>, ? extends F> func, Codec<HolderSet<C>> conditionCodec, BiPredicate<C, V> predicate) {
 		registry.register("constant", () -> func.apply(ConstantConfiguration.codec()));
 		registry.register("and", () -> func.apply(ConditionStreamConfiguration.andCodec(conditionCodec, predicate)));
 		registry.register("or", () -> func.apply(ConditionStreamConfiguration.orCodec(conditionCodec, predicate)));

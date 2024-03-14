@@ -19,14 +19,14 @@ public record IntegerComparisonConfiguration(Comparison comparison,
 
 	public static MapCodec<IntegerComparisonConfiguration> withDefaults(Comparison comparison, int value) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
-				CalioCodecHelper.optionalField(ApoliDataTypes.COMPARISON, "comparison", comparison).forGetter(IntegerComparisonConfiguration::comparison),
-				CalioCodecHelper.optionalField(CalioCodecHelper.INT, "compare_to", value).forGetter(IntegerComparisonConfiguration::compareTo)
+				ExtraCodecs.strictOptionalField(ApoliDataTypes.COMPARISON, "comparison", comparison).forGetter(IntegerComparisonConfiguration::comparison),
+				ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "compare_to", value).forGetter(IntegerComparisonConfiguration::compareTo)
 		).apply(instance, IntegerComparisonConfiguration::new));
 	}
 
 	public static final MapCodec<Optional<IntegerComparisonConfiguration>> OPTIONAL_MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			CalioCodecHelper.optionalField(ApoliDataTypes.COMPARISON, "comparison").forGetter(x -> x.map(IntegerComparisonConfiguration::comparison)),
-			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "compare_to").forGetter(x -> x.map(IntegerComparisonConfiguration::compareTo))
+			ExtraCodecs.strictOptionalField(ApoliDataTypes.COMPARISON, "comparison").forGetter(x -> x.map(IntegerComparisonConfiguration::comparison)),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "compare_to").forGetter(x -> x.map(IntegerComparisonConfiguration::compareTo))
 	).apply(instance, (t1, t2) -> t1.flatMap(x1 -> t2.map(x2 -> new IntegerComparisonConfiguration(x1, x2)))));
 
 	public static final Codec<IntegerComparisonConfiguration> CODEC = MAP_CODEC.codec();

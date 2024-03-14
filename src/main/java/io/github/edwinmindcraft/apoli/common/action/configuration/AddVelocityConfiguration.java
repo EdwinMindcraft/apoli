@@ -13,9 +13,9 @@ public record AddVelocityConfiguration(Vector3f direction, Space space,
                                        boolean server) implements IDynamicFeatureConfiguration {
 	public static final Codec<AddVelocityConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.VEC3F.forGetter(AddVelocityConfiguration::direction),
-			CalioCodecHelper.optionalField(ApoliDataTypes.SPACE, "space", Space.WORLD).forGetter(AddVelocityConfiguration::space),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "set", false).forGetter(AddVelocityConfiguration::set),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "client", true).forGetter(AddVelocityConfiguration::client),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "server", true).forGetter(AddVelocityConfiguration::server)
+			ExtraCodecs.strictOptionalField(ApoliDataTypes.SPACE, "space", Space.WORLD).forGetter(AddVelocityConfiguration::space),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "set", false).forGetter(AddVelocityConfiguration::set),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "client", true).forGetter(AddVelocityConfiguration::client),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "server", true).forGetter(AddVelocityConfiguration::server)
 	).apply(instance, AddVelocityConfiguration::new));
 }

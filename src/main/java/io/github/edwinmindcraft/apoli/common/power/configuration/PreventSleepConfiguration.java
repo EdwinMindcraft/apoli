@@ -11,7 +11,7 @@ public record PreventSleepConfiguration(Holder<ConfiguredBlockCondition<?, ?>> c
 										boolean allowSpawn) implements IDynamicFeatureConfiguration {
 	public static final Codec<PreventSleepConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ConfiguredBlockCondition.optional("block_condition").forGetter(PreventSleepConfiguration::condition),
-			CalioCodecHelper.optionalField(Codec.STRING, "message", "origins.cant_sleep").forGetter(PreventSleepConfiguration::message),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "set_spawn_point", false).forGetter(PreventSleepConfiguration::allowSpawn)
+			ExtraCodecs.strictOptionalField(Codec.STRING, "message", "origins.cant_sleep").forGetter(PreventSleepConfiguration::message),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "set_spawn_point", false).forGetter(PreventSleepConfiguration::allowSpawn)
 	).apply(instance, PreventSleepConfiguration::new));
 }

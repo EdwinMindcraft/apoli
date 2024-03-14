@@ -22,13 +22,13 @@ public class DamageSourceDescription {
 
     public static final Codec<DamageSourceDescription> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.fieldOf("name").forGetter(DamageSourceDescription::getName),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "bypasses_armor", false).forGetter(o -> o.containsTag(DamageTypeTags.BYPASSES_ARMOR)),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "fire", false).forGetter(o -> o.containsTag(DamageTypeTags.IS_FIRE)),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "unblockable", false).forGetter(o -> o.containsTag(DamageTypeTags.BYPASSES_SHIELD)),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "magic", false).forGetter(o -> o.containsTag(DamageTypeTags.WITCH_RESISTANT_TO)),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "out_of_world", false).forGetter(o -> o.containsTag(DamageTypeTags.BYPASSES_INVULNERABILITY)),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "projectile", false).forGetter(o -> o.containsTag(DamageTypeTags.IS_PROJECTILE)),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "explosive", false).forGetter(o -> o.containsTag(DamageTypeTags.IS_EXPLOSION))
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "bypasses_armor", false).forGetter(o -> o.containsTag(DamageTypeTags.BYPASSES_ARMOR)),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "fire", false).forGetter(o -> o.containsTag(DamageTypeTags.IS_FIRE)),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "unblockable", false).forGetter(o -> o.containsTag(DamageTypeTags.BYPASSES_SHIELD)),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "magic", false).forGetter(o -> o.containsTag(DamageTypeTags.WITCH_RESISTANT_TO)),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "out_of_world", false).forGetter(o -> o.containsTag(DamageTypeTags.BYPASSES_INVULNERABILITY)),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "projectile", false).forGetter(o -> o.containsTag(DamageTypeTags.IS_PROJECTILE)),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "explosive", false).forGetter(o -> o.containsTag(DamageTypeTags.IS_EXPLOSION))
     ).apply(instance, DamageSourceDescription::new));
     private static final Set<TagKey<DamageType>> TAGS = Sets.newHashSet();
     private static int TAG_COUNT = 0;

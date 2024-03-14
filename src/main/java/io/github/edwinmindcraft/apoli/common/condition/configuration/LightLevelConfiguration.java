@@ -17,7 +17,7 @@ public record LightLevelConfiguration(IntegerComparisonConfiguration comparison,
 									  @Nullable LightLayer type) implements IDynamicFeatureConfiguration {
 	public static final Codec<LightLevelConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			IntegerComparisonConfiguration.MAP_CODEC.forGetter(LightLevelConfiguration::comparison),
-			CalioCodecHelper.optionalField(SerializableDataType.enumValue(LightLayer.class), "light_type").forGetter(x -> Optional.ofNullable(x.type()))
+			ExtraCodecs.strictOptionalField(SerializableDataType.enumValue(LightLayer.class), "light_type").forGetter(x -> Optional.ofNullable(x.type()))
 	).apply(instance, (comparison, lightType) -> new LightLevelConfiguration(comparison, lightType.orElse(null))));
 
 	public int getLightLevel(LevelReader world, BlockPos pos) {

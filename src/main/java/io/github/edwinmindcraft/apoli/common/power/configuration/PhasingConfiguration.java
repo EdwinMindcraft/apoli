@@ -24,10 +24,10 @@ public record PhasingConfiguration(Holder<ConfiguredBlockCondition<?, ?>> phaseC
 								   Holder<ConfiguredEntityCondition<?, ?>> phaseDownCondition) implements IDynamicFeatureConfiguration {
 	public static final Codec<PhasingConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ConfiguredBlockCondition.optional("block_condition").forGetter(PhasingConfiguration::phaseCondition),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "blacklist", false).forGetter(PhasingConfiguration::blacklist),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "blacklist", false).forGetter(PhasingConfiguration::blacklist),
 			SerializableDataType.enumValue(RenderType.class).optionalFieldOf("render_type", RenderType.BLINDNESS).forGetter(PhasingConfiguration::renderType),
-			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "view_distance", 10F).forGetter(PhasingConfiguration::viewDistance),
-			CalioCodecHelper.optionalField(ConfiguredEntityCondition.HOLDER, "phase_down_condition", Holder.direct(new ConfiguredEntityCondition<>(ApoliEntityConditions.SNEAKING, new NoConfiguration(), new ConditionData(false)))).forGetter(PhasingConfiguration::phaseDownCondition)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.FLOAT, "view_distance", 10F).forGetter(PhasingConfiguration::viewDistance),
+			ExtraCodecs.strictOptionalField(ConfiguredEntityCondition.HOLDER, "phase_down_condition", Holder.direct(new ConfiguredEntityCondition<>(ApoliEntityConditions.SNEAKING, new NoConfiguration(), new ConditionData(false)))).forGetter(PhasingConfiguration::phaseDownCondition)
 	).apply(instance, PhasingConfiguration::new));
 
 	public boolean canPhaseDown(Entity entity) {

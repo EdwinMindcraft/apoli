@@ -28,14 +28,14 @@ public record ModifyInventoryConfiguration(InventoryUtil.InventoryType inventory
                                            int limit) implements IDynamicFeatureConfiguration {
 
     public static final Codec<ModifyInventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            CalioCodecHelper.optionalField(ApoliDataTypes.INVENTORY_TYPE, "inventory_type", InventoryUtil.InventoryType.INVENTORY).forGetter(ModifyInventoryConfiguration::inventoryType),
-            CalioCodecHelper.optionalField(ApoliDataTypes.PROCESS_MODE, "process_mode", InventoryUtil.ProcessMode.STACKS).forGetter(ModifyInventoryConfiguration::processMode),
+            ExtraCodecs.strictOptionalField(ApoliDataTypes.INVENTORY_TYPE, "inventory_type", InventoryUtil.InventoryType.INVENTORY).forGetter(ModifyInventoryConfiguration::inventoryType),
+            ExtraCodecs.strictOptionalField(ApoliDataTypes.PROCESS_MODE, "process_mode", InventoryUtil.ProcessMode.STACKS).forGetter(ModifyInventoryConfiguration::processMode),
             ConfiguredEntityAction.optional("entity_action").forGetter(ModifyInventoryConfiguration::entityAction),
             ConfiguredItemAction.optional("item_action").forGetter(ModifyInventoryConfiguration::itemAction),
             ConfiguredItemCondition.optional("item_condition").forGetter(ModifyInventoryConfiguration::itemCondition),
             ListConfiguration.mapCodec(ApoliDataTypes.ITEM_SLOT, "slot", "slots").forGetter(ModifyInventoryConfiguration::slots),
-            CalioCodecHelper.optionalField(SerializableDataTypes.IDENTIFIER, "power").forGetter(ModifyInventoryConfiguration::power),
-            CalioCodecHelper.optionalField(CalioCodecHelper.INT, "limit", 1).forGetter(ModifyInventoryConfiguration::limit)
+            ExtraCodecs.strictOptionalField(SerializableDataTypes.IDENTIFIER, "power").forGetter(ModifyInventoryConfiguration::power),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "limit", 1).forGetter(ModifyInventoryConfiguration::limit)
     ).apply(instance, ModifyInventoryConfiguration::new));
 
 }

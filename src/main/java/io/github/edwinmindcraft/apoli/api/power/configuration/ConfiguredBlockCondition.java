@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  */
 public final class ConfiguredBlockCondition<T extends IDynamicFeatureConfiguration, F extends BlockCondition<T>> extends ConfiguredCondition<T, F, ConfiguredBlockCondition<?, ?>> {
 	public static final Codec<ConfiguredBlockCondition<?, ?>> CODEC = BlockCondition.CODEC.dispatch(ConfiguredBlockCondition::getFactory, BlockCondition::getConditionCodec);
-	public static final MapCodec<Optional<ConfiguredBlockCondition<?, ?>>> OPTIONAL_FIELD = CalioCodecHelper.optionalField(CODEC, "block_condition");
+	public static final MapCodec<Optional<ConfiguredBlockCondition<?, ?>>> OPTIONAL_FIELD = ExtraCodecs.strictOptionalField(CODEC, "block_condition");
 	public static final CodecSet<ConfiguredBlockCondition<?, ?>> CODEC_SET = CalioCodecHelper.forDynamicRegistry(ApoliDynamicRegistries.CONFIGURED_BLOCK_CONDITION_KEY, SerializableDataTypes.IDENTIFIER, CODEC);
 	public static final Codec<Holder<ConfiguredBlockCondition<?, ?>>> HOLDER = CODEC_SET.holder();
 

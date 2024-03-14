@@ -17,7 +17,7 @@ public record AttributeConfiguration(ListConfiguration<AttributedEntityAttribute
 
 	public static final MapCodec<AttributeConfiguration> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			ListConfiguration.mapCodec(ApoliDataTypes.ATTRIBUTED_ATTRIBUTE_MODIFIER, "modifier", "modifiers").forGetter(AttributeConfiguration::modifiers),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "update_health", true).forGetter(AttributeConfiguration::updateHealth)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "update_health", true).forGetter(AttributeConfiguration::updateHealth)
 	).apply(instance, AttributeConfiguration::new));
 
 	public AttributeConfiguration(AttributedEntityAttributeModifier... modifiers) {

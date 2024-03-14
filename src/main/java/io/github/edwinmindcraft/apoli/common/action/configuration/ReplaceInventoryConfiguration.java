@@ -29,14 +29,14 @@ public record ReplaceInventoryConfiguration(InventoryUtil.InventoryType inventor
                                             boolean mergeNbt) implements IDynamicFeatureConfiguration {
 
     public static final Codec<ReplaceInventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            CalioCodecHelper.optionalField(ApoliDataTypes.INVENTORY_TYPE, "inventory_type", InventoryUtil.InventoryType.INVENTORY).forGetter(ReplaceInventoryConfiguration::inventoryType),
+            ExtraCodecs.strictOptionalField(ApoliDataTypes.INVENTORY_TYPE, "inventory_type", InventoryUtil.InventoryType.INVENTORY).forGetter(ReplaceInventoryConfiguration::inventoryType),
             ConfiguredEntityAction.optional("entity_action").forGetter(ReplaceInventoryConfiguration::entityAction),
             ConfiguredItemAction.optional("item_action").forGetter(ReplaceInventoryConfiguration::itemAction),
             ConfiguredItemCondition.optional("item_condition").forGetter(ReplaceInventoryConfiguration::itemCondition),
             ListConfiguration.mapCodec(ApoliDataTypes.ITEM_SLOT, "slot", "slots").forGetter(ReplaceInventoryConfiguration::slots),
-            CalioCodecHelper.optionalField(SerializableDataTypes.IDENTIFIER, "power").forGetter(ReplaceInventoryConfiguration::power),
+            ExtraCodecs.strictOptionalField(SerializableDataTypes.IDENTIFIER, "power").forGetter(ReplaceInventoryConfiguration::power),
             SerializableDataTypes.ITEM_STACK.fieldOf("stack").forGetter(ReplaceInventoryConfiguration::stack),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "merge_nbt", false).forGetter(ReplaceInventoryConfiguration::mergeNbt)
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "merge_nbt", false).forGetter(ReplaceInventoryConfiguration::mergeNbt)
     ).apply(instance, ReplaceInventoryConfiguration::new));
 
 }

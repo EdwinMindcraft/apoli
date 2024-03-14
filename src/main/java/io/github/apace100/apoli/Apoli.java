@@ -5,6 +5,7 @@ import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.apace100.apoli.util.GainedPowerCriterion;
 import io.github.apace100.apoli.util.Scheduler;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
+import io.github.edwinmindcraft.apoli.data.ApoliDataGenerator;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -49,6 +50,7 @@ public class Apoli {
 		CriteriaTriggers.register(GainedPowerCriterion.INSTANCE);
 
 		ApoliCommon.initialize(bus);
+		bus.addListener(ApoliDataGenerator::gatherData);
 		if (FMLEnvironment.dist == Dist.CLIENT) ApoliClient.initialize(bus);
 		LOGGER.info("Apoli " + ModLoadingContext.get().getActiveContainer().getModInfo().getVersion() + " has initialized. Ready to power up your game!");
 	}

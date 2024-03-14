@@ -20,10 +20,10 @@ public record RaycastSettingsConfiguration(double distance, boolean block, boole
 										   ClipContext.Fluid fluidHandling) implements IDynamicFeatureConfiguration {
 	public static final MapCodec<RaycastSettingsConfiguration> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			CalioCodecHelper.DOUBLE.fieldOf("distance").forGetter(RaycastSettingsConfiguration::distance),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "block", true).forGetter(RaycastSettingsConfiguration::block),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "entity", true).forGetter(RaycastSettingsConfiguration::entity),
-			CalioCodecHelper.optionalField(SerializableDataTypes.SHAPE_TYPE, "shape_type", ClipContext.Block.OUTLINE).forGetter(RaycastSettingsConfiguration::shapeType),
-			CalioCodecHelper.optionalField(SerializableDataTypes.FLUID_HANDLING, "fluid_handling", ClipContext.Fluid.ANY).forGetter(RaycastSettingsConfiguration::fluidHandling)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "block", true).forGetter(RaycastSettingsConfiguration::block),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "entity", true).forGetter(RaycastSettingsConfiguration::entity),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.SHAPE_TYPE, "shape_type", ClipContext.Block.OUTLINE).forGetter(RaycastSettingsConfiguration::shapeType),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.FLUID_HANDLING, "fluid_handling", ClipContext.Fluid.ANY).forGetter(RaycastSettingsConfiguration::fluidHandling)
 	).apply(instance, RaycastSettingsConfiguration::new));
 
 	@Override

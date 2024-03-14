@@ -15,9 +15,9 @@ import java.util.stream.Stream;
 public record ConditionStreamConfiguration<T, V>(List<HolderSet<T>> entries, String name, BiPredicate<T, V> predicate,
 												 Predicate<Stream<Boolean>> check) implements IDelegatedConditionConfiguration<V>, IStreamConfiguration<HolderSet<T>> {
 
-	public static <T, V> Codec<ConditionStreamConfiguration<T, V>> codec(CodecSet<T> codec, String name, BiPredicate<T, V> predicate, Predicate<Stream<Boolean>> check) {
+	public static <T, V> Codec<ConditionStreamConfiguration<T, V>> codec(Codec<HolderSet<T>> codec, String name, BiPredicate<T, V> predicate, Predicate<Stream<Boolean>> check) {
 		return RecordCodecBuilder.create(instance -> instance.group(
-				codec.set().fieldOf("conditions").forGetter(ConditionStreamConfiguration::entries)
+				codec.listOf().fieldOf("conditions").forGetter(ConditionStreamConfiguration::entries)
 		).apply(instance, c -> new ConditionStreamConfiguration<>(c, name, predicate, check)));
 	}
 
@@ -29,11 +29,11 @@ public record ConditionStreamConfiguration<T, V>(List<HolderSet<T>> entries, Str
 		return new ConditionStreamConfiguration<>(entries, "And", predicate, x -> x.anyMatch(y -> y));
 	}
 
-	public static <T, V> Codec<ConditionStreamConfiguration<T, V>> andCodec(CodecSet<T> codec, BiPredicate<T, V> predicate) {
+	public static <T, V> Codec<ConditionStreamConfiguration<T, V>> andCodec(Codec<HolderSet<T>> codec, BiPredicate<T, V> predicate) {
 		return codec(codec, "And", predicate, x -> x.allMatch(y -> y));
 	}
 
-	public static <T, V> Codec<ConditionStreamConfiguration<T, V>> orCodec(CodecSet<T> codec, BiPredicate<T, V> predicate) {
+	public static <T, V> Codec<ConditionStreamConfiguration<T, V>> orCodec(Codec<HolderSet<T>> codec, BiPredicate<T, V> predicate) {
 		return codec(codec, "Or", predicate, x -> x.anyMatch(y -> y));
 	}
 

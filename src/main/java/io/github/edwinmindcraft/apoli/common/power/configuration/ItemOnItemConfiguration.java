@@ -31,8 +31,8 @@ public record ItemOnItemConfiguration(Holder<ConfiguredItemCondition<?, ?>> usin
 	public static final Codec<ItemOnItemConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ConfiguredItemCondition.optional("using_item_condition").forGetter(ItemOnItemConfiguration::usingItemCondition),
 			ConfiguredItemCondition.optional("on_item_condition").forGetter(ItemOnItemConfiguration::onItemCondition),
-			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "result_from_on_stack", 0).forGetter(ItemOnItemConfiguration::resultFromOnStack),
-			CalioCodecHelper.optionalField(SerializableDataTypes.ITEM_STACK, "result").forGetter(x -> Optional.ofNullable(x.newStack())),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "result_from_on_stack", 0).forGetter(ItemOnItemConfiguration::resultFromOnStack),
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.ITEM_STACK, "result").forGetter(x -> Optional.ofNullable(x.newStack())),
 			ConfiguredItemAction.optional("using_item_action").forGetter(ItemOnItemConfiguration::usingItemAction),
 			ConfiguredItemAction.optional("on_item_action").forGetter(ItemOnItemConfiguration::onItemAction),
 			ConfiguredItemAction.optional("result_item_action").forGetter(ItemOnItemConfiguration::resultItemAction),

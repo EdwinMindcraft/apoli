@@ -21,8 +21,8 @@ public record BlockStateConfiguration(String property,
 	public static final Codec<BlockStateConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.STRING.fieldOf("property").forGetter(BlockStateConfiguration::property),
 			IntegerComparisonConfiguration.OPTIONAL_MAP_CODEC.forGetter(x -> Optional.ofNullable(x.comparison())),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "value").forGetter(x -> Optional.ofNullable(x.booleanValue())),
-			CalioCodecHelper.optionalField(Codec.STRING, "enum").forGetter(x -> Optional.ofNullable(x.stringValue()))
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "value").forGetter(x -> Optional.ofNullable(x.booleanValue())),
+			ExtraCodecs.strictOptionalField(Codec.STRING, "enum").forGetter(x -> Optional.ofNullable(x.stringValue()))
 	).apply(instance, (t1, t2, t3, t4) -> new BlockStateConfiguration(t1, t2.orElse(null), t3.orElse(null), t4.orElse(null))));
 
 	public boolean checkProperty(Object value) {

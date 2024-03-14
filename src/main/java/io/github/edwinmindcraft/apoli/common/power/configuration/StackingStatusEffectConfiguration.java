@@ -16,7 +16,7 @@ public record StackingStatusEffectConfiguration(ListConfiguration<MobEffectInsta
 			CalioCodecHelper.INT.fieldOf("min_stacks").forGetter(StackingStatusEffectConfiguration::min),
 			CalioCodecHelper.INT.fieldOf("max_stacks").forGetter(StackingStatusEffectConfiguration::max),
 			CalioCodecHelper.INT.fieldOf("duration_per_stack").forGetter(StackingStatusEffectConfiguration::duration),
-			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "tick_rate", 10).forGetter(StackingStatusEffectConfiguration::tickRate)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "tick_rate", 10).forGetter(StackingStatusEffectConfiguration::tickRate)
 	).apply(instance, StackingStatusEffectConfiguration::new));
 
 	public StackingStatusEffectConfiguration(ListConfiguration<MobEffectInstance> effects, int min, int max, int duration) {

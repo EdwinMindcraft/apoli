@@ -13,7 +13,7 @@ import java.util.Optional;
 public record RemoveEnchantmentConfiguration(ListConfiguration<Enchantment> enchantments, Optional<Integer> levels, boolean resetRepairCost) implements IDynamicFeatureConfiguration {
     public static final Codec<RemoveEnchantmentConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ListConfiguration.mapCodec(SerializableDataTypes.ENCHANTMENT, "enchantment", "enchantments").forGetter(RemoveEnchantmentConfiguration::enchantments),
-            CalioCodecHelper.optionalField(CalioCodecHelper.INT, "levels").forGetter(RemoveEnchantmentConfiguration::levels),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "reset_repair_cost", false).forGetter(RemoveEnchantmentConfiguration::resetRepairCost)
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "levels").forGetter(RemoveEnchantmentConfiguration::levels),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "reset_repair_cost", false).forGetter(RemoveEnchantmentConfiguration::resetRepairCost)
     ).apply(instance, RemoveEnchantmentConfiguration::new));
 }

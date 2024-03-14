@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
+import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -8,6 +9,8 @@ import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOverTimeC
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.biome.Biome;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,6 +41,11 @@ public class ActionOverTimePower extends PowerFactory<ActionOverTimeConfiguratio
 	@Override
 	protected int tickInterval(ActionOverTimeConfiguration configuration, Entity player) {
 		return configuration.interval();
+	}
+
+	@Override
+	public @Nullable Codec<?> getDataCodec() {
+		return Codec.BOOL;
 	}
 
 	@Override

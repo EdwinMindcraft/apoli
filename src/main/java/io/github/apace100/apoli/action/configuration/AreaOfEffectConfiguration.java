@@ -22,11 +22,11 @@ public record AreaOfEffectConfiguration<A extends ConfiguredFactory<?, ?, ?>, C 
                                                                                                              boolean includeTarget) implements IDynamicFeatureConfiguration {
     public static <A extends ConfiguredFactory<?, ?, ?>, C extends ConfiguredCondition<?, ?, ?>> Codec<AreaOfEffectConfiguration<A, C>> createCodec(MapCodec<Holder<A>> actionCodec, MapCodec<Holder<C>> conditionCodec) {
         return RecordCodecBuilder.create(instance -> instance.group(
-                CalioCodecHelper.optionalField(CalioCodecHelper.DOUBLE, "radius", 16.0).forGetter(AreaOfEffectConfiguration::radius),
+                ExtraCodecs.strictOptionalField(CalioCodecHelper.DOUBLE, "radius", 16.0).forGetter(AreaOfEffectConfiguration::radius),
                 actionCodec.forGetter(AreaOfEffectConfiguration::action),
                 conditionCodec.forGetter(AreaOfEffectConfiguration::condition),
-                CalioCodecHelper.optionalField(SerializableDataType.enumValue(Shape.class), "shape", Shape.CUBE).forGetter(AreaOfEffectConfiguration::shape),
-                CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "include_target", false).forGetter(AreaOfEffectConfiguration::includeTarget)
+                ExtraCodecs.strictOptionalField(SerializableDataType.enumValue(Shape.class), "shape", Shape.CUBE).forGetter(AreaOfEffectConfiguration::shape),
+                ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "include_target", false).forGetter(AreaOfEffectConfiguration::includeTarget)
         ).apply(instance, AreaOfEffectConfiguration::new));
     }
 }

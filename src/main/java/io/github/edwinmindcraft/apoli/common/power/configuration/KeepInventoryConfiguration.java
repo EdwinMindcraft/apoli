@@ -20,7 +20,7 @@ public record KeepInventoryConfiguration(Holder<ConfiguredItemCondition<?, ?>> k
 										 @Nullable Set<Integer> slots) implements IDynamicFeatureConfiguration {
 	public static final Codec<KeepInventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ConfiguredItemCondition.optional("item_condition").forGetter(KeepInventoryConfiguration::keepCondition),
-			CalioCodecHelper.optionalField(SerializableDataTypes.INTS, "slots").forGetter(x -> x.slots() == null ? Optional.empty() : Optional.of(new ArrayList<>(x.slots())))
+			ExtraCodecs.strictOptionalField(SerializableDataTypes.INTS, "slots").forGetter(x -> x.slots() == null ? Optional.empty() : Optional.of(new ArrayList<>(x.slots())))
 	).apply(instance, (t1, t2) -> new KeepInventoryConfiguration(t1, t2.map(ImmutableSet::copyOf).orElse(null))));
 
 	public boolean isApplicableTo(int slot, Level level, ItemStack stack) {

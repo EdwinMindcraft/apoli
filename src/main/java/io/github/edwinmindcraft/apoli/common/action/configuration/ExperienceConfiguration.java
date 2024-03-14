@@ -8,7 +8,7 @@ import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 public record ExperienceConfiguration(int points, int levels) implements IDynamicFeatureConfiguration {
 
 	public static final Codec<ExperienceConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "points", 0).forGetter(ExperienceConfiguration::points),
-			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "levels", 0).forGetter(ExperienceConfiguration::levels)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "points", 0).forGetter(ExperienceConfiguration::points),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "levels", 0).forGetter(ExperienceConfiguration::levels)
 	).apply(instance, ExperienceConfiguration::new));
 }

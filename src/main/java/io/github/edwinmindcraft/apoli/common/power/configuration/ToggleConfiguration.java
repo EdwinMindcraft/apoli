@@ -9,8 +9,8 @@ import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 public record ToggleConfiguration(boolean defaultState, IActivePower.Key key,
 								  boolean retainState) implements TogglePowerConfiguration {
 	public static final Codec<ToggleConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "active_by_default", true).forGetter(TogglePowerConfiguration::defaultState),
-			CalioCodecHelper.optionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(TogglePowerConfiguration::key),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "retain_state", true).forGetter(TogglePowerConfiguration::retainState)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "active_by_default", true).forGetter(TogglePowerConfiguration::defaultState),
+			ExtraCodecs.strictOptionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(TogglePowerConfiguration::key),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "retain_state", true).forGetter(TogglePowerConfiguration::retainState)
 	).apply(instance, ToggleConfiguration::new));
 }

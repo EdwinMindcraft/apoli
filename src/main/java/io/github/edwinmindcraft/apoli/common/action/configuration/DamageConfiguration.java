@@ -14,8 +14,8 @@ import java.util.Optional;
 
 public record DamageConfiguration(Optional<ResourceKey<DamageType>> damageType, Optional<DamageSourceDescription> source, float amount) implements IDynamicFeatureConfiguration {
 	public static final Codec<DamageConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            CalioCodecHelper.optionalField(SerializableDataTypes.DAMAGE_TYPE, "damage_type").forGetter(DamageConfiguration::damageType),
-            CalioCodecHelper.optionalField(ApoliDataTypes.DAMAGE_SOURCE_DESCRIPTION, "source").forGetter(DamageConfiguration::source),
+            ExtraCodecs.strictOptionalField(SerializableDataTypes.DAMAGE_TYPE, "damage_type").forGetter(DamageConfiguration::damageType),
+            ExtraCodecs.strictOptionalField(ApoliDataTypes.DAMAGE_SOURCE_DESCRIPTION, "source").forGetter(DamageConfiguration::source),
 			CalioCodecHelper.FLOAT.fieldOf("amount").forGetter(DamageConfiguration::amount)
 	).apply(instance, DamageConfiguration::new));
 }

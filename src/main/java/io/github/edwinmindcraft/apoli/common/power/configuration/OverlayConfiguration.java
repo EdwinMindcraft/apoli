@@ -14,12 +14,12 @@ public record OverlayConfiguration(ResourceLocation texture, float strength, Col
 
 	public static final Codec<OverlayConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.IDENTIFIER.fieldOf("texture").forGetter(OverlayConfiguration::texture),
-			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "strength", 1.0F).forGetter(OverlayConfiguration::strength),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.FLOAT, "strength", 1.0F).forGetter(OverlayConfiguration::strength),
 			ColorConfiguration.NO_ALPHA.forGetter(OverlayConfiguration::color),
 			DrawMode.CODEC.fieldOf("draw_mode").forGetter(OverlayConfiguration::mode),
 			DrawPhase.CODEC.fieldOf("draw_phase").forGetter(OverlayConfiguration::phase),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "hide_with_hud", true).forGetter(OverlayConfiguration::hideWithHud),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "visible_in_third_person", false).forGetter(OverlayConfiguration::visibleInThirdPerson)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "hide_with_hud", true).forGetter(OverlayConfiguration::hideWithHud),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "visible_in_third_person", false).forGetter(OverlayConfiguration::visibleInThirdPerson)
 	).apply(instance, OverlayConfiguration::new));
 
 	public enum DrawMode {

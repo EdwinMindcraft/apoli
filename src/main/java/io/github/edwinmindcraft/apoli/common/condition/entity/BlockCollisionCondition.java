@@ -3,7 +3,6 @@ package io.github.edwinmindcraft.apoli.common.condition.entity;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.BlockCollisionConfiguration;
-import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;

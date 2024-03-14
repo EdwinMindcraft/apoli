@@ -35,7 +35,7 @@ public class AttributeModifyTransferPower extends PowerFactory<AttributeModifyTr
 			if (attributes.hasAttribute(config.source())) {
 				AttributeInstance instance = attributes.getInstance(config.source());
 				if (instance != null)
-					instance.getModifiers().forEach(mod -> builder.add(ModifierUtil.fromAttributeModifier(new AttributeModifier(mod.getId(), mod.getName(), mod.getAmount() * config.multiplier(), mod.getOperation()))));
+					instance.getModifiers().forEach(mod -> builder.add(ModifierUtil.fromAttributeModifier(new AttributeModifier(mod.getId(), mod.name, mod.getAmount() * config.multiplier(), mod.getOperation()))));
 			}
 		}
 		return builder.build();

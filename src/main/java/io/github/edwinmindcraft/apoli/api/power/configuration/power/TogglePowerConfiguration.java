@@ -9,15 +9,15 @@ import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
 public interface TogglePowerConfiguration extends IDynamicFeatureConfiguration {
 	MapCodec<TogglePowerConfiguration> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "active_by_default", true).forGetter(TogglePowerConfiguration::defaultState),
-			CalioCodecHelper.optionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(TogglePowerConfiguration::key),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "retain_state", true).forGetter(TogglePowerConfiguration::retainState)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "active_by_default", true).forGetter(TogglePowerConfiguration::defaultState),
+			ExtraCodecs.strictOptionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(TogglePowerConfiguration::key),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "retain_state", true).forGetter(TogglePowerConfiguration::retainState)
 	).apply(instance, Impl::new));
 
 	MapCodec<TogglePowerConfiguration> INACTIVE_MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "active_by_default", false).forGetter(TogglePowerConfiguration::defaultState),
-			CalioCodecHelper.optionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(TogglePowerConfiguration::key),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "retain_state", true).forGetter(TogglePowerConfiguration::retainState)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "active_by_default", false).forGetter(TogglePowerConfiguration::defaultState),
+			ExtraCodecs.strictOptionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(TogglePowerConfiguration::key),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "retain_state", true).forGetter(TogglePowerConfiguration::retainState)
 	).apply(instance, Impl::new));
 
 	Codec<TogglePowerConfiguration> CODEC = MAP_CODEC.codec();

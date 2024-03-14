@@ -18,10 +18,10 @@ public record FireProjectileConfiguration(EntityType<?> entityType, float diverg
                                           Holder<ConfiguredEntityAction<?, ?>> projectileAction) implements IDynamicFeatureConfiguration {
     public static final Codec<FireProjectileConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             SerializableDataTypes.ENTITY_TYPE.fieldOf("entity_type").forGetter(FireProjectileConfiguration::entityType),
-            CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "divergence", 1F).forGetter(FireProjectileConfiguration::divergence),
-            CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "speed", 1.5F).forGetter(FireProjectileConfiguration::speed),
-            CalioCodecHelper.optionalField(CalioCodecHelper.INT, "count", 1).forGetter(FireProjectileConfiguration::count),
-            CalioCodecHelper.optionalField(SerializableDataTypes.NBT, "tag").forGetter(FireProjectileConfiguration::tag),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.FLOAT, "divergence", 1F).forGetter(FireProjectileConfiguration::divergence),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.FLOAT, "speed", 1.5F).forGetter(FireProjectileConfiguration::speed),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "count", 1).forGetter(FireProjectileConfiguration::count),
+            ExtraCodecs.strictOptionalField(SerializableDataTypes.NBT, "tag").forGetter(FireProjectileConfiguration::tag),
             ConfiguredEntityAction.optional("projectile_action").forGetter(FireProjectileConfiguration::projectileAction)
     ).apply(instance, FireProjectileConfiguration::new));
 }

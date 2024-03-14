@@ -37,7 +37,7 @@ public record RestrictArmorConfiguration(Map<EquipmentSlot, Holder<ConfiguredIte
 
 	public static final Codec<RestrictArmorConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			EQUIPMENT_MAP_CODEC.forGetter(RestrictArmorConfiguration::conditions),
-			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "tick_rate", 80).forGetter(RestrictArmorConfiguration::tickRate)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "tick_rate", 80).forGetter(RestrictArmorConfiguration::tickRate)
 	).apply(instance, RestrictArmorConfiguration::new));
 
 	public boolean check(EquipmentSlot slot, Level level, ItemStack stack) {

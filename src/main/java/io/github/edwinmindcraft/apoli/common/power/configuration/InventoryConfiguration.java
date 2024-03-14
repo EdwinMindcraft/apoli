@@ -15,11 +15,11 @@ public record InventoryConfiguration(String inventoryName, boolean dropOnDeath,
 									 Holder<ConfiguredItemCondition<?, ?>> dropFilter,
 									 IActivePower.Key key, boolean recoverable) implements IDynamicFeatureConfiguration {
 	public static final Codec<InventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(Codec.STRING, "title", "container.inventory").forGetter(InventoryConfiguration::inventoryName),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "drop_on_death", false).forGetter(InventoryConfiguration::dropOnDeath),
-			CalioCodecHelper.optionalField(SerializableDataType.enumValue(InventoryPower.ContainerType.class), "container_type", InventoryPower.ContainerType.DROPPER).forGetter(InventoryConfiguration::containerType),
+			ExtraCodecs.strictOptionalField(Codec.STRING, "title", "container.inventory").forGetter(InventoryConfiguration::inventoryName),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "drop_on_death", false).forGetter(InventoryConfiguration::dropOnDeath),
+			ExtraCodecs.strictOptionalField(SerializableDataType.enumValue(InventoryPower.ContainerType.class), "container_type", InventoryPower.ContainerType.DROPPER).forGetter(InventoryConfiguration::containerType),
 			ConfiguredItemCondition.optional("drop_on_death_filter").forGetter(InventoryConfiguration::dropFilter),
-			CalioCodecHelper.optionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(InventoryConfiguration::key),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "recoverable", true).forGetter(InventoryConfiguration::recoverable)
+			ExtraCodecs.strictOptionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(InventoryConfiguration::key),
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "recoverable", true).forGetter(InventoryConfiguration::recoverable)
 	).apply(instance, InventoryConfiguration::new));
 }

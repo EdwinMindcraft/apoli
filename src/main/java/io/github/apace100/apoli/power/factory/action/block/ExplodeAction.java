@@ -2,7 +2,6 @@ package io.github.apace100.apoli.power.factory.action.block;
 
 import io.github.apace100.apoli.action.configuration.ExplodeConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockAction;
-import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.damagesource.DamageSource;

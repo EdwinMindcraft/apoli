@@ -13,7 +13,7 @@ import java.util.Optional;
 public record ClimbingConfiguration(boolean allowHolding,
 									@Nullable Holder<ConfiguredEntityCondition<?, ?>> condition) implements IDynamicFeatureConfiguration {
 	public static final Codec<ClimbingConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "allow_holding", true).forGetter(ClimbingConfiguration::allowHolding),
-			CalioCodecHelper.optionalField(ConfiguredEntityCondition.HOLDER, "hold_condition").forGetter(climbingConfiguration -> Optional.ofNullable(climbingConfiguration.condition()))
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "allow_holding", true).forGetter(ClimbingConfiguration::allowHolding),
+			ExtraCodecs.strictOptionalField(ConfiguredEntityCondition.HOLDER, "hold_condition").forGetter(climbingConfiguration -> Optional.ofNullable(climbingConfiguration.condition()))
 	).apply(instance, (t1, t2) -> new ClimbingConfiguration(t1, t2.orElse(null))));
 }
