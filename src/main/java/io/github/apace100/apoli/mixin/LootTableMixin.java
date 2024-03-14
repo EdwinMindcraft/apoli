@@ -39,7 +39,7 @@ public class LootTableMixin {
 
     @Inject(method = "getRandomItems(Lnet/minecraft/world/level/storage/loot/LootContext;)Lit/unimi/dsi/fastutil/objects/ObjectArrayList;", at = @At("HEAD"), cancellable = true)
     private void modifyLootTable(LootContext context, CallbackInfoReturnable<ObjectArrayList<ItemStack>> cir) {
-        if(((ReplacingLootContext)context).isReplaced((LootTable)(Object)this)) {
+        if(((ReplacingLootContext)context).isReplaced((LootTable)(Object)this) || lootTableId == null) {
             return;
         }
 
@@ -92,7 +92,7 @@ public class LootTableMixin {
 
     @Inject(method = "getRandomItemsRaw(Lnet/minecraft/world/level/storage/loot/LootContext;Ljava/util/function/Consumer;)V", at = @At("HEAD"), cancellable = true)
     private void setReplacedLootTable(LootContext context, Consumer<ItemStack> lootConsumer, CallbackInfo ci) {
-        if (this.lootTableId.equals(ReplaceLootTablePower.REPLACED_TABLE_UTIL_ID)) {
+        if (this.lootTableId != null && this.lootTableId.equals(ReplaceLootTablePower.REPLACED_TABLE_UTIL_ID)) {
             LootTable replace = ReplaceLootTablePower.peek();
             replace.getRandomItemsRaw(context, lootConsumer);
             ci.cancel();
