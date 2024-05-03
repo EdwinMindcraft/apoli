@@ -28,7 +28,7 @@ public abstract class ForgeGuiMixin extends Gui {
 		if (Gui.GUI_ICONS_LOCATION.equals(original)) {
 			Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = IPowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
 			if (first.isPresent()) {
-				return first.get().value().getConfiguration().value().orElse(null);
+				return first.get().value().getConfiguration().value().orElse(original);
 			}
 		}
 		return original;
@@ -39,7 +39,7 @@ public abstract class ForgeGuiMixin extends Gui {
         if (Gui.GUI_ICONS_LOCATION.equals(original)) {
             Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = IPowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
             if (first.isPresent()) {
-                return first.get().value().getConfiguration().value().orElse(null);
+                return first.get().value().getConfiguration().value().orElse(original);
             }
         }
         return original;
@@ -50,7 +50,7 @@ public abstract class ForgeGuiMixin extends Gui {
         if (Gui.GUI_ICONS_LOCATION.equals(original)) {
             Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = IPowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
             if (first.isPresent()) {
-                return first.get().value().getConfiguration().value().orElse(null);
+                return first.get().value().getConfiguration().value().orElse(original);
             }
         }
         return original;
@@ -61,7 +61,7 @@ public abstract class ForgeGuiMixin extends Gui {
         if (Gui.GUI_ICONS_LOCATION.equals(original)) {
             Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = IPowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
             if (first.isPresent()) {
-                return first.get().value().getConfiguration().value().orElse(null);
+                return first.get().value().getConfiguration().value().orElse(original);
             }
         }
         return original;
