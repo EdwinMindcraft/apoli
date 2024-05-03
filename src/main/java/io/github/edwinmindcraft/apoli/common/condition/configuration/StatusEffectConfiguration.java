@@ -19,8 +19,8 @@ public record StatusEffectConfiguration(MobEffect effect,
 			SerializableDataTypes.STATUS_EFFECT.fieldOf("effect").forGetter(StatusEffectConfiguration::effect),
 			Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("min_amplifier", 0).forGetter(StatusEffectConfiguration::minAmplifier),
 			Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("max_amplifier", Integer.MAX_VALUE).forGetter(StatusEffectConfiguration::maxAmplifier),
-			Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("min_duration", 0).forGetter(StatusEffectConfiguration::minDuration),
-			Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("max_duration", Integer.MAX_VALUE).forGetter(StatusEffectConfiguration::maxDuration)
+			Codec.intRange(-1, Integer.MAX_VALUE).optionalFieldOf("min_duration", -1).forGetter(StatusEffectConfiguration::minDuration),
+			Codec.intRange(-1, Integer.MAX_VALUE).optionalFieldOf("max_duration", Integer.MAX_VALUE).forGetter(StatusEffectConfiguration::maxDuration)
 	).apply(instance, StatusEffectConfiguration::new));
 
 	@Override
