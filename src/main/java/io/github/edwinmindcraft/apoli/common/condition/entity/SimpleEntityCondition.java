@@ -19,15 +19,15 @@ public class SimpleEntityCondition extends EntityCondition<NoConfiguration> {
 	public static boolean isExposedToSky(Entity entity) {
 		BlockPos bp = new BlockPos(entity.blockPosition().getX(), (int) Math.round(entity.getY()), entity.blockPosition().getZ());
 		if (entity.getVehicle() instanceof Boat) bp = bp.above();
-		return entity.level().canSeeSky(bp);
+		return entity.getLevel().canSeeSky(bp);
 	}
 
 	public static boolean isExposedToSun(Entity entity) {
-		return entity.getLightLevelDependentMagicValue() > 0.5F && entity.level().isDay() && !((EntityAccessor) entity).callIsBeingRainedOn() && isExposedToSky(entity);
+		return entity.getLightLevelDependentMagicValue() > 0.5F && entity.getLevel().isDay() && !((EntityAccessor) entity).callIsBeingRainedOn() && isExposedToSky(entity);
 	}
 
     public static boolean isGlowing(Entity entity) {
-        if (entity.level().isClientSide())
+        if (entity.getLevel().isClientSide())
             return Minecraft.getInstance().shouldEntityAppearGlowing(entity);
         else
             return entity.isCurrentlyGlowing();
