@@ -17,7 +17,7 @@ public class SimpleEntityCondition extends EntityCondition<NoConfiguration> {
 	}
 
 	public static boolean isExposedToSky(Entity entity) {
-		BlockPos bp = new BlockPos((int)entity.getX(), (int) Math.round(entity.getY()), (int)entity.getZ());
+		BlockPos bp = new BlockPos(entity.blockPosition().getX(), (int) Math.round(entity.getY()), entity.blockPosition().getZ());
 		if (entity.getVehicle() instanceof Boat) bp = bp.above();
 		return entity.level().canSeeSky(bp);
 	}
