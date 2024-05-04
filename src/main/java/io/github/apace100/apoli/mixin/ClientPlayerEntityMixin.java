@@ -20,8 +20,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import javax.annotation.Nullable;
-
 @Mixin(LocalPlayer.class)
 public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer implements WaterMovingEntity {
 
