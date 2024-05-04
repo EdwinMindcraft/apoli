@@ -1,16 +1,18 @@
 package io.github.apace100.apoli.command;
 
-import com.google.gson.JsonElement;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.calio.util.JsonTextFormatter;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import joptsimple.internal.Strings;
 import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -87,7 +89,9 @@ public class PowerCommand {
                         )
 						.then(literal("dump")
 								.then(argument("power", PowerTypeArgumentType.power())
-                                        .executes(PowerCommand::dumpPower))
+                                        .executes(context -> dumpPower(context, false))
+                                        .then(argument("indent", IntegerArgumentType.integer(0))
+                                                .executes(context -> dumpPower(context, true))))
                         )
 						.then(literal("condition")
 								.then(argument("target", EntityArgument.entity())
@@ -539,12 +543,13 @@ public class PowerCommand {
         return ApoliAPI.getPowers(source.getServer()).get(power).getData().getName();
     }
 
-    public static int dumpPower(CommandContext<CommandSourceStack> context) {
+    public static int dumpPower(CommandContext<CommandSourceStack> context, boolean indentSpecified) {
         ResourceKey<ConfiguredPower<?, ?>> arg = PowerTypeArgumentType.getConfiguredPower(context, "power");
         ConfiguredPower<?, ?> power = ApoliAPI.getPowers(context.getSource().getServer()).getHolderOrThrow(arg).value();
-        String s = ConfiguredPower.CODEC.encodeStart(JsonOps.INSTANCE, power)
-                .map(JsonElement::toString).result().orElseThrow(() -> new CommandRuntimeException(Component.literal("Failed to encode " + arg)));
-        context.getSource().sendSuccess(() -> Component.literal(s), false);
+        String indent = Strings.repeat(' ', indentSpecified ? IntegerArgumentType.getInteger(context, "indent") : 4);
+        Component s = ConfiguredPower.CODEC.encodeStart(JsonOps.INSTANCE, power)
+                .map(jsonElement -> new JsonTextFormatter(indent).apply(jsonElement)).result().orElseThrow(() -> new CommandRuntimeException(Component.literal("Failed to encode " + arg)));
+        context.getSource().sendSuccess(() -> s, false);
         return 1;
     }
 
