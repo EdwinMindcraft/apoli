@@ -25,13 +25,16 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.StatType;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Pose;
@@ -139,12 +142,13 @@ public class ApoliDataTypes {
 			new SerializableData()
 					.add("item", SerializableDataTypes.ITEM)
 					.add("amount", SerializableDataTypes.INT, 1)
-					.add("tag", SerializableDataTypes.NBT, null)
+					.add("components", SerializableDataTypes.COMPONENT_CHANGES, DataComponentPatch.EMPTY)
 					.add("slot", SerializableDataTypes.INT, Integer.MIN_VALUE),
 			(data) -> {
 				ItemStack stack = new ItemStack((Item) data.get("item"), data.getInt("amount"));
-				if (data.isPresent("tag")) {
-					stack.setTag(data.get("tag"));
+				DataComponentPatch patch = data.get("components");
+				if (data.isPresent("components")) {
+					stack.applyComponents(patch);
 				}
 				return new Tuple<>(data.getInt("slot"), stack);
 			},
@@ -152,7 +156,7 @@ public class ApoliDataTypes {
 				SerializableData.Instance data = serializableData.new Instance();
 				data.set("item", positionedStack.getB().getItem());
 				data.set("amount", positionedStack.getB().getCount());
-				data.set("tag", positionedStack.getB().hasTag() ? positionedStack.getB().getTag() : null);
+				data.set("components", !positionedStack.getB().isComponentsPatchEmpty() ? positionedStack.getB().getComponentsPatch() : DataComponentPatch.EMPTY);
 				data.set("slot", positionedStack.getA());
 				return data;
 			}));
@@ -196,11 +200,7 @@ public class ApoliDataTypes {
 	public static final SerializableDataType<PlayerAbility> PLAYER_ABILITY = SerializableDataType.wrap(
 			PlayerAbility.class, SerializableDataTypes.IDENTIFIER,
 			ability -> PlayerAbilities.REGISTRY.getKey(ability), id -> {
-                ResourceLocation resolvedId = id;
-                if (id.getNamespace().equals("minecraft")) {
-                    resolvedId = new ResourceLocation("calio", id.getPath());
-                }
-                PlayerAbility ability = PlayerAbilities.REGISTRY.get(resolvedId);
+                PlayerAbility ability = PlayerAbilities.REGISTRY.get(id);
                 if (ability == null) {
                     throw new NullPointerException(id + " has not been registered");
                 }
@@ -339,18 +339,7 @@ public class ApoliDataTypes {
 					.orElseGet(JsonObject::new)
 	);
 
-	public static final SerializableDataType<Integer> NON_NEGATIVE_INT = SerializableDataType.boundNumber(
-			SerializableDataTypes.INT, 0, Integer.MAX_VALUE,
-			value -> (min, max) -> {
-
-				if (value < min) {
-					throw new IllegalArgumentException("Expected value to be equal or greater than " + min + "! (current value: " + value + ")");
-				}
-
-				return value;
-
-			}
-	);
+	public static final SerializableDataType<Integer> NON_NEGATIVE_INT = new SerializableDataType<>(Integer.class, ExtraCodecs.POSITIVE_INT, ByteBufCodecs.INT.cast());
 
 	public static final SerializableDataType<StackClickPhase> STACK_CLICK_PHASE = SerializableDataType.enumValue(StackClickPhase.class);
 
