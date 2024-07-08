@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.condition.meta;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.configuration.IStreamConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
@@ -15,8 +16,8 @@ import java.util.stream.Stream;
 public record ConditionStreamConfiguration<T, V>(List<HolderSet<T>> entries, String name, BiPredicate<T, V> predicate,
 												 Predicate<Stream<Boolean>> check) implements IDelegatedConditionConfiguration<V>, IStreamConfiguration<HolderSet<T>> {
 
-	public static <T, V> Codec<ConditionStreamConfiguration<T, V>> codec(Codec<HolderSet<T>> codec, String name, BiPredicate<T, V> predicate, Predicate<Stream<Boolean>> check) {
-		return RecordCodecBuilder.create(instance -> instance.group(
+	public static <T, V> MapCodec<ConditionStreamConfiguration<T, V>> codec(Codec<HolderSet<T>> codec, String name, BiPredicate<T, V> predicate, Predicate<Stream<Boolean>> check) {
+		return RecordCodecBuilder.mapCodec(instance -> instance.group(
 				codec.listOf().fieldOf("conditions").forGetter(ConditionStreamConfiguration::entries)
 		).apply(instance, c -> new ConditionStreamConfiguration<>(c, name, predicate, check)));
 	}
@@ -29,11 +30,11 @@ public record ConditionStreamConfiguration<T, V>(List<HolderSet<T>> entries, Str
 		return new ConditionStreamConfiguration<>(entries, "And", predicate, x -> x.anyMatch(y -> y));
 	}
 
-	public static <T, V> Codec<ConditionStreamConfiguration<T, V>> andCodec(Codec<HolderSet<T>> codec, BiPredicate<T, V> predicate) {
+	public static <T, V> MapCodec<ConditionStreamConfiguration<T, V>> andCodec(Codec<HolderSet<T>> codec, BiPredicate<T, V> predicate) {
 		return codec(codec, "And", predicate, x -> x.allMatch(y -> y));
 	}
 
-	public static <T, V> Codec<ConditionStreamConfiguration<T, V>> orCodec(Codec<HolderSet<T>> codec, BiPredicate<T, V> predicate) {
+	public static <T, V> MapCodec<ConditionStreamConfiguration<T, V>> orCodec(Codec<HolderSet<T>> codec, BiPredicate<T, V> predicate) {
 		return codec(codec, "Or", predicate, x -> x.anyMatch(y -> y));
 	}
 

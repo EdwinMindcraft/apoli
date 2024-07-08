@@ -6,7 +6,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import io.github.edwinmindcraft.calio.api.registry.CalioDynamicRegistryManager;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -25,17 +26,17 @@ public record ParticleConfiguration(ParticleOptions particle,
 	public static final Codec<ParticleConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE.fieldOf("particle").forGetter(ParticleConfiguration::particle),
 			Codec.intRange(1, Integer.MAX_VALUE).fieldOf("frequency").forGetter(ParticleConfiguration::frequency),
-			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "visible_in_first_person", false).forGetter(ParticleConfiguration::visibleInFirstPerson),
-            ExtraCodecs.strictOptionalField(SerializableDataTypes.VECTOR, "spread", new Vec3(0.25, 0.5, 0.25)).forGetter(ParticleConfiguration::spread),
-            ExtraCodecs.strictOptionalField(CalioCodecHelper.FLOAT, "offset_y", 1.0F).forGetter(ParticleConfiguration::offsetY),
-            ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "count", 1).forGetter(ParticleConfiguration::count),
-            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "visible_while_invisible", false).forGetter(ParticleConfiguration::visibleWhileInvisible),
-            ExtraCodecs.strictOptionalField(CalioCodecHelper.FLOAT, "speed", 0.0F).forGetter(ParticleConfiguration::speed)
+			CalioCodecHelper.BOOL.optionalFieldOf("visible_in_first_person", false).forGetter(ParticleConfiguration::visibleInFirstPerson),
+			SerializableDataTypes.VECTOR.optionalFieldOf("spread", new Vec3(0.25, 0.5, 0.25)).forGetter(ParticleConfiguration::spread),
+			CalioCodecHelper.FLOAT.optionalFieldOf("offset_y", 1.0F).forGetter(ParticleConfiguration::offsetY),
+			CalioCodecHelper.INT.optionalFieldOf("count", 1).forGetter(ParticleConfiguration::count),
+			CalioCodecHelper.BOOL.optionalFieldOf("visible_while_invisible", false).forGetter(ParticleConfiguration::visibleWhileInvisible),
+			CalioCodecHelper.FLOAT.optionalFieldOf("speed", 0.0F).forGetter(ParticleConfiguration::speed)
     ).apply(instance, ParticleConfiguration::new));
 
 	@Override
 	@NotNull
-	public List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
+	public List<String> getWarnings(@NotNull RegistryAccess server) {
 		return ImmutableList.of();
 	}
 

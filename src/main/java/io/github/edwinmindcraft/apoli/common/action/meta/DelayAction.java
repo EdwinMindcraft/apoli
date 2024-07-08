@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.action.meta;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.apoli.util.Scheduler;
 import io.github.edwinmindcraft.apoli.api.configuration.MustBeBound;
@@ -14,8 +14,8 @@ public record DelayAction<T, V>(@MustBeBound Holder<T> action, int delay,
 								BiConsumer<T, V> executor) implements IDelegatedActionConfiguration<V> {
 	private static final Scheduler SCHEDULER = new Scheduler();
 
-	public static <T, V> Codec<DelayAction<T, V>> codec(CodecSet<T> codec, BiConsumer<T, V> executor) {
-		return RecordCodecBuilder.create(instance -> instance.group(
+	public static <T, V> MapCodec<DelayAction<T, V>> codec(CodecSet<T> codec, BiConsumer<T, V> executor) {
+		return RecordCodecBuilder.mapCodec(instance -> instance.group(
 				codec.holder().fieldOf("action").forGetter(DelayAction::action),
 				CalioCodecHelper.INT.fieldOf("ticks").forGetter(DelayAction::delay)
 		).apply(instance, (action, delay) -> new DelayAction<>(action, delay, executor)));

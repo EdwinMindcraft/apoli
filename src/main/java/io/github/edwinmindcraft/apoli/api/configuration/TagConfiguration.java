@@ -11,12 +11,12 @@ import java.util.Optional;
 
 public record TagConfiguration<V>(TagKey<V> value) implements IDynamicFeatureConfiguration {
 
-	public static <T> Codec<TagConfiguration<T>> codec(Codec<TagKey<T>> codec, String fieldName) {
-		return codec.fieldOf(fieldName).xmap(TagConfiguration::new, TagConfiguration::value).codec();
+	public static <T> MapCodec<TagConfiguration<T>> codec(Codec<TagKey<T>> codec, String fieldName) {
+		return codec.fieldOf(fieldName).xmap(TagConfiguration::new, TagConfiguration::value);
 	}
 
 	public static <T> MapCodec<Optional<TagConfiguration<T>>> optionalField(Codec<TagKey<T>> codec, String fieldName) {
-		return ExtraCodecs.strictOptionalField(codec, fieldName).xmap(x -> x.map(TagConfiguration::new), x -> x.map(TagConfiguration::value));
+		return codec.optionalFieldOf(fieldName).xmap(x -> x.map(TagConfiguration::new), x -> x.map(TagConfiguration::value));
 	}
 
 	@Override

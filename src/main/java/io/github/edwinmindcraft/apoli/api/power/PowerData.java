@@ -6,29 +6,25 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
-import io.github.edwinmindcraft.calio.common.util.ForgeConditionCodec;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.crafting.conditions.ICondition;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public record PowerData(List<ConfiguredEntityCondition<?, ?>> conditions, boolean hidden, int loadingPriority, Optional<ICondition> forgeCondition,
+public record PowerData(List<ConfiguredEntityCondition<?, ?>> conditions, boolean hidden, int loadingPriority,
                         String name, String description) {
 
-	public static final PowerData DEFAULT = new PowerData(ImmutableList.of(), false, 0, Optional.empty(), "", "");
+	public static final PowerData DEFAULT = new PowerData(ImmutableList.of(), false, 0, "", "");
 
 	public static final MapCodec<PowerData> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			CalioCodecHelper.listOf(ConfiguredEntityCondition.CODEC, "condition", "conditions").forGetter(PowerData::conditions),
-			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "hidden", false).forGetter(PowerData::hidden),
-			ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "loading_priority", 0).forGetter(PowerData::loadingPriority),
-            ExtraCodecs.strictOptionalField(ForgeConditionCodec.INSTANCE, "forge:conditions").forGetter(PowerData::forgeCondition),
-			ExtraCodecs.strictOptionalField(Codec.STRING, "name", "").forGetter(PowerData::name),
-			ExtraCodecs.strictOptionalField(Codec.STRING, "description", "").forGetter(PowerData::description)
+			CalioCodecHelper.BOOL.optionalFieldOf("hidden", false).forGetter(PowerData::hidden),
+			CalioCodecHelper.INT.optionalFieldOf("loading_priority", 0).forGetter(PowerData::loadingPriority),
+			Codec.STRING.optionalFieldOf("name", "").forGetter(PowerData::name),
+			Codec.STRING.optionalFieldOf("description", "").forGetter(PowerData::description)
 	).apply(instance, PowerData::new));
 
 	public static Builder builder() {
@@ -52,7 +48,7 @@ public record PowerData(List<ConfiguredEntityCondition<?, ?>> conditions, boolea
 	 * @return A new, completed power data.
 	 */
 	public PowerData complete(ResourceLocation identifier) {
-		return new PowerData(this.conditions, this.hidden, this.loadingPriority, this.forgeCondition,
+		return new PowerData(this.conditions, this.hidden, this.loadingPriority,
 				StringUtils.isEmpty(this.name) ? "power." + identifier.getNamespace() + "." + identifier.getPath() + ".name" : this.name,
 				StringUtils.isEmpty(this.description) ? "power." + identifier.getNamespace() + "." + identifier.getPath() + ".description" : this.description);
 	}
@@ -68,7 +64,6 @@ public record PowerData(List<ConfiguredEntityCondition<?, ?>> conditions, boolea
 		private final List<ConfiguredEntityCondition<?, ?>> conditions = new ArrayList<>();
 		private boolean hidden = false;
 		private int loadingPriority = 0;
-        private Optional<ICondition> forgeCondition = Optional.empty();
 		private String name = "";
 		private String description = "";
 
@@ -116,13 +111,8 @@ public record PowerData(List<ConfiguredEntityCondition<?, ?>> conditions, boolea
 			return this;
 		}
 
-        public Builder withForgeCondition(ICondition forgeCondition) {
-            this.forgeCondition = Optional.of(forgeCondition);
-            return this;
-        }
-
 		public PowerData build() {
-			return new PowerData(this.conditions, this.hidden, this.loadingPriority, this.forgeCondition, this.name, this.description);
+			return new PowerData(this.conditions, this.hidden, this.loadingPriority, this.name, this.description);
 		}
 	}
 }

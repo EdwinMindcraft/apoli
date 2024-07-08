@@ -8,8 +8,8 @@ import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.calio.api.event.DynamicRegistrationEvent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -32,8 +32,7 @@ public class PowerLoadEvent extends Event {
 		return this.id;
 	}
 
-	@Cancelable
-	public static class Pre extends PowerLoadEvent {
+	public static class Pre extends PowerLoadEvent implements ICancellableEvent {
 
 		private JsonElement json;
 

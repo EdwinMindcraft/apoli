@@ -7,12 +7,11 @@ import io.github.edwinmindcraft.apoli.api.configuration.MustBeBound;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.StringRepresentable;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -65,7 +64,7 @@ public interface IDynamicFeatureConfiguration {
 	 * @return The errors that invalidate this configuration, or an empty list in no errors where found.
 	 */
 	@NotNull
-	default List<String> getErrors(@NotNull ICalioDynamicRegistryManager server) {
+	default List<String> getErrors(@NotNull RegistryAccess server) {
 		return this.getChildrenComponent().entrySet().stream().flatMap(entry -> this.copyErrorsFrom(entry.getValue(), server, this.name(), entry.getKey()).stream()).toList();
 	}
 
@@ -75,7 +74,7 @@ public interface IDynamicFeatureConfiguration {
 	 * should be written here.
 	 */
 	@NotNull
-	default List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
+	default List<String> getWarnings(@NotNull RegistryAccess server) {
 		return this.getChildrenComponent().entrySet().stream().flatMap(entry -> this.copyWarningsFrom(entry.getValue(), server, this.name(), entry.getKey()).stream()).toList();
 	}
 
@@ -160,14 +159,14 @@ public interface IDynamicFeatureConfiguration {
 	/**
 	 * Returns a list of powers that are not registered in the dynamic registry.
 	 *
-	 * @param dynamicRegistryManager The dynamic registry manager, use {@link CalioAPI#getDynamicRegistries(MinecraftServer)} to access it.
-	 * @param identifiers            The powers to check the existence of.
+	 * @param registries	The registry access, use {@link CalioAPI#getRegistryAccess()} to access it.
+	 * @param identifiers   The powers to check the existence of.
 	 *
 	 * @return A containing all the missing powers.
 	 */
 	@NotNull
-	default List<ResourceLocation> checkPower(@NotNull ICalioDynamicRegistryManager dynamicRegistryManager, @NotNull ResourceLocation... identifiers) {
-		Registry<ConfiguredPower<?, ?>> powers = dynamicRegistryManager.get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
+	default List<ResourceLocation> checkPower(@NotNull RegistryAccess registries, @NotNull ResourceLocation... identifiers) {
+		Registry<ConfiguredPower<?, ?>> powers = registries.registryOrThrow(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
 		ImmutableList.Builder<ResourceLocation> builder = ImmutableList.builder();
 		for (ResourceLocation identifier : identifiers) {
 			if (!powers.containsKey(identifier))
@@ -183,12 +182,12 @@ public interface IDynamicFeatureConfiguration {
 		return val::formatted;
 	}
 
-	default List<String> copyErrorsFrom(@Nullable IDynamicFeatureConfiguration config, ICalioDynamicRegistryManager server, String name, String... fields) {
+	default List<String> copyErrorsFrom(@Nullable IDynamicFeatureConfiguration config, RegistryAccess server, String name, String... fields) {
 		if (config == null) return ImmutableList.of();
 		return config.getErrors(server).stream().map(this.fieldName(name, fields)).toList();
 	}
 
-	default List<String> copyWarningsFrom(@Nullable IDynamicFeatureConfiguration config, ICalioDynamicRegistryManager server, String name, String... fields) {
+	default List<String> copyWarningsFrom(@Nullable IDynamicFeatureConfiguration config, RegistryAccess server, String name, String... fields) {
 		if (config == null) return ImmutableList.of();
 		return config.getWarnings(server).stream().map(this.fieldName(name, fields)).toList();
 	}

@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.api.power.factory;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 
 public class ModifierOperation {
 	public static final Codec<ModifierOperation> CODEC = ApoliRegistries.MODIFIER_OPERATION.byNameCodec();
-	private final Codec<ConfiguredModifier<?>> codec;
+	private final MapCodec<ConfiguredModifier<?>> codec;
 
 	private final Phase phase;
 	private final int order;
@@ -34,7 +35,7 @@ public class ModifierOperation {
 		this.function = function;
 	}
 
-	public Codec<ConfiguredModifier<?>> getCodec() {
+	public MapCodec<ConfiguredModifier<?>> getCodec() {
 		return this.codec;
 	}
 

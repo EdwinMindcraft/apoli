@@ -12,12 +12,10 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.registries.RegistryBuilder;
 
 public class ApoliDynamicRegisters {
-
-	public static final DeferredRegister<ConfiguredPower<?, ?>> CONFIGURED_POWERS = DeferredRegister.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, Apoli.MODID);
-	public static final DeferredRegister<GlobalPowerSet> GLOBAL_POWER_SETS = DeferredRegister.create(ApoliDynamicRegistries.GLOBAL_POWER_SET, Apoli.MODID);
-
+	
 	public static final DeferredRegister<ConfiguredBiEntityAction<?, ?>> CONFIGURED_BIENTITY_ACTIONS = DeferredRegister.create(ApoliDynamicRegistries.CONFIGURED_BIENTITY_ACTION_KEY, Apoli.MODID);
 	public static final DeferredRegister<ConfiguredBlockAction<?, ?>> CONFIGURED_BLOCK_ACTIONS = DeferredRegister.create(ApoliDynamicRegistries.CONFIGURED_BLOCK_ACTION_KEY, Apoli.MODID);
 	public static final DeferredRegister<ConfiguredEntityAction<?, ?>> CONFIGURED_ENTITY_ACTIONS = DeferredRegister.create(ApoliDynamicRegistries.CONFIGURED_ENTITY_ACTION_KEY, Apoli.MODID);
@@ -34,26 +32,20 @@ public class ApoliDynamicRegisters {
 	public static final DeferredRegister<ConfiguredModifier<?>> CONFIGURED_MODIFIERS = DeferredRegister.create(ApoliDynamicRegistries.CONFIGURED_MODIFIER_KEY, Apoli.MODID);
 
 	public static void initialize(IEventBus bus) {
-		ApoliBuiltinRegistries.CONFIGURED_POWERS = CONFIGURED_POWERS.makeRegistry(() -> new RegistryBuilder<ConfiguredPower<?, ?>>().hasTags().disableSaving());
-		ApoliBuiltinRegistries.GLOBAL_POWER_SET = GLOBAL_POWER_SETS.makeRegistry(() -> new RegistryBuilder<GlobalPowerSet>().hasTags().disableSaving());
+		ApoliBuiltinRegistries.CONFIGURED_BIENTITY_ACTIONS = CONFIGURED_BIENTITY_ACTIONS.makeRegistry(builder -> builder.defaultKey(ApoliDynamicRegistries.ACTION_DEFAULT));
+		ApoliBuiltinRegistries.CONFIGURED_BLOCK_ACTIONS = CONFIGURED_BLOCK_ACTIONS.makeRegistry(builder -> builder.defaultKey(ApoliDynamicRegistries.ACTION_DEFAULT));
+		ApoliBuiltinRegistries.CONFIGURED_ENTITY_ACTIONS = CONFIGURED_ENTITY_ACTIONS.makeRegistry(builder -> builder.defaultKey(ApoliDynamicRegistries.ACTION_DEFAULT));
+		ApoliBuiltinRegistries.CONFIGURED_ITEM_ACTIONS = CONFIGURED_ITEM_ACTIONS.makeRegistry(builder -> builder.defaultKey(ApoliDynamicRegistries.ACTION_DEFAULT));
 
-		ApoliBuiltinRegistries.CONFIGURED_BIENTITY_ACTIONS = CONFIGURED_BIENTITY_ACTIONS.makeRegistry(() -> new RegistryBuilder<ConfiguredBiEntityAction<?, ?>>().disableSaving().hasTags().setDefaultKey(ApoliDynamicRegistries.ACTION_DEFAULT));
-		ApoliBuiltinRegistries.CONFIGURED_BLOCK_ACTIONS = CONFIGURED_BLOCK_ACTIONS.makeRegistry(() -> new RegistryBuilder<ConfiguredBlockAction<?, ?>>().disableSaving().hasTags().setDefaultKey(ApoliDynamicRegistries.ACTION_DEFAULT));
-		ApoliBuiltinRegistries.CONFIGURED_ENTITY_ACTIONS = CONFIGURED_ENTITY_ACTIONS.makeRegistry(() -> new RegistryBuilder<ConfiguredEntityAction<?, ?>>().disableSaving().hasTags().setDefaultKey(ApoliDynamicRegistries.ACTION_DEFAULT));
-		ApoliBuiltinRegistries.CONFIGURED_ITEM_ACTIONS = CONFIGURED_ITEM_ACTIONS.makeRegistry(() -> new RegistryBuilder<ConfiguredItemAction<?, ?>>().disableSaving().hasTags().setDefaultKey(ApoliDynamicRegistries.ACTION_DEFAULT));
+		ApoliBuiltinRegistries.CONFIGURED_BIENTITY_CONDITIONS = CONFIGURED_BIENTITY_CONDITIONS.makeRegistry(builder -> builder.defaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
+		ApoliBuiltinRegistries.CONFIGURED_BIOME_CONDITIONS = CONFIGURED_BIOME_CONDITIONS.makeRegistry(builder -> builder.defaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
+		ApoliBuiltinRegistries.CONFIGURED_BLOCK_CONDITIONS = CONFIGURED_BLOCK_CONDITIONS.makeRegistry(builder -> builder.defaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
+		ApoliBuiltinRegistries.CONFIGURED_DAMAGE_CONDITIONS = CONFIGURED_DAMAGE_CONDITIONS.makeRegistry(builder -> builder.defaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
+		ApoliBuiltinRegistries.CONFIGURED_ENTITY_CONDITIONS = CONFIGURED_ENTITY_CONDITIONS.makeRegistry(builder -> builder.defaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
+		ApoliBuiltinRegistries.CONFIGURED_FLUID_CONDITIONS = CONFIGURED_FLUID_CONDITIONS.makeRegistry(builder -> builder.defaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
+		ApoliBuiltinRegistries.CONFIGURED_ITEM_CONDITIONS = CONFIGURED_ITEM_CONDITIONS.makeRegistry(builder -> builder.defaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
 
-		ApoliBuiltinRegistries.CONFIGURED_BIENTITY_CONDITIONS = CONFIGURED_BIENTITY_CONDITIONS.makeRegistry(() -> new RegistryBuilder<ConfiguredBiEntityCondition<?, ?>>().disableSaving().hasTags().setDefaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
-		ApoliBuiltinRegistries.CONFIGURED_BIOME_CONDITIONS = CONFIGURED_BIOME_CONDITIONS.makeRegistry(() -> new RegistryBuilder<ConfiguredBiomeCondition<?, ?>>().disableSaving().hasTags().setDefaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
-		ApoliBuiltinRegistries.CONFIGURED_BLOCK_CONDITIONS = CONFIGURED_BLOCK_CONDITIONS.makeRegistry(() -> new RegistryBuilder<ConfiguredBlockCondition<?, ?>>().disableSaving().hasTags().setDefaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
-		ApoliBuiltinRegistries.CONFIGURED_DAMAGE_CONDITIONS = CONFIGURED_DAMAGE_CONDITIONS.makeRegistry(() -> new RegistryBuilder<ConfiguredDamageCondition<?, ?>>().disableSaving().hasTags().setDefaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
-		ApoliBuiltinRegistries.CONFIGURED_ENTITY_CONDITIONS = CONFIGURED_ENTITY_CONDITIONS.makeRegistry(() -> new RegistryBuilder<ConfiguredEntityCondition<?, ?>>().disableSaving().hasTags().setDefaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
-		ApoliBuiltinRegistries.CONFIGURED_FLUID_CONDITIONS = CONFIGURED_FLUID_CONDITIONS.makeRegistry(() -> new RegistryBuilder<ConfiguredFluidCondition<?, ?>>().disableSaving().hasTags().setDefaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
-		ApoliBuiltinRegistries.CONFIGURED_ITEM_CONDITIONS = CONFIGURED_ITEM_CONDITIONS.makeRegistry(() -> new RegistryBuilder<ConfiguredItemCondition<?, ?>>().disableSaving().hasTags().setDefaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
-
-		ApoliBuiltinRegistries.CONFIGURED_MODIFIERS = CONFIGURED_MODIFIERS.makeRegistry(() -> new RegistryBuilder<ConfiguredModifier<?>>().disableSaving().hasTags());
-
-		CONFIGURED_POWERS.register(bus);
-		GLOBAL_POWER_SETS.register(bus);
+		ApoliBuiltinRegistries.CONFIGURED_MODIFIERS = CONFIGURED_MODIFIERS.makeRegistry(RegistryBuilder::create);
 
 		CONFIGURED_BIENTITY_ACTIONS.register(bus);
 		CONFIGURED_BLOCK_ACTIONS.register(bus);
@@ -72,6 +64,9 @@ public class ApoliDynamicRegisters {
 		bus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
 			event.dataPackRegistry(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, ConfiguredPower.DIRECT_CODEC, ConfiguredPower.DIRECT_CODEC);
 			event.dataPackRegistry(ApoliDynamicRegistries.GLOBAL_POWER_SET, GlobalPowerSet.DIRECT_CODEC, GlobalPowerSet.DIRECT_CODEC);
+
+			// TODO: Consider whether these should be datapack registries.
+			/*
 			event.dataPackRegistry(ApoliDynamicRegistries.CONFIGURED_BIENTITY_ACTION_KEY, ConfiguredBiEntityAction.DIRECT_CODEC, ConfiguredBiEntityAction.DIRECT_CODEC);
 			event.dataPackRegistry(ApoliDynamicRegistries.CONFIGURED_BLOCK_ACTION_KEY, ConfiguredBlockAction.CODEC, ConfiguredBlockAction.CODEC);
 			event.dataPackRegistry(ApoliDynamicRegistries.CONFIGURED_ENTITY_ACTION_KEY, ConfiguredEntityAction.CODEC, ConfiguredEntityAction.CODEC);
@@ -86,6 +81,7 @@ public class ApoliDynamicRegisters {
 			event.dataPackRegistry(ApoliDynamicRegistries.CONFIGURED_ITEM_CONDITION_KEY, ConfiguredItemCondition.CODEC, ConfiguredItemCondition.CODEC);
 
 			event.dataPackRegistry(ApoliDynamicRegistries.CONFIGURED_MODIFIER_KEY, ConfiguredModifier.CODEC, ConfiguredModifier.CODEC);
+			 */
 		});
 	}
 }

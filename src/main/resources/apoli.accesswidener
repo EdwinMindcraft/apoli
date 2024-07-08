@@ -1,4 +1,0 @@
-accessWidener   v1  named
-
-mutable field net/minecraft/item/ItemStack item Lnet/minecraft/item/Item;
-extendable class net/minecraft/item/ItemStack

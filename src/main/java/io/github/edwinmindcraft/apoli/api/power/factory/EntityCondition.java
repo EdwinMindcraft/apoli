@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.api.power.factory;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.ConditionData;
 import io.github.edwinmindcraft.apoli.api.power.IConditionFactory;
@@ -10,14 +11,14 @@ import net.minecraft.world.entity.Entity;
 
 public abstract class EntityCondition<T extends IDynamicFeatureConfiguration> implements IConditionFactory<T, ConfiguredEntityCondition<T, ?>, EntityCondition<T>> {
 	public static final Codec<EntityCondition<?>> CODEC = ApoliRegistries.ENTITY_CONDITION.byNameCodec();
-	private final Codec<ConfiguredEntityCondition<T, ?>> codec;
+	private final MapCodec<ConfiguredEntityCondition<T, ?>> codec;
 
-	protected EntityCondition(Codec<T> codec) {
+	protected EntityCondition(MapCodec<T> codec) {
 		this.codec = IConditionFactory.conditionCodec(codec, this);
 	}
 
 	@Override
-	public Codec<ConfiguredEntityCondition<T, ?>> getConditionCodec() {
+	public MapCodec<ConfiguredEntityCondition<T, ?>> getConditionCodec() {
 		return this.codec;
 	}
 

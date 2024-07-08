@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.api.power;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 
 /**
@@ -9,11 +10,11 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
  * but it may be useful to optimize the code.
  */
 public interface IConditionFactory<T extends IDynamicFeatureConfiguration, C extends ConfiguredCondition<T, ? extends F, ?>, F extends IConditionFactory<T, C, F>> extends IFactory<T, C, F> {
-	static <T extends IDynamicFeatureConfiguration, C extends ConfiguredCondition<T, ? extends F, ?>, F extends IConditionFactory<T, C, F>> Codec<C> conditionCodec(Codec<T> codec, F factory) {
-		return IFactory.unionCodec(IFactory.asMap(codec), ConditionData.CODEC, factory::configure, ConfiguredCondition::getConfiguration, ConfiguredCondition::getData);
+	static <T extends IDynamicFeatureConfiguration, C extends ConfiguredCondition<T, ? extends F, ?>, F extends IConditionFactory<T, C, F>> MapCodec<C> conditionCodec(MapCodec<T> codec, F factory) {
+		return IFactory.unionCodec(codec, ConditionData.CODEC, factory::configure, ConfiguredCondition::getConfiguration, ConfiguredCondition::getData);
 	}
 
-	Codec<C> getConditionCodec();
+	MapCodec<C> getConditionCodec();
 
 	default C configure(T input) {
 		return this.configure(input, ConditionData.DEFAULT);

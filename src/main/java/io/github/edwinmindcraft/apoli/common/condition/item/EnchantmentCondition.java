@@ -14,6 +14,6 @@ public class EnchantmentCondition extends ItemCondition<EnchantmentConfiguration
 
 	@Override
 	public boolean check(EnchantmentConfiguration configuration, @Nullable Level level, ItemStack stack) {
-		return configuration.applyCheck(stack);
+		return configuration.applyCheck(level.registryAccess(), stack);
 	}
 }

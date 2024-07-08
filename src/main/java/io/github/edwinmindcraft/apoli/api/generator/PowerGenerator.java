@@ -6,7 +6,7 @@ import io.github.apace100.calio.data.JsonDataProvider;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.server.packs.PackType;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class PowerGenerator extends JsonDataProvider<ConfiguredPower<?, ?>> {
@@ -17,7 +17,7 @@ public abstract class PowerGenerator extends JsonDataProvider<ConfiguredPower<?,
 
 	@Override
 	protected JsonElement asJson(ConfiguredPower<?, ?> input) {
-		return ConfiguredPower.CODEC.encodeStart(JsonOps.INSTANCE, input).getOrThrow(true, s -> {});
+		return ConfiguredPower.DIRECT_CODEC.encodeStart(JsonOps.INSTANCE, input).getOrThrow();
 	}
 
 	@Override

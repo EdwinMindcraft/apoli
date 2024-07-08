@@ -15,28 +15,23 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Tuple;
-import net.minecraft.util.Unit;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float distanceMultiplier,
 											 @Nullable ResourceKey<Biome> biome, SpawnStrategy strategy,
@@ -44,11 +39,11 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 											 @Nullable SoundEvent sound) implements IDynamicFeatureConfiguration {
 	public static final Codec<ModifyPlayerSpawnConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.DIMENSION.fieldOf("dimension").forGetter(ModifyPlayerSpawnConfiguration::dimension),
-			ExtraCodecs.strictOptionalField(CalioCodecHelper.FLOAT, "dimension_distance_multiplier", 0F).forGetter(ModifyPlayerSpawnConfiguration::distanceMultiplier),
+            CalioCodecHelper.FLOAT.optionalFieldOf("dimension_distance_multiplier", 0F).forGetter(ModifyPlayerSpawnConfiguration::distanceMultiplier),
 			CalioCodecHelper.resourceKey(Registries.BIOME).optionalFieldOf("biome").forGetter(x -> Optional.ofNullable(x.biome())),
-			ExtraCodecs.strictOptionalField(SerializableDataType.enumValue(SpawnStrategy.class), "spawn_strategy", SpawnStrategy.DEFAULT).forGetter(ModifyPlayerSpawnConfiguration::strategy),
-			ExtraCodecs.strictOptionalField(SerializableDataType.registryKey(Registries.STRUCTURE), "structure").forGetter(x -> Optional.ofNullable(x.structure())),
-			ExtraCodecs.strictOptionalField(SerializableDataTypes.SOUND_EVENT, "respawn_sound").forGetter(x -> Optional.ofNullable(x.sound()))
+            SerializableDataType.enumValue(SpawnStrategy.class).optionalFieldOf("spawn_strategy", SpawnStrategy.DEFAULT).forGetter(ModifyPlayerSpawnConfiguration::strategy),
+            SerializableDataType.registryKey(Registries.STRUCTURE).optionalFieldOf("structure").forGetter(x -> Optional.ofNullable(x.structure())),
+            SerializableDataTypes.SOUND_EVENT.optionalFieldOf("respawn_sound").forGetter(x -> Optional.ofNullable(x.sound()))
 	).apply(instance, (t1, t2, t3, t4, t5, t6) -> new ModifyPlayerSpawnConfiguration(t1, t2, t3.orElse(null), t4, t5.orElse(null), t6.orElse(null))));
 
 

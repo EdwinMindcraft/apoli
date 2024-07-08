@@ -44,23 +44,23 @@ public record DistanceFromPointConfiguration(ReferencePoint reference, Vec3 offs
 											 Optional<Boolean> resultOnWrongDimension,
 											 Optional<Integer> roundToDigit) implements IDynamicFeatureConfiguration {
 	public static final MapCodec<Vec3> OFFSET_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			ExtraCodecs.strictOptionalField(SerializableDataTypes.VECTOR, "offset", Vec3.ZERO).forGetter(Function.identity()),
-			ExtraCodecs.strictOptionalField(SerializableDataTypes.VECTOR, "coordinates", Vec3.ZERO).forGetter(x -> Vec3.ZERO)
+			SerializableDataTypes.VECTOR.optionalFieldOf("offset", Vec3.ZERO).forGetter(Function.identity()),
+			SerializableDataTypes.VECTOR.optionalFieldOf("coordinates", Vec3.ZERO).forGetter(x -> Vec3.ZERO)
 	).apply(instance, Vec3::add));
 
-	public static Codec<DistanceFromPointConfiguration> codec(ReferencePoint reference) {
-		return RecordCodecBuilder.create(instance -> instance.group(
-				ExtraCodecs.strictOptionalField(SerializableDataType.enumValue(ReferencePoint.class), "reference", reference).forGetter(DistanceFromPointConfiguration::reference),
+	public static MapCodec<DistanceFromPointConfiguration> codec(ReferencePoint reference) {
+		return RecordCodecBuilder.mapCodec(instance -> instance.group(
+				SerializableDataType.enumValue(ReferencePoint.class).optionalFieldOf("reference", reference).forGetter(DistanceFromPointConfiguration::reference),
 				OFFSET_CODEC.forGetter(DistanceFromPointConfiguration::offset),
-				ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "ignore_x", false).forGetter(DistanceFromPointConfiguration::ignoreX),
-				ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "ignore_y", false).forGetter(DistanceFromPointConfiguration::ignoreY),
-				ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "ignore_z", false).forGetter(DistanceFromPointConfiguration::ignoreZ),
-				ExtraCodecs.strictOptionalField(SerializableDataType.enumValue(Shape.class), "ignore_z", Shape.CUBE).forGetter(DistanceFromPointConfiguration::shape),
-				ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "scale_reference_to_dimension", true).forGetter(DistanceFromPointConfiguration::scaleReferenceToDimension),
-				ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "scale_distance_to_dimension", false).forGetter(DistanceFromPointConfiguration::scaleDistanceToDimension),
+				CalioCodecHelper.BOOL.optionalFieldOf("ignore_x", false).forGetter(DistanceFromPointConfiguration::ignoreX),
+				CalioCodecHelper.BOOL.optionalFieldOf("ignore_y", false).forGetter(DistanceFromPointConfiguration::ignoreY),
+				CalioCodecHelper.BOOL.optionalFieldOf("ignore_z", false).forGetter(DistanceFromPointConfiguration::ignoreZ),
+				SerializableDataType.enumValue(Shape.class).optionalFieldOf("shape", Shape.CUBE).forGetter(DistanceFromPointConfiguration::shape),
+				CalioCodecHelper.BOOL.optionalFieldOf("scale_reference_to_dimension", true).forGetter(DistanceFromPointConfiguration::scaleReferenceToDimension),
+				CalioCodecHelper.BOOL.optionalFieldOf("scale_distance_to_dimension", false).forGetter(DistanceFromPointConfiguration::scaleDistanceToDimension),
 				DoubleComparisonConfiguration.MAP_CODEC.forGetter(DistanceFromPointConfiguration::comparison),
-				ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "result_on_wrong_dimension").forGetter(DistanceFromPointConfiguration::resultOnWrongDimension),
-				ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "round_to_digit").forGetter(DistanceFromPointConfiguration::roundToDigit)
+				CalioCodecHelper.BOOL.optionalFieldOf("result_on_wrong_dimension").forGetter(DistanceFromPointConfiguration::resultOnWrongDimension),
+				CalioCodecHelper.INT.optionalFieldOf("round_to_digit").forGetter(DistanceFromPointConfiguration::roundToDigit)
 		).apply(instance, DistanceFromPointConfiguration::new));
 	}
 

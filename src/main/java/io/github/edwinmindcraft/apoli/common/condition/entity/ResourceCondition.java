@@ -1,8 +1,10 @@
 package io.github.edwinmindcraft.apoli.common.condition.entity;
 
 import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.ResourceComparisonConfiguration;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -16,12 +18,11 @@ public class ResourceCondition extends EntityCondition<ResourceComparisonConfigu
 
 	@Override
 	public boolean check(ResourceComparisonConfiguration configuration, Entity entity) {
-		return PowerContainer.get(entity).resolve().map(x -> x.getPower(configuration.resource().power())).map(power -> {
-			if (entity instanceof LivingEntity living) {
-				OptionalInt value = power.value().getValue(living);
-				return value.isPresent() && configuration.comparison().check(value.getAsInt());
-			}
+		PowerContainer container = PowerContainer.get(entity);
+		if (container == null || !container.hasPower(configuration.resource().power()))
 			return false;
-		}).orElse(false);
+		var power = container.getPower(configuration.resource().power());
+		OptionalInt value = power.value().getValue(entity);
+		return value.isPresent() && configuration.comparison().check(value.getAsInt());
 	}
 }

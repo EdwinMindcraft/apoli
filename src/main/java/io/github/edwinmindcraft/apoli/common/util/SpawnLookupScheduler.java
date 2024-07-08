@@ -1,12 +1,10 @@
 package io.github.edwinmindcraft.apoli.common.util;
 
 import com.google.common.util.concurrent.Futures;
-import com.mojang.datafixers.util.Pair;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
-import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import io.github.edwinmindcraft.apoli.common.network.S2CCachedSpawnsPacket;
 import io.github.edwinmindcraft.apoli.common.network.S2CResetSpawnCachePacket;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyPlayerSpawnConfiguration;
@@ -17,8 +15,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -154,7 +152,7 @@ public class SpawnLookupScheduler {
             this.handled.remove(power);
             // Clear cache position for power.
             SpawnLookupUtil.clearSpawnCacheValue(power);
-            ApoliCommon.CHANNEL.send(PacketDistributor.ALL.noArg(), new S2CCachedSpawnsPacket(Set.of(power), true));
+            PacketDistributor.sendToAllPlayers(new S2CCachedSpawnsPacket(Set.of(power), true));
 
             // The following isn't necessary if we're using lazy loading.
             // Adds the newly invalidated position to the positions to recompute.
@@ -194,7 +192,7 @@ public class SpawnLookupScheduler {
         // Clear cache position for all powers.
         SpawnLookupUtil.resetSpawnCache();
         if (ServerLifecycleHooks.getCurrentServer() == null) return;
-        ApoliCommon.CHANNEL.send(PacketDistributor.ALL.noArg(), new S2CResetSpawnCachePacket());
+        PacketDistributor.sendToAllPlayers(new S2CResetSpawnCachePacket());
     }
 
     public void doSpawnLookup(ResourceKey<ConfiguredPower<?, ?>> power) {
@@ -238,7 +236,7 @@ public class SpawnLookupScheduler {
 
             SpawnLookupUtil.changeSpawnCacheValue(power, targetDimension, msp);
             SpawnLookupUtil.addToPowersWithSpawns(power);
-            ApoliCommon.CHANNEL.send(PacketDistributor.ALL.noArg(), new S2CCachedSpawnsPacket(Set.of(power)));
+            PacketDistributor.sendToAllPlayers(new S2CCachedSpawnsPacket(Set.of(power)));
         } else {
             handleFailure(power);
         }
@@ -247,6 +245,6 @@ public class SpawnLookupScheduler {
     private void handleFailure(ResourceKey<ConfiguredPower<?, ?>> power) {
         SpawnLookupUtil.emptySpawnCacheValue(power);
         SpawnLookupUtil.addToPowersWithSpawns(power);
-        ApoliCommon.CHANNEL.send(PacketDistributor.ALL.noArg(), new S2CCachedSpawnsPacket(Set.of(power)));
+        PacketDistributor.sendToAllPlayers(new S2CCachedSpawnsPacket(Set.of(power)));
     }
 }

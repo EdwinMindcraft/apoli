@@ -9,8 +9,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.GameType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Objects;
 
@@ -33,7 +31,6 @@ public class GameModeCondition extends EntityCondition<FieldConfiguration<GameTy
 		return this.testClient(configuration.value(), entity);
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	public static class Client extends GameModeCondition {
 		public Client() {
 			super();

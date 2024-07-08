@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.util.HudRender;
-import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
@@ -16,18 +15,18 @@ import io.github.edwinmindcraft.apoli.api.power.PowerData;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
-import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
-import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import io.github.edwinmindcraft.calio.api.registry.DynamicRegistryListener;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import io.github.edwinmindcraft.calio.api.registry.CalioDynamicRegistryManager;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.*;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.common.util.Lazy;
 import org.jetbrains.annotations.NotNull;
@@ -63,7 +62,7 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	}
 
 	public static MapCodec<Optional<Holder<ConfiguredPower<?, ?>>>> optional(String name) {
-		return ExtraCodecs.strictOptionalField(REFERENCE_CODEC, name);
+		return REFERENCE_CODEC.optionalFieldOf(name);
 	}
 
 	private final Lazy<F> factory;
@@ -175,18 +174,18 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return builder.build();
 	}
 
-	public CompoundTag serialize(PowerContainer container) {
+	public CompoundTag serialize(LivingEntity entity, PowerContainer container) {
 		CompoundTag tag = new CompoundTag();
-		CompoundTag attachments = this.serializeAttachments();
+		CompoundTag attachments = this.serializeAttachments(entity.level().registryAccess());
 		if (attachments != null && !attachments.isEmpty())
 			tag.put("neoforge:attachments", attachments);
 		this.getFactory().serialize(this, container, tag);
 		return tag;
 	}
 
-	public void deserialize(PowerContainer container, CompoundTag tag) {
+	public void deserialize(LivingEntity entity, PowerContainer container, CompoundTag tag) {
 		if (tag.contains("neoforge:attachments", Tag.TAG_COMPOUND))
-			this.deserializeAttachments(tag.getCompound("neoforge:attachments"));
+			this.deserializeAttachments(entity.level().registryAccess(), tag.getCompound("neoforge:attachments"));
 		this.getFactory().deserialize(this, container, tag);
 	}
 
@@ -298,12 +297,12 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	}
 
 	@Override
-	public @NotNull List<String> getErrors(@NotNull ICalioDynamicRegistryManager server) {
+	public @NotNull List<String> getErrors(@NotNull RegistryAccess server) {
 		return this.getConfiguration().getErrors(server);
 	}
 
 	@Override
-	public @NotNull List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
+	public @NotNull List<String> getWarnings(@NotNull RegistryAccess server) {
 		return this.getConfiguration().getWarnings(server);
 	}
 
@@ -351,7 +350,7 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	}
 
 	@Override
-	public void whenAvailable(@NotNull ICalioDynamicRegistryManager manager) {
+	public void whenAvailable(@NotNull CalioDynamicRegistryManager manager) {
 		if (this.getFactory() instanceof DynamicRegistryListener drl)
 			drl.whenAvailable(manager);
 	}

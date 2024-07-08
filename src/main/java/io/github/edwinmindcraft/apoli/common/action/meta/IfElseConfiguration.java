@@ -1,6 +1,5 @@
 package io.github.edwinmindcraft.apoli.common.action.meta;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.configuration.MustBeBound;
@@ -14,8 +13,8 @@ import java.util.function.Function;
 public record IfElseConfiguration<C, A, V>(@MustBeBound Holder<C> condition, @MustBeBound Holder<A> ifAction,
 										   Holder<A> elseAction, BiPredicate<C, V> predicate,
 										   BiConsumer<A, V> executor) implements IDelegatedActionConfiguration<V> {
-	public static <C, A, V> Codec<IfElseConfiguration<C, A, V>> codec(CodecSet<C> conditionCodec, CodecSet<A> actionCodec, Function<String, MapCodec<Holder<A>>> optional, BiPredicate<C, V> predicate, BiConsumer<A, V> executor) {
-		return RecordCodecBuilder.create(instance -> instance.group(
+	public static <C, A, V> MapCodec<IfElseConfiguration<C, A, V>> codec(CodecSet<C> conditionCodec, CodecSet<A> actionCodec, Function<String, MapCodec<Holder<A>>> optional, BiPredicate<C, V> predicate, BiConsumer<A, V> executor) {
+		return RecordCodecBuilder.mapCodec(instance -> instance.group(
 				conditionCodec.holder().fieldOf("condition").forGetter(IfElseConfiguration::condition),
 				actionCodec.holder().fieldOf("if_action").forGetter(IfElseConfiguration::ifAction),
 				optional.apply("else_action").forGetter(IfElseConfiguration::elseAction)

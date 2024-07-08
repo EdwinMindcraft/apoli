@@ -2,13 +2,16 @@ package io.github.edwinmindcraft.apoli.common.condition.configuration;
 
 import com.google.common.collect.Streams;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.configuration.IntegerComparisonConfiguration;
-import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import io.github.edwinmindcraft.calio.api.registry.CalioDynamicRegistryManager;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -22,33 +25,24 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 
 public record EnchantmentConfiguration(IntegerComparisonConfiguration comparison,
-									   Optional<Enchantment> enchantment,
+									   Optional<ResourceKey<Enchantment>> enchantment,
 									   Calculation calculation) implements IDynamicFeatureConfiguration {
-    public static final Codec<EnchantmentConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            IntegerComparisonConfiguration.MAP_CODEC.forGetter(EnchantmentConfiguration::comparison),
-            ExtraCodecs.strictOptionalField(SerializableDataTypes.ENCHANTMENT, "enchantment").forGetter(EnchantmentConfiguration::enchantment),
+    public static final MapCodec<EnchantmentConfiguration> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            IntegerComparisonConfiguration.CODEC.forGetter(EnchantmentConfiguration::comparison),
+			SerializableDataTypes.ENCHANTMENT.optionalFieldOf("enchantment").forGetter(EnchantmentConfiguration::enchantment),
             SerializableDataType.enumValue(Calculation.class).optionalFieldOf("calculation", Calculation.SUM).forGetter(EnchantmentConfiguration::calculation)
     ).apply(instance, EnchantmentConfiguration::new));
 
-	@Override
-	public @NotNull List<String> getErrors(@NotNull ICalioDynamicRegistryManager server) {
-		return IDynamicFeatureConfiguration.super.getErrors(server);
-	}
-
-	@Override
-	public @NotNull List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
-		return IDynamicFeatureConfiguration.super.getWarnings(server);
-	}
-
-	public boolean applyCheck(Iterable<ItemStack> input) {
+	public boolean applyCheck(RegistryAccess access, Iterable<ItemStack> input) {
 		if (this.enchantment().isEmpty()) {
-            return this.comparison().check(this.calculation().apply(Streams.stream(input).mapToInt(stack -> EnchantmentHelper.getEnchantments(stack).size())).orElse(0));
+            return this.comparison().check(this.calculation().apply(Streams.stream(input).mapToInt(stack -> EnchantmentHelper.getEnchantmentsForCrafting(stack).size())).orElse(0));
         }
-		return this.comparison().check(this.calculation().apply(Streams.stream(input).mapToInt(stack -> EnchantmentHelper.getItemEnchantmentLevel(this.enchantment().get(), stack))).orElse(0));
+		Holder<Enchantment> enchantment = access.holderOrThrow(enchantment().get());
+		return this.comparison().check(this.calculation().apply(Streams.stream(input).mapToInt(stack -> stack.getEnchantmentLevel(enchantment))).orElse(0));
 	}
 
-	public boolean applyCheck(ItemStack... stacks) {
-		return this.applyCheck(Arrays.asList(stacks));
+	public boolean applyCheck(RegistryAccess access, ItemStack... stacks) {
+		return this.applyCheck(access, Arrays.asList(stacks));
 	}
 
 	public enum Calculation {

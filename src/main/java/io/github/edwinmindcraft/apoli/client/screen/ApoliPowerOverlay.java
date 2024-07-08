@@ -9,25 +9,26 @@ import io.github.edwinmindcraft.apoli.common.power.OverlayPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.OverlayConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.Holder;
 import net.minecraft.util.Mth;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 import java.util.List;
 import java.util.function.Predicate;
 
-public class ApoliPowerOverlay implements IGuiOverlay {
+public class ApoliPowerOverlay implements LayeredDraw.Layer {
 	private final Predicate<OverlayConfiguration> shouldDraw;
 
 	public ApoliPowerOverlay(Predicate<OverlayConfiguration> shouldDraw) {
 		this.shouldDraw = shouldDraw;
 	}
 
-	private void renderPower(ConfiguredPower<OverlayConfiguration, ?> power, GuiGraphics graphics, int width, int height, float partialTick) {
+	// TODO: Wait for Origins Fabric's simplification of the overlay code.
+	private void renderPower(ConfiguredPower<OverlayConfiguration, ?> power, GuiGraphics graphics, int width, int height, DeltaTracker partialTick) {
 		OverlayConfiguration configuration = power.getConfiguration();
 		ColorConfiguration color = configuration.color();
 
@@ -83,15 +84,17 @@ public class ApoliPowerOverlay implements IGuiOverlay {
 	}
 
 	@Override
-	public void render(ForgeGui gui, GuiGraphics graphics, float partialTick, int width, int height) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		boolean hideGui = Minecraft.getInstance().options.hideGui;
 		boolean isFirstPerson = Minecraft.getInstance().options.getCameraType().isFirstPerson();
+		int width = Minecraft.getInstance().getWindow().getWidth();
+		int height = Minecraft.getInstance().getWindow().getHeight();
 		List<ConfiguredPower<OverlayConfiguration, OverlayPower>> powers = PowerContainer.getPowers(Minecraft.getInstance().getCameraEntity(), ApoliPowers.OVERLAY.get()).stream()
 				.map(Holder::value)
 				.filter(x -> this.shouldDraw.test(x.getConfiguration()) && (!x.getConfiguration().hideWithHud() || !hideGui) && (x.getConfiguration().visibleInThirdPerson() || isFirstPerson))
 				.toList();
 		for (ConfiguredPower<OverlayConfiguration, OverlayPower> power : powers) {
-			this.renderPower(power, graphics, width, height, partialTick);
+			this.renderPower(power, graphics, width, height, deltaTracker);
 		}
 	}
 }

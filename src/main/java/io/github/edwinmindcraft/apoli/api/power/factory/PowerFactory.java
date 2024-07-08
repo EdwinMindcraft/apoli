@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
@@ -39,7 +40,7 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 			Gson gson = new GsonBuilder().create();
 			JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
 			for (String s : jsonObject.keySet()) {
-				builder.put(s, new ResourceLocation(jsonObject.get(s).getAsString()));
+				builder.put(s, ResourceLocation.parse(jsonObject.get(s).getAsString()));
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -47,8 +48,8 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 		return builder.build();
 	});
 
-	private static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> Codec<ConfiguredPower<T, ?>> powerCodec(Codec<T> codec, F factory) {
-		return IFactory.unionCodec(IFactory.asMap(codec), PowerData.CODEC, factory::configure, ConfiguredPower::getConfiguration, ConfiguredPower::getData);
+	private static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> MapCodec<ConfiguredPower<T, ?>> powerCodec(MapCodec<T> codec, F factory) {
+		return IFactory.unionCodec(codec, PowerData.CODEC, factory::configure, ConfiguredPower::getConfiguration, ConfiguredPower::getData);
 	}
 
 	public static final Codec<PowerFactory<?>> IGNORE_NAMESPACE_CODEC = Codec.STRING.flatXmap(val -> {
@@ -76,12 +77,12 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 			return DataResult.error(() -> "Unregistered power factory: %s".formatted(factory));
 	});
 
-	private final Codec<ConfiguredPower<T, ?>> codec;
+	private final MapCodec<ConfiguredPower<T, ?>> codec;
 	private final boolean allowConditions;
 	private boolean ticking = false;
 	private boolean tickingWhenInactive = false;
 
-	protected PowerFactory(Codec<T> codec) {
+	protected PowerFactory(MapCodec<T> codec) {
 		this(codec, true);
 	}
 
@@ -90,9 +91,9 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 	 *
 	 * @param codec           The codec used to serialize the configuration of this power.
 	 * @param allowConditions Determines whether this power will use the global field {@link PowerData#conditions()} or not.
-	 * @see #PowerFactory(Codec) for a version with allow conditions true by default.
+	 * @see #PowerFactory(MapCodec) for a version with allow conditions true by default.
 	 */
-	protected PowerFactory(Codec<T> codec, boolean allowConditions) {
+	protected PowerFactory(MapCodec<T> codec, boolean allowConditions) {
 		this.codec = powerCodec(codec, this);
 		this.allowConditions = allowConditions;
 	}
@@ -109,7 +110,7 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 		this.tickingWhenInactive = whenInactive;
 	}
 
-	public Codec<ConfiguredPower<T, ?>> getCodec() {
+	public MapCodec<ConfiguredPower<T, ?>> getCodec() {
 		return this.codec;
 	}
 
@@ -144,7 +145,7 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 			Apoli.LOGGER.error("Cannot access contained keys as this power is unregistered: {}", configuration);
 			return ImmutableSet.of();
 		}
-		return contained.keySet().stream().map(suffix -> ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, new ResourceLocation(key.getNamespace(), key.getPath() + suffix))).collect(Collectors.toUnmodifiableSet());
+		return contained.keySet().stream().map(suffix -> ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, ResourceLocation.fromNamespaceAndPath(key.getNamespace(), key.getPath() + suffix))).collect(Collectors.toUnmodifiableSet());
 	}
 
 	public ConfiguredPower<T, ?> configure(T input, PowerData data) {

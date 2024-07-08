@@ -1,16 +1,19 @@
 package io.github.edwinmindcraft.apoli.common.condition.block;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.context.BlockConditionContext;
 import io.github.edwinmindcraft.apoli.common.condition.meta.IDelegatedConditionConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Supplier;
 
 
 public class DelegatedBlockCondition<T extends IDelegatedConditionConfiguration<BlockConditionContext>> extends BlockCondition<T> {
-	public DelegatedBlockCondition(Codec<T> codec) {
+	public DelegatedBlockCondition(MapCodec<T> codec) {
 		super(codec);
 	}
 

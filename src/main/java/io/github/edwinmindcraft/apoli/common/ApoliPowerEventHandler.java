@@ -23,6 +23,7 @@ import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
 import io.github.edwinmindcraft.apoli.common.util.ModifyPlayerSpawnCache;
 import io.github.edwinmindcraft.apoli.common.util.SpawnLookupScheduler;
+import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;

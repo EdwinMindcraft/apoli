@@ -6,9 +6,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+import org.jetbrains.annotations.NotNull;
 
 
 import java.util.Collection;
+import java.util.function.Supplier;
 
 public class BlockStateCondition extends BlockCondition<BlockStateConfiguration> {
 

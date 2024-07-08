@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.condition.configuration;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.apoli.util.Shape;
@@ -15,7 +15,7 @@ public record BlockInRadiusConfiguration(
 		Holder<ConfiguredBlockCondition<?, ?>> blockCondition, int radius,
 		Shape shape, IntegerComparisonConfiguration comparison) implements IDynamicFeatureConfiguration {
 
-	public static final Codec<BlockInRadiusConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final MapCodec<BlockInRadiusConfiguration> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			ConfiguredBlockCondition.required("block_condition").forGetter(BlockInRadiusConfiguration::blockCondition),
 			CalioCodecHelper.INT.fieldOf("radius").forGetter(BlockInRadiusConfiguration::radius),
 			SerializableDataType.enumValue(Shape.class).optionalFieldOf("shape", Shape.CUBE).forGetter(BlockInRadiusConfiguration::shape),

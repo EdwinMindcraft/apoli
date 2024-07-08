@@ -11,6 +11,7 @@ public class PowerCondition extends EntityCondition<PowerSourceConfiguration> {
 
 	@Override
 	public boolean check(PowerSourceConfiguration configuration, Entity entity) {
-		return PowerContainer.get(entity).map(x -> configuration.source() == null ? x.hasPower(configuration.power().power()) : x.hasPower(configuration.power().power(), configuration.source())).orElse(false);
+		PowerContainer container = PowerContainer.get(entity);
+		return container != null && configuration.source() == null ? container.hasPower(configuration.power().power()) : container.hasPower(configuration.power().power(), configuration.source());
 	}
 }

@@ -8,13 +8,14 @@ import io.github.apace100.apoli.global.GlobalPowerSetUtil;
 import io.github.apace100.apoli.util.GainedPowerCriterion;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -25,27 +26,25 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.LazyOptional;
 
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class PowerContainerImpl implements io.github.edwinmindcraft.apoli.api.component.PowerContainer, ICapabilitySerializable<Tag> {
+public class PowerContainerImpl implements PowerContainer, INBTSerializable<Tag> {
 	@NotNull
 	private final LivingEntity owner;
 	private final Map<ResourceKey<ConfiguredPower<?, ?>>, Holder<ConfiguredPower<?, ?>>> powers;
 	private final Map<ResourceKey<ConfiguredPower<?, ?>>, Set<ResourceLocation>> powerSources;
 	private final Map<ResourceKey<ConfiguredPower<?, ?>>, Object> powerData;
 	private final Map<PowerFactory<?>, List<Holder<ConfiguredPower<?, ?>>>> factoryAccessCache;
-
-	private transient final LazyOptional<io.github.edwinmindcraft.apoli.api.component.PowerContainer> thisOptional = LazyOptional.of(() -> this);
 
 	public PowerContainerImpl(@NotNull LivingEntity owner) {
 		this.owner = owner;
@@ -67,7 +66,7 @@ public class PowerContainerImpl implements io.github.edwinmindcraft.apoli.api.co
 				//If we can't remove the power, we'll rebuild the factory access cache.
 				//This is slower, but still comparably faster than filtering holders
 				if (instance != null && instance.isBound()) {
-					PowerFactory<?> factory = instance.get().getFactory();
+					PowerFactory<?> factory = instance.value().getFactory();
 					instance.value().onRemoved(this.owner);
 					instance.value().onLost(this.owner);
 					if (this.factoryAccessCache.containsKey(factory))
@@ -258,7 +257,7 @@ public class PowerContainerImpl implements io.github.edwinmindcraft.apoli.api.co
 						}
 						Holder<ConfiguredPower<?, ?>> instance = optionalPower.get();
 						try {
-							instance.value().deserialize(this, data);
+							instance.value().deserialize(owner, this, data);
 						} catch (ClassCastException e) {
 							Apoli.LOGGER.warn("Data type of \"" + identifier + "\" changed, skipping data for that power on entity " + this.owner.getName().getContents());
 						}
@@ -291,7 +290,7 @@ public class PowerContainerImpl implements io.github.edwinmindcraft.apoli.api.co
 		this.factoryAccessCache.clear();
 		for (var value : this.powers.values()) {
 			if (value.isBound()) {
-				this.factoryAccessCache.computeIfAbsent(value.get().getFactory(), k -> Collections.synchronizedList(new ArrayList<>())).add(value);
+				this.factoryAccessCache.computeIfAbsent(value.value().getFactory(), k -> Collections.synchronizedList(new ArrayList<>())).add(value);
 			}
 		}
 	}
@@ -317,7 +316,7 @@ public class PowerContainerImpl implements io.github.edwinmindcraft.apoli.api.co
 		this.powerSources.clear();
 		this.powers.clear();
 		this.powerData.clear();
-		Registry<ConfiguredPower<?, ?>> powerRegistry = CalioAPI.getDynamicRegistries(this.owner.getServer()).get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
+		Registry<ConfiguredPower<?, ?>> powerRegistry = CalioAPI.getRegistryAccess().registryOrThrow(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
 		for (Map.Entry<ResourceLocation, Collection<ResourceLocation>> powerEntry : powerSources.asMap().entrySet()) {
 			ResourceKey<ConfiguredPower<?, ?>> power = ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, powerEntry.getKey());
 			Optional<Holder.Reference<ConfiguredPower<?, ?>>> configuredPower = powerRegistry.getHolder(power).filter(Holder::isBound);
@@ -329,7 +328,7 @@ public class PowerContainerImpl implements io.github.edwinmindcraft.apoli.api.co
 			this.powerSources.put(power, new HashSet<>(powerEntry.getValue()));
 			CompoundTag tag = data.get(powerEntry.getKey());
 			if (tag != null)
-				configuredPower.get().value().deserialize(this, tag);
+				configuredPower.get().value().deserialize(owner, this, tag);
 		}
 		this.rebuildFactoryAccessCache();
 	}
@@ -352,7 +351,7 @@ public class PowerContainerImpl implements io.github.edwinmindcraft.apoli.api.co
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> @NotNull T getPowerData(ResourceKey<ConfiguredPower<?, ?>> power, Supplier<@NotNull ? extends T> supplier) {
+	public <T> @NotNull T getPowerData(ResourceKey<ConfiguredPower<?, ?>> power, Supplier<@NotNull T> supplier) {
 		Object obj = this.powerData.computeIfAbsent(power, x -> supplier.get());
 		try {
 			return (T) obj;
@@ -366,19 +365,18 @@ public class PowerContainerImpl implements io.github.edwinmindcraft.apoli.api.co
 		return this.owner;
 	}
 
-	@NotNull
-	@Override
-	public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-		return ApoliCapabilities.POWER_CONTAINER.orEmpty(cap, this.thisOptional);
+	@Nullable
+	public static PowerContainer get(Entity entity) {
+		return ApoliCapabilities.POWER_CONTAINER.getCapability(entity, null);
 	}
 
 	@Override
-	public Tag serializeNBT() {
+	public Tag serializeNBT(HolderLookup.Provider provider) {
 		return this.writeToNbt(new CompoundTag());
 	}
 
 	@Override
-	public void deserializeNBT(Tag nbt) {
+	public void deserializeNBT(HolderLookup.Provider provider, Tag nbt) {
 		this.readFromNbt((CompoundTag) nbt);
         GlobalPowerSetUtil.applyGlobalPowers(owner);
 	}

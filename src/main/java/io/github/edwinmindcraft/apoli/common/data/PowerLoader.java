@@ -11,9 +11,9 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.calio.api.registry.DynamicEntryFactory;
 import io.github.edwinmindcraft.calio.api.registry.DynamicEntryValidator;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import io.github.edwinmindcraft.calio.api.registry.CalioDynamicRegistryManager;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -30,9 +30,9 @@ public enum PowerLoader implements DynamicEntryFactory<ConfiguredPower<?, ?>>, D
 		SerializableData.CURRENT_PATH = resourceLocation.getPath();
 		Optional<ConfiguredPower<?, ?>> definition = list.stream().flatMap(x -> {
 			PowerLoadEvent.Pre pre = new PowerLoadEvent.Pre(resourceLocation, x);
-			MinecraftForge.EVENT_BUS.post(pre);
+			NeoForge.EVENT_BUS.post(pre);
 			if (pre.isCanceled()) return Stream.empty();
-			DataResult<ConfiguredPower<?, ?>> power = ConfiguredPower.CODEC.decode(JsonOps.INSTANCE, pre.getJson()).map(Pair::getFirst);
+			DataResult<ConfiguredPower<?, ?>> power = ConfiguredPower.DIRECT_CODEC.decode(JsonOps.INSTANCE, pre.getJson()).map(Pair::getFirst);
 			Optional<ConfiguredPower<?, ?>> powerDefinition = power.resultOrPartial(error -> {});
 			if (power.error().isPresent()) {
 				if (powerDefinition.isEmpty()) {
@@ -41,7 +41,7 @@ public enum PowerLoader implements DynamicEntryFactory<ConfiguredPower<?, ?>>, D
 				} else
 					Apoli.LOGGER.warn("Power \"{}\" will only be partially loaded: {}", resourceLocation, power.error().get().message());
 			}
-			powerDefinition.ifPresent(cp -> MinecraftForge.EVENT_BUS.post(new PowerLoadEvent.Post(resourceLocation, x, cp)));
+			powerDefinition.ifPresent(cp -> NeoForge.EVENT_BUS.post(new PowerLoadEvent.Post(resourceLocation, x, cp)));
 			return powerDefinition.stream();
 		}).max(LOADING_ORDER_COMPARATOR);
 		SerializableData.CURRENT_NAMESPACE = null;
@@ -57,7 +57,7 @@ public enum PowerLoader implements DynamicEntryFactory<ConfiguredPower<?, ?>>, D
 		if (accept != null) {
 			ImmutableMap.Builder<ResourceLocation, ConfiguredPower<?, ?>> builder = ImmutableMap.builder();
 			accept.getContainedPowers().forEach((s, configuredPower) -> {
-				ResourceLocation path = new ResourceLocation(location.getNamespace(), location.getPath() + s);
+				ResourceLocation path = ResourceLocation.fromNamespaceAndPath(location.getNamespace(), location.getPath() + s);
 				builder.put(path, configuredPower.value().complete(path));
 			});
 			builder.put(location, accept.complete(location));
@@ -68,7 +68,7 @@ public enum PowerLoader implements DynamicEntryFactory<ConfiguredPower<?, ?>>, D
 
 
 	@Override
-	public @NotNull DataResult<ConfiguredPower<?, ?>> validate(@NotNull ResourceLocation location, @NotNull ConfiguredPower<?, ?> configuredPower, @NotNull ICalioDynamicRegistryManager manager) {
+	public @NotNull DataResult<ConfiguredPower<?, ?>> validate(@NotNull ResourceLocation location, @NotNull ConfiguredPower<?, ?> configuredPower, @NotNull CalioDynamicRegistryManager manager) {
 		if (!configuredPower.isConfigurationValid()) {
 			configuredPower.getErrors(manager).forEach(x -> Apoli.LOGGER.error("Error in power {}: {}", location, x));
 			return DataResult.error(() -> "Invalid Configuration.");

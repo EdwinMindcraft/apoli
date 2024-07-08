@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.condition.configuration;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.apoli.util.Comparison;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
@@ -12,7 +13,7 @@ public record InBlockAnywhereConfiguration(
 		Holder<ConfiguredBlockCondition<?, ?>> blockCondition,
 		IntegerComparisonConfiguration comparison) implements IDynamicFeatureConfiguration {
 
-	public static final Codec<InBlockAnywhereConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final MapCodec<InBlockAnywhereConfiguration> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			ConfiguredBlockCondition.required("block_condition").forGetter(InBlockAnywhereConfiguration::blockCondition),
 			IntegerComparisonConfiguration.withDefaults(Comparison.GREATER_THAN_OR_EQUAL, 1).forGetter(InBlockAnywhereConfiguration::comparison)
 	).apply(instance, InBlockAnywhereConfiguration::new));

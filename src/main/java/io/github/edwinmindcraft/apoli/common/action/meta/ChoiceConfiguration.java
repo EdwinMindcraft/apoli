@@ -1,7 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.action.meta;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.apace100.calio.FilterableWeightedList;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.configuration.IStreamConfiguration;
@@ -17,8 +17,8 @@ public record ChoiceConfiguration<T, V>(
 		FilterableWeightedList<Holder<T>> list,
 		BiConsumer<T, V> executor) implements IDelegatedActionConfiguration<V>, IStreamConfiguration<Holder<T>> {
 
-	public static <T, V> Codec<ChoiceConfiguration<T, V>> codec(CodecSet<T> codec, BiConsumer<T, V> executor) {
-		return CalioCodecHelper.weightedListOf(codec.holder()).fieldOf("actions").xmap(x -> new ChoiceConfiguration<>(x, executor), ChoiceConfiguration::list).codec();
+	public static <T, V> MapCodec<ChoiceConfiguration<T, V>> codec(CodecSet<T> codec, BiConsumer<T, V> executor) {
+		return CalioCodecHelper.weightedListOf(codec.holder()).fieldOf("actions").xmap(x -> new ChoiceConfiguration<>(x, executor), ChoiceConfiguration::list);
 	}
 
 	@Override

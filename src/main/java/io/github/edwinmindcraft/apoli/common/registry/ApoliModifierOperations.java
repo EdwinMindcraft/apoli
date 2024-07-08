@@ -23,8 +23,8 @@ public class ApoliModifierOperations {
 	public static final DeferredHolder<ModifierOperation, SetTotalModifierOperation> SET_TOTAL = ApoliRegisters.MODIFIER_OPERATIONS.register("set_total", SetTotalModifierOperation::new);
 
 	public static void bootstrap() {
-		ApoliRegistries.MODIFIER_OPERATION.addAlias(new ResourceLocation("addition"), ADD_BASE_EARLY.getId());
-		ApoliRegistries.MODIFIER_OPERATION.addAlias(new ResourceLocation("multiply_base"), MULTIPLY_BASE_ADDITIVE.getId());
-		ApoliRegistries.MODIFIER_OPERATION.addAlias(new ResourceLocation("multiply_total"), MULTIPLY_TOTAL_ADDITIVE.getId());
+		ApoliRegistries.MODIFIER_OPERATION.addAlias(ResourceLocation.withDefaultNamespace("addition"), ADD_BASE_EARLY.getId());
+		ApoliRegistries.MODIFIER_OPERATION.addAlias(ResourceLocation.withDefaultNamespace("multiply_base"), MULTIPLY_BASE_ADDITIVE.getId());
+		ApoliRegistries.MODIFIER_OPERATION.addAlias(ResourceLocation.withDefaultNamespace("multiply_total"), MULTIPLY_TOTAL_ADDITIVE.getId());
 	}
 }

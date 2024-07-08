@@ -1,7 +1,8 @@
 package io.github.edwinmindcraft.apoli.api.power;
 
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import io.github.edwinmindcraft.calio.api.registry.CalioDynamicRegistryManager;
+import net.minecraft.core.RegistryAccess;
 import net.minecraftforge.common.util.Lazy;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,12 +27,12 @@ public abstract class ConfiguredFactory<T extends IDynamicFeatureConfiguration, 
 	}
 
 	@Override
-	public @NotNull List<String> getErrors(@NotNull ICalioDynamicRegistryManager server) {
+	public @NotNull List<String> getErrors(@NotNull RegistryAccess server) {
 		return this.getConfiguration().getErrors(server);
 	}
 
 	@Override
-	public @NotNull List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
+	public @NotNull List<String> getWarnings(@NotNull RegistryAccess server) {
 		return this.getConfiguration().getWarnings(server);
 	}
 

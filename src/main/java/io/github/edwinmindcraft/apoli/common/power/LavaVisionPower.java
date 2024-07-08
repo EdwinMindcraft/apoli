@@ -1,6 +1,5 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import de.dafuqs.additionalentityattributes.AdditionalEntityAttributes;
 import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.AttributeModifyingPowerFactory;
@@ -27,7 +26,7 @@ public class LavaVisionPower extends AttributeModifyingPowerFactory<LavaVisionCo
 	}
 
 	@Override
-	public @Nullable Attribute getAttribute() {
+	public @Nullable Holder<Attribute> getAttribute() {
 		return AdditionalEntityAttributes.LAVA_VISIBILITY;
 	}
 }

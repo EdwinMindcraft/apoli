@@ -30,7 +30,7 @@ public record BlockInteractionConfiguration(Holder<ConfiguredBlockCondition<?, ?
 	public static final Codec<BlockInteractionConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ConfiguredBlockCondition.optional("block_condition").forGetter(BlockInteractionConfiguration::blockCondition),
 			ConfiguredBlockAction.optional("block_action").forGetter(BlockInteractionConfiguration::blockAction),
-			CalioCodecHelper.<EnumSet<Direction>>optionalField(SerializableDataTypes.DIRECTION_SET, "directions", () -> EnumSet.allOf(Direction.class)).forGetter(BlockInteractionConfiguration::directions),
+			SerializableDataTypes.DIRECTION_SET.optionalFieldOf("directions", EnumSet.allOf(Direction.class)).forGetter(BlockInteractionConfiguration::directions),
 			ConfiguredEntityAction.optional("entity_action").forGetter(BlockInteractionConfiguration::entityAction),
 			InteractionPowerConfiguration.MAP_CODEC.forGetter(BlockInteractionConfiguration::interaction)
 	).apply(instance, BlockInteractionConfiguration::new));

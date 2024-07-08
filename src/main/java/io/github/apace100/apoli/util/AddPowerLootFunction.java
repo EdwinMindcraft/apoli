@@ -1,12 +1,10 @@
 package io.github.apace100.apoli.util;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import io.github.apace100.calio.data.SerializableDataTypes;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliLootFunctions;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -15,14 +13,24 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class AddPowerLootFunction extends LootItemConditionalFunction {
+
+	public static final MapCodec<AddPowerLootFunction> MAP_CODEC = RecordCodecBuilder.mapCodec(inst -> commonFields(inst).and(inst.group(
+			EquipmentSlot.CODEC.fieldOf("slot").forGetter(AddPowerLootFunction::getSlot),
+			ResourceLocation.CODEC.fieldOf("power").forGetter(AddPowerLootFunction::getPowerId),
+			Codec.BOOL.optionalFieldOf("hidden", false).forGetter(AddPowerLootFunction::isHidden),
+			Codec.BOOL.optionalFieldOf("negative", false).forGetter(AddPowerLootFunction::isNegative)
+	)).apply(inst, AddPowerLootFunction::new));
 
 	private final EquipmentSlot slot;
 	private final ResourceLocation powerId;
 	private final boolean hidden;
 	private final boolean negative;
 
-	private AddPowerLootFunction(LootItemCondition[] conditions, EquipmentSlot slot, ResourceLocation powerId, boolean hidden, boolean negative) {
+
+	private AddPowerLootFunction(List<LootItemCondition> conditions, EquipmentSlot slot, ResourceLocation powerId, boolean hidden, boolean negative) {
 		super(conditions);
 		this.slot = slot;
 		this.powerId = powerId;
@@ -31,7 +39,7 @@ public class AddPowerLootFunction extends LootItemConditionalFunction {
 	}
 
 	@NotNull
-	public LootItemFunctionType getType() {
+	public LootItemFunctionType<AddPowerLootFunction> getType() {
 		return ApoliLootFunctions.ADD_POWER_LOOT_FUNCTION.get();
 	}
 
@@ -42,29 +50,24 @@ public class AddPowerLootFunction extends LootItemConditionalFunction {
 		return stack;
 	}
 
+	public EquipmentSlot getSlot() {
+		return slot;
+	}
+
+	public ResourceLocation getPowerId() {
+		return powerId;
+	}
+
+	public boolean isHidden() {
+		return hidden;
+	}
+
+	public boolean isNegative() {
+		return negative;
+	}
+
 	@NotNull
 	public static LootItemConditionalFunction.Builder<?> builder(EquipmentSlot slot, ResourceLocation powerId, boolean hidden, boolean negative) {
 		return LootItemConditionalFunction.simpleBuilder((conditions) -> new AddPowerLootFunction(conditions, slot, powerId, hidden, negative));
-	}
-
-	public static class Serializer extends LootItemConditionalFunction.Serializer<AddPowerLootFunction> {
-		@Override
-		public void serialize(@NotNull JsonObject object, @NotNull AddPowerLootFunction instance, @NotNull JsonSerializationContext context) {
-			super.serialize(object, instance, context);
-			object.addProperty("slot", instance.slot.getName());
-			object.addProperty("power", instance.powerId.toString());
-			if (instance.hidden) object.addProperty("hidden", true);
-			if (instance.negative) object.addProperty("negative", true);
-		}
-
-		@Override
-		@NotNull
-		public AddPowerLootFunction deserialize(@NotNull JsonObject object, @NotNull JsonDeserializationContext context, LootItemCondition @NotNull [] conditions) {
-			EquipmentSlot slot = SerializableDataTypes.EQUIPMENT_SLOT.read(object.get("slot"));
-			ResourceLocation powerId = SerializableDataTypes.IDENTIFIER.read(object.get("power"));
-			boolean hidden = GsonHelper.getAsBoolean(object, "hidden", false);
-			boolean negative = GsonHelper.getAsBoolean(object, "negative", false);
-			return new AddPowerLootFunction(conditions, slot, powerId, hidden, negative);
-		}
 	}
 }

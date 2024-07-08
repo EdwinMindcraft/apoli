@@ -1,5 +1,6 @@
 package io.github.apace100.apoli.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.apace100.apoli.access.EntityLinkedItemStack;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.VariableAccess;
@@ -10,6 +11,7 @@ import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
@@ -30,9 +32,9 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.Optional;
 
 @Mixin(ItemStack.class)
-public abstract class ItemStackMixin extends net.minecraftforge.common.capabilities.CapabilityProvider<ItemStack>  {
+public abstract class ItemStackMixin  {
 
-    @Shadow public abstract int getUseDuration();
+    @Shadow public abstract int getUseDuration(LivingEntity entity);
 
     @Shadow public abstract InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand);
 
@@ -72,13 +74,13 @@ public abstract class ItemStackMixin extends net.minecraftforge.common.capabilit
         });
     }
 
-    // TODO: When Origins Fabric gets MixinExtras, use @ModifyReturnValue.
-    @Inject(method = "use", at = @At("RETURN"), cancellable = true)
-    private void callActionOnUseInstantAfter(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
-        if (cir.getReturnValue().getResult().consumesAction() && ApoliAPI.getPowerContainer(user) != null && ApoliAPI.getPowerContainer(user).getPowers(ApoliPowers.ACTION_ON_ITEM_USE.get()).stream().anyMatch(p -> p.isBound() && p.value().getFactory().canRun(p, user, (ItemStack)(Object)this, this.getUseDuration() == 0 ? ActionOnItemUseConfiguration.TriggerType.INSTANT : ActionOnItemUseConfiguration.TriggerType.START, ActionOnItemUseConfiguration.PriorityPhase.AFTER))) {
-            MutableObject<ItemStack> mutable = new MutableObject<>(cir.getReturnValue().getObject());
-            ActionOnItemUsePower.execute(user, cir.getReturnValue().getObject(), mutable, this.getUseDuration() == 0 ? ActionOnItemUseConfiguration.TriggerType.INSTANT : ActionOnItemUseConfiguration.TriggerType.START, ActionOnItemUseConfiguration.PriorityPhase.AFTER);
-            cir.setReturnValue(new InteractionResultHolder<>(cir.getReturnValue().getResult(), mutable.getValue()));
+    @ModifyReturnValue(method = "use", at = @At("RETURN"))
+    private InteractionResultHolder<ItemStack> callActionOnUseInstantAfter(InteractionResultHolder<ItemStack> original, Level world, Player user, InteractionHand hand) {
+        if (original.getResult().consumesAction() && ApoliAPI.getPowerContainer(user) != null && ApoliAPI.getPowerContainer(user).getPowers(ApoliPowers.ACTION_ON_ITEM_USE.get()).stream().anyMatch(p -> p.isBound() && p.value().getFactory().canRun(p, user, (ItemStack)(Object)this, this.getUseDuration() == 0 ? ActionOnItemUseConfiguration.TriggerType.INSTANT : ActionOnItemUseConfiguration.TriggerType.START, ActionOnItemUseConfiguration.PriorityPhase.AFTER))) {
+            MutableObject<ItemStack> mutable = new MutableObject<>(original.getObject());
+            ActionOnItemUsePower.execute(user, original.getObject(), mutable, this.getUseDuration() == 0 ? ActionOnItemUseConfiguration.TriggerType.INSTANT : ActionOnItemUseConfiguration.TriggerType.START, ActionOnItemUseConfiguration.PriorityPhase.AFTER);
+            return (new InteractionResultHolder<>(original.getResult(), mutable.getValue()));
         }
+        return original;
     }
 }

@@ -8,8 +8,6 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class UsingEffectiveToolCondition extends EntityCondition<NoConfiguration> {
 
@@ -32,7 +30,6 @@ public class UsingEffectiveToolCondition extends EntityCondition<NoConfiguration
 		return this.checkClient(entity);
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	public static class Client extends UsingEffectiveToolCondition {
 		@Override
 		protected boolean checkClient(Entity entity) {

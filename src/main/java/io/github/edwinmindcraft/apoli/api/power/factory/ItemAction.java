@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.api.power.factory;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.IFactory;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemAction;
@@ -11,13 +12,13 @@ import org.apache.commons.lang3.mutable.Mutable;
 
 public abstract class ItemAction<T extends IDynamicFeatureConfiguration> implements IFactory<T, ConfiguredItemAction<T, ?>, ItemAction<T>> {
 	public static final Codec<ItemAction<?>> CODEC = ApoliRegistries.ITEM_ACTION.byNameCodec();
-	private final Codec<ConfiguredItemAction<T, ?>> codec;
+	private final MapCodec<ConfiguredItemAction<T, ?>> codec;
 
-	protected ItemAction(Codec<T> codec) {
-		this.codec = IFactory.singleCodec(IFactory.asMap(codec), this::configure, ConfiguredItemAction::getConfiguration);
+	protected ItemAction(MapCodec<T> codec) {
+		this.codec = IFactory.singleCodec(codec, this::configure, ConfiguredItemAction::getConfiguration);
 	}
 
-	public Codec<ConfiguredItemAction<T, ?>> getCodec() {
+	public MapCodec<ConfiguredItemAction<T, ?>> getCodec() {
 		return this.codec;
 	}
 

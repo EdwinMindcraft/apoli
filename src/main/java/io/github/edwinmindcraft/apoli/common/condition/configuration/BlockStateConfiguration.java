@@ -2,11 +2,12 @@ package io.github.edwinmindcraft.apoli.common.condition.configuration;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.configuration.IntegerComparisonConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import io.github.edwinmindcraft.calio.api.registry.CalioDynamicRegistryManager;
 import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,11 +19,11 @@ public record BlockStateConfiguration(String property,
 									  @Nullable IntegerComparisonConfiguration comparison,
 									  @Nullable Boolean booleanValue,
 									  @Nullable String stringValue) implements IDynamicFeatureConfiguration {
-	public static final Codec<BlockStateConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final MapCodec<BlockStateConfiguration> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			Codec.STRING.fieldOf("property").forGetter(BlockStateConfiguration::property),
 			IntegerComparisonConfiguration.OPTIONAL_MAP_CODEC.forGetter(x -> Optional.ofNullable(x.comparison())),
-			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "value").forGetter(x -> Optional.ofNullable(x.booleanValue())),
-			ExtraCodecs.strictOptionalField(Codec.STRING, "enum").forGetter(x -> Optional.ofNullable(x.stringValue()))
+			CalioCodecHelper.BOOL.optionalFieldOf("value").forGetter(x -> Optional.ofNullable(x.booleanValue())),
+			Codec.STRING.optionalFieldOf("enum").forGetter(x -> Optional.ofNullable(x.stringValue()))
 	).apply(instance, (t1, t2, t3, t4) -> new BlockStateConfiguration(t1, t2.orElse(null), t3.orElse(null), t4.orElse(null))));
 
 	public boolean checkProperty(Object value) {
@@ -41,7 +42,7 @@ public record BlockStateConfiguration(String property,
 	}
 
 	@Override
-	public @NotNull List<String> getErrors(@NotNull ICalioDynamicRegistryManager server) {
+	public @NotNull List<String> getErrors(@NotNull CalioDynamicRegistryManager server) {
 		if (this.booleanValue() == null && this.stringValue() == null && this.comparison() == null)
 			return ImmutableList.of("BlockState/No check were defined");
 		return IDynamicFeatureConfiguration.super.getErrors(server);

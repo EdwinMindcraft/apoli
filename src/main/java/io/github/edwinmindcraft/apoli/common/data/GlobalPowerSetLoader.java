@@ -6,11 +6,10 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import io.github.apace100.apoli.Apoli;
-import io.github.apace100.calio.data.SerializableData;
 import io.github.edwinmindcraft.apoli.common.global.GlobalPowerSet;
 import io.github.edwinmindcraft.calio.api.registry.DynamicEntryFactory;
 import io.github.edwinmindcraft.calio.api.registry.DynamicEntryValidator;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import io.github.edwinmindcraft.calio.api.registry.CalioDynamicRegistryManager;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,7 +56,7 @@ public enum GlobalPowerSetLoader implements DynamicEntryFactory<GlobalPowerSet>,
 
 
 	@Override
-	public @NotNull DataResult<GlobalPowerSet> validate(@NotNull ResourceLocation location, @NotNull GlobalPowerSet globalPowerSet, @NotNull ICalioDynamicRegistryManager manager) {
+	public @NotNull DataResult<GlobalPowerSet> validate(@NotNull ResourceLocation location, @NotNull GlobalPowerSet globalPowerSet, @NotNull CalioDynamicRegistryManager manager) {
 		return DataResult.success(globalPowerSet);
 	}
 }

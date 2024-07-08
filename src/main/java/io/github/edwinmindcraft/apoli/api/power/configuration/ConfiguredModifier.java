@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.common.util.Lazy;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public final class ConfiguredModifier<F extends ModifierOperation> {
@@ -27,12 +28,12 @@ public final class ConfiguredModifier<F extends ModifierOperation> {
 		return HOLDER.fieldOf(name);
 	}
 
-	public static PropagatingOptionalFieldCodec<Holder<ConfiguredModifier<?>>> optional(String name) {
-		return ExtraCodecs.strictOptionalField(HOLDER, name);
+	public static MapCodec<Optional<Holder<ConfiguredModifier<?>>>> optional(String name) {
+		return HOLDER.optionalFieldOf(name);
 	}
 
-	public static PropagatingDefaultedOptionalFieldCodec<Holder<ConfiguredModifier<?>>> optional(String name, Holder<ConfiguredModifier<?>> key) {
-		return ExtraCodecs.strictOptionalField(HOLDER, name, key);
+	public static MapCodec<Holder<ConfiguredModifier<?>>> optional(String name, Holder<ConfiguredModifier<?>> key) {
+		return HOLDER.optionalFieldOf(name, key);
 	}
 
 	public static double apply(Holder<ConfiguredModifier<?>> modifier, Entity entity, double value) {

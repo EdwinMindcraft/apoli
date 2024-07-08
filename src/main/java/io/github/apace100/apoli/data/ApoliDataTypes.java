@@ -2,6 +2,12 @@ package io.github.apace100.apoli.data;
 
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.JsonOps;
+import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.util.*;
 import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.SerializationHelper;
@@ -9,23 +15,38 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.apace100.calio.util.ArgumentWrapper;
+import io.github.apace100.apoli.util.ArmPoseReference;
+import io.github.apace100.apoli.util.BlockUsagePhase;
+import io.github.apace100.apoli.util.StackClickPhase;
 import io.github.edwinmindcraft.calio.api.ability.PlayerAbility;
 import io.github.edwinmindcraft.calio.api.registry.PlayerAbilities;
+import io.github.edwinmindcraft.calio.common.util.DynamicIdentifier;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.StatType;
 import net.minecraft.util.Tuple;
+import net.minecraft.world.entity.Display;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.level.GameType;
 
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 //FIXME Reintroduce
 public class ApoliDataTypes {
@@ -174,12 +195,12 @@ public class ApoliDataTypes {
 
 	public static final SerializableDataType<PlayerAbility> PLAYER_ABILITY = SerializableDataType.wrap(
 			PlayerAbility.class, SerializableDataTypes.IDENTIFIER,
-			ability -> PlayerAbilities.REGISTRY.get().getKey(ability), id -> {
+			ability -> PlayerAbilities.REGISTRY.getKey(ability), id -> {
                 ResourceLocation resolvedId = id;
                 if (id.getNamespace().equals("minecraft")) {
                     resolvedId = new ResourceLocation("calio", id.getPath());
                 }
-                PlayerAbility ability = PlayerAbilities.REGISTRY.get().getValue(resolvedId);
+                PlayerAbility ability = PlayerAbilities.REGISTRY.get(resolvedId);
                 if (ability == null) {
                     throw new NullPointerException(id + " has not been registered");
                 }
@@ -208,9 +229,145 @@ public class ApoliDataTypes {
 
     public static final SerializableDataType<List<LegacyMaterial>> LEGACY_MATERIALS = SerializableDataType.list(LEGACY_MATERIAL);
 
+	public static final SerializableDataType<ClickAction> CLICK_TYPE = SerializableDataType.enumValue(ClickAction.class);
+
+	public static final SerializableDataType<EnumSet<ClickAction>> CLICK_TYPE_SET = SerializableDataType.enumSet(ClickAction.class, CLICK_TYPE);
+
+	public static final SerializableDataType<Display.TextDisplay.Align> TEXT_ALIGNMENT = SerializableDataType.enumValue(Display.TextDisplay.Align.class);
+
+	public static final SerializableDataType<Map<ResourceLocation, ResourceLocation>> IDENTIFIER_MAP = new SerializableDataType<>(
+			ClassUtil.castClass(Map.class),
+			(buffer, idMap) -> buffer.writeMap(
+					idMap,
+					FriendlyByteBuf::writeResourceLocation,
+					FriendlyByteBuf::writeResourceLocation
+			),
+			buffer -> buffer.readMap(
+					FriendlyByteBuf::readResourceLocation,
+					FriendlyByteBuf::readResourceLocation
+			),
+			jsonElement -> {
+
+				if (!(jsonElement instanceof JsonObject jsonObject)) {
+					throw new JsonParseException("Expected a JSON object");
+				}
+
+				Map<ResourceLocation, ResourceLocation> map = new LinkedHashMap<>();
+				for (String key : jsonObject.keySet()) {
+
+					if (!(jsonObject.get(key) instanceof JsonPrimitive jsonPrimitive) || !jsonPrimitive.isString()) {
+						continue;
+					}
+
+					ResourceLocation keyId = DynamicIdentifier.of(key);
+					ResourceLocation valId = DynamicIdentifier.of(jsonPrimitive.getAsString());
+
+					map.put(keyId, valId);
+
+				}
+
+				return map;
+
+			},
+			idMap -> {
+
+				JsonObject jsonObject = new JsonObject();
+				idMap.forEach((keyId, valId) -> jsonObject.addProperty(keyId.toString(), valId.toString()));
+
+				return jsonObject;
+
+			}
+	);
+
+	public static final SerializableDataType<Map<Pattern, ResourceLocation>> REGEX_MAP = new SerializableDataType<>(
+			ClassUtil.castClass(Map.class),
+			(buffer, regexMap) -> buffer.writeMap(
+					regexMap,
+					(keyBuffer, pattern) -> keyBuffer.writeUtf(pattern.toString()),
+					FriendlyByteBuf::writeResourceLocation
+			),
+			buffer -> buffer.readMap(
+					keyBuffer -> Pattern.compile(keyBuffer.readUtf()),
+					FriendlyByteBuf::readResourceLocation
+			),
+			jsonElement -> {
+
+				if (!(jsonElement instanceof JsonObject jsonObject)) {
+					throw new JsonSyntaxException("Expected a JSON object.");
+				}
+
+				Map<Pattern, ResourceLocation> regexMap = new HashMap<>();
+				for (String key : jsonObject.keySet()) {
+
+					if (!(jsonObject.get(key) instanceof JsonPrimitive jsonPrimitive) || !jsonPrimitive.isString()) {
+						continue;
+					}
+
+					Pattern pattern = Pattern.compile(key);
+					ResourceLocation id = DynamicIdentifier.of(jsonPrimitive);
+
+					regexMap.put(pattern, id);
+
+				}
+
+				return regexMap;
+
+			},
+			regexMap -> {
+
+				JsonObject jsonObject = new JsonObject();
+				regexMap.forEach((regex, id) -> jsonObject.addProperty(regex.pattern(), id.toString()));
+
+				return jsonObject;
+
+			}
+	);
+
+	public static final SerializableDataType<GameType> GAME_MODE = SerializableDataType.enumValue(GameType.class);
+
+	//  This is for keeping backwards compatibility to fields that used to accept strings as translation keys
+	public static final SerializableDataType<Component> DEFAULT_TRANSLATABLE_TEXT = new SerializableDataType<>(
+			ClassUtil.castClass(Component.class),
+			ComponentSerialization.TRUSTED_STREAM_CODEC::encode,
+			ComponentSerialization.TRUSTED_STREAM_CODEC::decode,
+			jsonElement -> jsonElement instanceof JsonPrimitive jsonPrimitive
+					? Component.translatable(jsonPrimitive.getAsString())
+					: SerializableDataTypes.TEXT.read(jsonElement),
+			text -> ComponentSerialization.CODEC.encodeStart(JsonOps.INSTANCE, text)
+					.mapError(err -> "Failed to serialize text to JSON (skipping): " + err)
+					.resultOrPartial(Apoli.LOGGER::warn)
+					.orElseGet(JsonObject::new)
+	);
+
+	public static final SerializableDataType<Integer> NON_NEGATIVE_INT = SerializableDataType.boundNumber(
+			SerializableDataTypes.INT, 0, Integer.MAX_VALUE,
+			value -> (min, max) -> {
+
+				if (value < min) {
+					throw new IllegalArgumentException("Expected value to be equal or greater than " + min + "! (current value: " + value + ")");
+				}
+
+				return value;
+
+			}
+	);
+
+	public static final SerializableDataType<StackClickPhase> STACK_CLICK_PHASE = SerializableDataType.enumValue(StackClickPhase.class);
+
+	public static final SerializableDataType<EnumSet<StackClickPhase>> STACK_CLICK_PHASE_SET = SerializableDataType.enumSet(StackClickPhase.class, STACK_CLICK_PHASE);
+
+	public static final SerializableDataType<BlockUsagePhase> BLOCK_USAGE_PHASE = SerializableDataType.enumValue(BlockUsagePhase.class);
+
+	public static final SerializableDataType<EnumSet<BlockUsagePhase>> BLOCK_USAGE_PHASE_SET = SerializableDataType.enumSet(BlockUsagePhase.class, BLOCK_USAGE_PHASE);
+
+	public static final SerializableDataType<Pose> ENTITY_POSE = SerializableDataType.enumValue(Pose.class);
+
+	public static final SerializableDataType<ArmPoseReference> ARM_POSE_REFERENCE = SerializableDataType.enumValue(ArmPoseReference.class);
+
+
 	public static final SerializableDataType<Stat<?>> STAT = SerializableDataType.compound(ClassUtil.castClass(Stat.class),
 			new SerializableData()
-					.add("type", SerializableDataType.registry(ClassUtil.castClass(StatType.class), ForgeRegistries.STAT_TYPES))
+					.add("type", SerializableDataType.registry(ClassUtil.castClass(StatType.class), BuiltInRegistries.STAT_TYPE))
 					.add("id", SerializableDataTypes.IDENTIFIER),
 			data -> {
 				StatType statType = data.get("type");

@@ -1,6 +1,6 @@
 package io.github.apace100.apoli.power.factory.condition;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.util.Comparison;
 import io.github.edwinmindcraft.apoli.common.action.configuration.DistanceFromPointConfiguration;
@@ -49,7 +49,7 @@ public class DistanceFromCoordinatesConditionRegistry {
 		return new String[]{"distance_from_spawn", "distance_from_coordinates"};
 	}
 
-	private static Codec<DistanceFromPointConfiguration> getSerializableData(String alias) {
+	private static MapCodec<DistanceFromPointConfiguration> getSerializableData(String alias) {
 		// Using doubles and not ints because the player position is a vector of doubles and the sqrt function (for the distance) returns a double so we might as well use that precision
 		return DistanceFromPointConfiguration.codec(alias.equals("distance_from_coordinates") ? ReferencePoint.WORLD_ORIGIN : ReferencePoint.WORLD_SPAWN);
         /*return new SerializableData()

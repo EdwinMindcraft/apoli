@@ -29,8 +29,9 @@ public final class ConfiguredBiEntityAction<C extends IDynamicFeatureConfigurati
 		return CODEC.fieldOf(name);
 	}
 
+	// FIXME: This...
 	public static MapCodec<Holder<ConfiguredBiEntityAction<?, ?>>> optional(String name) {
-		return ExtraCodecs.strictOptionalField(CODEC, name).xmap(optional -> optional.orElseGet(() ->));
+		return CODEC.optionalFieldOf(name).xmap(optional -> optional.orElseGet(() -> ));
 	}
 
 	public static void execute(Holder<ConfiguredBiEntityAction<?, ?>> action, Entity actor, Entity target) {

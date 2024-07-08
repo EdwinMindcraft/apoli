@@ -2,21 +2,24 @@ package io.github.edwinmindcraft.apoli.common.condition.configuration;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import io.github.edwinmindcraft.calio.api.registry.CalioDynamicRegistryManager;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.effect.MobEffect;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record StatusEffectConfiguration(MobEffect effect,
+public record StatusEffectConfiguration(Holder<MobEffect> effect,
 										int minAmplifier, int maxAmplifier, int minDuration,
 										int maxDuration) implements IDynamicFeatureConfiguration {
 
-	public static final Codec<StatusEffectConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			SerializableDataTypes.STATUS_EFFECT.fieldOf("effect").forGetter(StatusEffectConfiguration::effect),
+	public static final MapCodec<StatusEffectConfiguration> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+			SerializableDataTypes.STATUS_EFFECT_ENTRY.fieldOf("effect").forGetter(StatusEffectConfiguration::effect),
 			Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("min_amplifier", 0).forGetter(StatusEffectConfiguration::minAmplifier),
 			Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("max_amplifier", Integer.MAX_VALUE).forGetter(StatusEffectConfiguration::maxAmplifier),
 			Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("min_duration", 0).forGetter(StatusEffectConfiguration::minDuration),
@@ -24,7 +27,7 @@ public record StatusEffectConfiguration(MobEffect effect,
 	).apply(instance, StatusEffectConfiguration::new));
 
 	@Override
-	public @NotNull List<String> getErrors(@NotNull ICalioDynamicRegistryManager server) {
+	public @NotNull List<String> getErrors(@NotNull RegistryAccess server) {
 		ImmutableList.Builder<String> builder = ImmutableList.builder();
 		if (this.minAmplifier() <= this.maxAmplifier())
 			builder.add("%s/Amplifier range is invalid: [%d,%d]".formatted(this.name(), this.minAmplifier(), this.maxAmplifier()));
@@ -34,7 +37,7 @@ public record StatusEffectConfiguration(MobEffect effect,
 	}
 
 	@Override
-	public @NotNull List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
+	public @NotNull List<String> getWarnings(@NotNull RegistryAccess server) {
 		if (this.effect() == null)
 			return ImmutableList.of(this.name() + "/Missing Effect");
 		return ImmutableList.of();

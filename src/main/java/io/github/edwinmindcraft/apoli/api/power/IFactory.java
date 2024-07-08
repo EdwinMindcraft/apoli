@@ -30,15 +30,15 @@ public interface IFactory<T extends IDynamicFeatureConfiguration, C extends Conf
 		return codec.fieldOf("value");
 	}
 
-	static <T, V, R> Codec<R> unionCodec(MapCodec<T> first, MapCodec<V> second, BiFunction<T, V, R> function, Function<R, T> firstGetter, Function<R, V> secondGetter) {
-		return RecordCodecBuilder.create(instance -> instance.group(
+	static <T, V, R> MapCodec<R> unionCodec(MapCodec<T> first, MapCodec<V> second, BiFunction<T, V, R> function, Function<R, T> firstGetter, Function<R, V> secondGetter) {
+		return RecordCodecBuilder.mapCodec(instance -> instance.group(
 				first.forGetter(firstGetter),
 				second.forGetter(secondGetter)
 		).apply(instance, function));
 	}
 
-	static <T, R> Codec<R> singleCodec(MapCodec<T> first, Function<T, R> to, Function<R, T> from) {
-		return first.xmap(to, from).codec();
+	static <T, R> MapCodec<R> singleCodec(MapCodec<T> first, Function<T, R> to, Function<R, T> from) {
+		return first.xmap(to, from);
 	}
 
 	/**

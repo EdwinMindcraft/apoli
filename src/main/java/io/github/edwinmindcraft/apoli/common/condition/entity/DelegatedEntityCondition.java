@@ -1,12 +1,12 @@
 package io.github.edwinmindcraft.apoli.common.condition.entity;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import io.github.edwinmindcraft.apoli.common.condition.meta.IDelegatedConditionConfiguration;
 import net.minecraft.world.entity.Entity;
 
 public class DelegatedEntityCondition<T extends IDelegatedConditionConfiguration<Entity>> extends EntityCondition<T> {
-	public DelegatedEntityCondition(Codec<T> codec) {
+	public DelegatedEntityCondition(MapCodec<T> codec) {
 		super(codec);
 	}
 

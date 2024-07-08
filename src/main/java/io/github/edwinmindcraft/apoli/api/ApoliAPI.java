@@ -4,21 +4,17 @@ import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
-import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import io.github.edwinmindcraft.apoli.common.network.C2SUseActivePowers;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
-import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -33,16 +29,13 @@ public class ApoliAPI {
 	@Nullable
 	public static PowerContainer getPowerContainer(Entity entity) {
 		if (entity instanceof LivingEntity living) {
-			LazyOptional<PowerContainer> optional = PowerContainer.get(living);
-			if (optional.isPresent())
-				return optional.orElseThrow(RuntimeException::new);
+            return PowerContainer.get(living);
 		}
 		return null;
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	public static void performPowers(Set<ResourceLocation> powers) {
-		ApoliCommon.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SUseActivePowers(powers));
+		PacketDistributor.sendToServer(new C2SUseActivePowers(powers));
 	}
 
 	public static boolean enableFoodRestrictions() {
@@ -53,17 +46,17 @@ public class ApoliAPI {
 	public static void synchronizePowerContainer(Entity living) {
 		S2CSynchronizePowerContainer packet = S2CSynchronizePowerContainer.forEntity(living);
 		if (packet != null && !living.level().isClientSide())
-			ApoliCommon.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> living), packet);
+			PacketDistributor.sendToPlayersTrackingEntity(living, packet);
 	}
 
 	public static void synchronizePowerContainer(Entity living, ServerPlayer with) {
 		S2CSynchronizePowerContainer packet = S2CSynchronizePowerContainer.forEntity(living);
 		if (packet != null)
-			ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> with), packet);
+			PacketDistributor.sendToPlayer(with, packet);
 	}
 
 	public static ResourceLocation identifier(String path) {
-		return new ResourceLocation(MODID, path);
+		return ResourceLocation.fromNamespaceAndPath(MODID, path);
 	}
 
 	public static void addAdditionalDataField(String name) {
@@ -86,8 +79,8 @@ public class ApoliAPI {
 	 *
 	 * @return The ConfiguredPower registry.
 	 */
-	public static MappedRegistry<ConfiguredPower<?, ?>> getPowers(@Nullable MinecraftServer server) {
-		return CalioAPI.getDynamicRegistries(server).get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
+	public static Registry<ConfiguredPower<?, ?>> getPowers(@Nullable MinecraftServer server) {
+		return server.overworld().registryAccess().registryOrThrow(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
 	}
 
 	/**
@@ -98,8 +91,8 @@ public class ApoliAPI {
 	 *
 	 * @return The ConfiguredPower registry.
 	 */
-	public static MappedRegistry<ConfiguredPower<?, ?>> getPowers(@Nullable RegistryAccess access) {
-		return CalioAPI.getDynamicRegistries(access).get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
+	public static Registry<ConfiguredPower<?, ?>> getPowers(@Nullable RegistryAccess access) {
+		return access.registryOrThrow(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
 	}
 
 	/**
@@ -108,7 +101,7 @@ public class ApoliAPI {
 	 *
 	 * @return The ConfiguredPower registry.
 	 */
-	public static MappedRegistry<ConfiguredPower<?, ?>> getPowers() {
-		return CalioAPI.getDynamicRegistries().get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
+	public static Registry<ConfiguredPower<?, ?>> getPowers() {
+		return CalioAPI.getSidedRegistryAccess().registryOrThrow(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
 	}
 }

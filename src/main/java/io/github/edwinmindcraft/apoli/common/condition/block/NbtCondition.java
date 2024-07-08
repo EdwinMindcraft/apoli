@@ -9,6 +9,9 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Supplier;
 
 
 public class NbtCondition extends BlockCondition<FieldConfiguration<CompoundTag>> {
@@ -21,7 +24,7 @@ public class NbtCondition extends BlockCondition<FieldConfiguration<CompoundTag>
 		CompoundTag nbt = new CompoundTag();
 		BlockEntity blockEntity = reader.getBlockEntity(position);
 		if (blockEntity != null)
-			nbt = blockEntity.serializeNBT();
+			nbt = blockEntity.getUpdateTag(reader.registryAccess());
 		return NbtUtils.compareNbt(configuration.value(), nbt, true);
 	}
 }

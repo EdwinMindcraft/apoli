@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.api.power.factory;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.IFactory;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockAction;
@@ -12,13 +13,13 @@ import net.minecraft.world.level.Level;
 public abstract class BlockAction<T extends IDynamicFeatureConfiguration> implements IFactory<T, ConfiguredBlockAction<T, ?>, BlockAction<T>> {
 	public static final Codec<BlockAction<?>> CODEC = ApoliRegistries.BLOCK_ACTION.byNameCodec();
 
-	private final Codec<ConfiguredBlockAction<T, ?>> codec;
+	private final MapCodec<ConfiguredBlockAction<T, ?>> codec;
 
-	protected BlockAction(Codec<T> codec) {
-		this.codec = IFactory.singleCodec(IFactory.asMap(codec), this::configure, ConfiguredBlockAction::getConfiguration);
+	protected BlockAction(MapCodec<T> codec) {
+		this.codec = IFactory.singleCodec(codec, this::configure, ConfiguredBlockAction::getConfiguration);
 	}
 
-	public Codec<ConfiguredBlockAction<T, ?>> getCodec() {
+	public MapCodec<ConfiguredBlockAction<T, ?>> getCodec() {
 		return this.codec;
 	}
 

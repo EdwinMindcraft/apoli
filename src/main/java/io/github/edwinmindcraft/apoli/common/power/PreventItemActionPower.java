@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -31,7 +32,7 @@ public class PreventItemActionPower extends PowerFactory<FieldConfiguration<Opti
 
 	public boolean doesPrevent(ConfiguredPower<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>, ?> configuration, Level level, ItemStack stack) {
 		//FIXME Disable Food Restrictions.
-		if (stack.isEdible() && !ApoliAPI.enableFoodRestrictions())
+		if (stack.has(DataComponents.FOOD) && !ApoliAPI.enableFoodRestrictions())
 			return false;
 		return configuration.getConfiguration().value().map(x -> x.check(level, stack)).orElse(true);
 	}

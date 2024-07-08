@@ -1,6 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.condition.block;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
 import io.github.edwinmindcraft.apoli.common.action.configuration.DistanceFromPointConfiguration;
 import net.minecraft.core.BlockPos;
@@ -8,10 +8,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Supplier;
 
 
 public class DistanceFromPointBlockCondition extends BlockCondition<DistanceFromPointConfiguration> {
-	public DistanceFromPointBlockCondition(Codec<DistanceFromPointConfiguration> codec) {
+	public DistanceFromPointBlockCondition(MapCodec<DistanceFromPointConfiguration> codec) {
 		super(codec);
 	}
 

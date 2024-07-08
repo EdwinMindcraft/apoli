@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.api.power.factory;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.ConditionData;
 import io.github.edwinmindcraft.apoli.api.power.IConditionFactory;
@@ -12,14 +13,14 @@ import net.minecraft.world.level.biome.Biome;
 public abstract class BiomeCondition<T extends IDynamicFeatureConfiguration> implements IConditionFactory<T, ConfiguredBiomeCondition<T, ?>, BiomeCondition<T>> {
 	public static final Codec<BiomeCondition<?>> CODEC = ApoliRegistries.BIOME_CONDITION.byNameCodec();
 
-	private final Codec<ConfiguredBiomeCondition<T, ?>> codec;
+	private final MapCodec<ConfiguredBiomeCondition<T, ?>> codec;
 
-	protected BiomeCondition(Codec<T> codec) {
+	protected BiomeCondition(MapCodec<T> codec) {
 		this.codec = IConditionFactory.conditionCodec(codec, this);
 	}
 
 	@Override
-	public Codec<ConfiguredBiomeCondition<T, ?>> getConditionCodec() {
+	public MapCodec<ConfiguredBiomeCondition<T, ?>> getConditionCodec() {
 		return this.codec;
 	}
 

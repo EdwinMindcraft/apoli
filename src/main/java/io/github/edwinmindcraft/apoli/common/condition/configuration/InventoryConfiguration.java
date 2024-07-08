@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.condition.configuration;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.util.Comparison;
@@ -26,12 +27,12 @@ public record InventoryConfiguration(EnumSet<InventoryUtil.InventoryType> invent
                                      Optional<ResourceKey<ConfiguredPower<?, ?>>> power,
                                      IntegerComparisonConfiguration comparison) implements IDynamicFeatureConfiguration {
 
-    public static final Codec<InventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ExtraCodecs.strictOptionalField(ApoliDataTypes.INVENTORY_TYPE_SET, "inventory_types", EnumSet.of(InventoryUtil.InventoryType.INVENTORY)).forGetter(InventoryConfiguration::inventoryTypes),
-            ExtraCodecs.strictOptionalField(ApoliDataTypes.PROCESS_MODE, "process_mode", InventoryUtil.ProcessMode.ITEMS).forGetter(InventoryConfiguration::processMode),
+    public static final MapCodec<InventoryConfiguration> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            ApoliDataTypes.INVENTORY_TYPE_SET.optionalFieldOf("inventory_types", EnumSet.of(InventoryUtil.InventoryType.INVENTORY)).forGetter(InventoryConfiguration::inventoryTypes),
+            ApoliDataTypes.PROCESS_MODE.optionalFieldOf("process_mode", InventoryUtil.ProcessMode.ITEMS).forGetter(InventoryConfiguration::processMode),
             ConfiguredItemCondition.optional("item_condition").forGetter(InventoryConfiguration::itemCondition),
             ListConfiguration.mapCodec(ApoliDataTypes.ITEM_SLOT, "slot", "slots").forGetter(InventoryConfiguration::slots),
-            ExtraCodecs.strictOptionalField(CalioCodecHelper.resourceKey(ApoliDynamicRegistries.CONFIGURED_POWER_KEY), "power").forGetter(InventoryConfiguration::power),
+            CalioCodecHelper.resourceKey(ApoliDynamicRegistries.CONFIGURED_POWER_KEY).optionalFieldOf("power").forGetter(InventoryConfiguration::power),
             IntegerComparisonConfiguration.withDefaults(Comparison.GREATER_THAN_OR_EQUAL, 0).forGetter(InventoryConfiguration::comparison)
     ).apply(instance, InventoryConfiguration::new));
 

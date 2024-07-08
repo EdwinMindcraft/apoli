@@ -7,9 +7,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.entity.EntityType;
-
-import java.util.Optional;
 
 public class InTagCondition extends DamageCondition<FieldConfiguration<TagKey<DamageType>>> {
 

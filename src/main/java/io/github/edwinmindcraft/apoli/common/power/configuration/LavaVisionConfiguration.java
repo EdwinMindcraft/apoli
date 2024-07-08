@@ -1,32 +1,35 @@
 package io.github.edwinmindcraft.apoli.common.power.configuration;
 
-import com.mojang.serialization.Codec;
+import com.google.common.base.Suppliers;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IAttributeModifyingPowerConfiguration;
-import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
 import io.github.edwinmindcraft.apoli.common.util.PowerUtils;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraftforge.common.util.Lazy;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public final class LavaVisionConfiguration implements IAttributeModifyingPowerConfiguration {
-	public static final Codec<LavaVisionConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final MapCodec<LavaVisionConfiguration> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			CalioCodecHelper.FLOAT.fieldOf("s").forGetter(LavaVisionConfiguration::s),
 			CalioCodecHelper.FLOAT.fieldOf("v").forGetter(LavaVisionConfiguration::v)
 	).apply(instance, LavaVisionConfiguration::new));
 	private final float s;
 	private final float v;
 
-	private final Lazy<ListConfiguration<AttributeModifier>> modifiers;
+	private Supplier<ListConfiguration<AttributeModifier>> modifiers;
 
 	public LavaVisionConfiguration(float s, float v) {
 		this.s = s;
 		this.v = v;
-		this.modifiers = Lazy.of(() -> ListConfiguration.of(PowerUtils.staticModifier("Lava vision power", this.v() - 1.0, AttributeModifier.Operation.ADDITION, this.s(), this.v())));
+	}
+
+	public void createModifiers(ResourceLocation powerId) {
+		this.modifiers = Suppliers.memoize(() -> ListConfiguration.of(PowerUtils.staticModifier(powerId, this.v() - 1.0, AttributeModifier.Operation.ADD_VALUE)));
 	}
 
 	@Override

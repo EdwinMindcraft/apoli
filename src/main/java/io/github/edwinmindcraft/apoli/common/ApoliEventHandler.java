@@ -1,14 +1,12 @@
 package io.github.edwinmindcraft.apoli.common;
 
 import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.access.EntityLinkedItemStack;
 import io.github.apace100.apoli.command.PowerCommand;
 import io.github.apace100.apoli.command.ResourceCommand;
 import io.github.apace100.apoli.util.InventoryUtil;
 import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
-import io.github.edwinmindcraft.apoli.common.component.EntityLinkedItemStackImpl;
 import io.github.edwinmindcraft.apoli.common.component.PowerContainerImpl;
 import io.github.edwinmindcraft.apoli.common.network.S2CCachedSpawnsPacket;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
@@ -24,20 +22,17 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.OnDatapackSyncEvent;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashSet;
 import java.util.List;
@@ -47,7 +42,7 @@ import java.util.Set;
  * This class contains events that relate to non-power stuff, as in
  * synchronization & capability associations.
  */
-@Mod.EventBusSubscriber(modid = Apoli.MODID)
+@EventBusSubscriber(modid = Apoli.MODID)
 public class ApoliEventHandler {
 
 	@SubscribeEvent
@@ -57,19 +52,16 @@ public class ApoliEventHandler {
 		}
 	}
 
-    @SubscribeEvent
-    public static void attachItemCapabilities(AttachCapabilitiesEvent<ItemStack> event) {
-        event.addCapability(EntityLinkedItemStack.KEY, new EntityLinkedItemStackImpl(event.getObject()));
-    }
-
 	@SubscribeEvent
 	public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-		if (event.getEntity() instanceof ServerPlayer spe) {
-			ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> spe), new S2CCachedSpawnsPacket(SpawnLookupUtil.getPowersWithSpawns()));
-			S2CSynchronizePowerContainer packet = S2CSynchronizePowerContainer.forEntity(spe);
-			if (packet == null)
-				Apoli.LOGGER.error("Couldn't create synchronization packet for player {}", spe.getScoreboardName());
-			ApoliCommon.CHANNEL.send(PacketDistributor.ALL.noArg(), packet);
+		if (event.getEntity() instanceof ServerPlayer sp) {
+			PacketDistributor.sendToPlayer(sp, new S2CCachedSpawnsPacket(SpawnLookupUtil.getPowersWithSpawns()));
+			S2CSynchronizePowerContainer packet = S2CSynchronizePowerContainer.forEntity(sp);
+			if (packet == null) {
+				Apoli.LOGGER.error("Couldn't create synchronization packet for player {}", sp.getScoreboardName());
+				return;
+			}
+			PacketDistributor.sendToAllPlayers(packet);
 		}
 	}
 
@@ -94,7 +86,7 @@ public class ApoliEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onPowerLoad(DynamicRegistrationEvent<ConfiguredPower<?, ?>> event) {
-        if (event.getOriginal().getData().forgeCondition().isPresent() && !event.getOriginal().getData().forgeCondition().get().test(ICondition.IContext.EMPTY)) {
+        if (event.getOriginal().getData().neoForgeConditions().isPresent() && !event.getOriginal().getData().neoForgeConditions().get().stream().allMatch(condition -> condition.test(ICondition.IContext.TAGS_INVALID)) {
             disablePower(event.getRegistryName());
             event.setCanceled(true);
         }
@@ -112,8 +104,11 @@ public class ApoliEventHandler {
 	public static void onDataSync(OnDatapackSyncEvent event) {
 		if (event.getPlayer() == null) {
 			for (ServerPlayer player : event.getPlayerList().getPlayers()) {
-				PowerContainer.get(player).ifPresent(PowerContainer::rebuildCache);
-				PowerContainer.sync(player);
+				PowerContainer container = PowerContainer.get(player);
+				if (container != null) {
+					container.rebuildCache();
+					PowerContainer.sync(player);
+				}
 			}
 		}
 	}
@@ -124,10 +119,14 @@ public class ApoliEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void livingTick(LivingEvent.LivingTickEvent event) {
-		if (!event.getEntity().level().isClientSide())
-			PowerContainer.get(event.getEntity()).ifPresent(PowerContainer::serverTick);
+	public static void livingTick(EntityTickEvent event) {
+		if (!event.getEntity().level().isClientSide()) {
+			PowerContainer container = PowerContainer.get(event.getEntity());
+			if (container != null)
+				container.serverTick();
+		}
 
+		// FIXME: Use an duck interface instead of a capability.
         InventoryUtil.forEachStack(event.getEntity(), (slot) -> {
             if (slot.get().isEmpty() || slot.get().getCapability(ApoliCapabilities.ENTITY_LINKED_ITEM_STACK).map(eli -> eli.getEntity() == event.getEntity()).orElse(false)) {
                 return;
@@ -138,13 +137,14 @@ public class ApoliEventHandler {
         });
 	}
 
+	// FIXME: Spawn powers.
 	@SubscribeEvent
 	public static void playerClone(PlayerEvent.Clone event) {
 		event.getOriginal().reviveCaps(); // Revive capabilities.
 
-		LazyOptional<PowerContainer> original = PowerContainer.get(event.getOriginal());
-		LazyOptional<PowerContainer> player = PowerContainer.get(event.getEntity());
-		if (original.isPresent() != player.isPresent()) {
+		PowerContainer original = PowerContainer.get(event.getOriginal());
+		PowerContainer player = PowerContainer.get(event.getEntity());
+		if ((original == null) == (player != null)) {
 			Apoli.LOGGER.info("Capability mismatch: original:{}, new:{}", original.isPresent(), player.isPresent());
 		}
 		original.ifPresent(x -> x.getPowers().forEach(y -> y.value().onRemoved(event.getOriginal())));
@@ -164,7 +164,9 @@ public class ApoliEventHandler {
 			PowerContainer.sync(sp);
 			if (!event.isEndConquered()) {
 				ApoliPowers.MODIFY_PLAYER_SPAWN.get().schedulePlayerToSpawn(sp);
-				PowerContainer.get(sp).ifPresent(x -> x.getPowers().forEach(y -> y.value().onRespawn(sp)));
+				PowerContainer container = PowerContainer.get(sp);
+				if (container != null)
+					container.getPowers().forEach(y -> y.value().onRespawn(sp));
 			}
 		}
 	}

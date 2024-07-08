@@ -1,8 +1,8 @@
 package io.github.edwinmindcraft.apoli.common;
 
 import io.github.apace100.apoli.Apoli;
+import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
-import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.common.data.GlobalPowerSetLoader;
@@ -12,71 +12,31 @@ import io.github.edwinmindcraft.apoli.common.network.*;
 import io.github.edwinmindcraft.apoli.common.registry.*;
 import io.github.edwinmindcraft.apoli.common.registry.action.*;
 import io.github.edwinmindcraft.apoli.common.registry.condition.*;
-import io.github.edwinmindcraft.apoli.common.util.AllNamespacesLoadedCondition;
-import io.github.edwinmindcraft.apoli.common.util.AnyNamespacesLoadedCondition;
 import io.github.edwinmindcraft.apoli.compat.ApoliCompat;
+import io.github.edwinmindcraft.calio.api.CalioAPI;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
 public class ApoliCommon {
-	public static final String NETWORK_VERSION = "1.3";
-
-	public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder.named(Apoli.identifier("channel"))
-			.networkProtocolVersion(() -> NETWORK_VERSION)
-			.clientAcceptedVersions(NETWORK_VERSION::equals)
-			.serverAcceptedVersions(NETWORK_VERSION::equals)
-			.simpleChannel();
+	public static final String NETWORK_VERSION = "2.0";
 
 	public static final ResourceLocation POWER_SOURCE = Apoli.identifier("power_source");
 
-	private static void initializeNetwork() {
-		int messageId = 0;
-		CHANNEL.messageBuilder(C2SUseActivePowers.class, messageId++, NetworkDirection.PLAY_TO_SERVER)
-				.encoder(C2SUseActivePowers::encode).decoder(C2SUseActivePowers::decode)
-				.consumerNetworkThread(C2SUseActivePowers::handle).add();
-
-		CHANNEL.messageBuilder(S2CSynchronizePowerContainer.class, messageId++, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(S2CSynchronizePowerContainer::encode).decoder(S2CSynchronizePowerContainer::decode)
-				.consumerNetworkThread(S2CSynchronizePowerContainer::handle).add();
-
-		CHANNEL.messageBuilder(S2CPlayerDismount.class, messageId++, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(S2CPlayerDismount::encode).decoder(S2CPlayerDismount::decode)
-				.consumerNetworkThread(S2CPlayerDismount::handle).add();
-
-		CHANNEL.messageBuilder(S2CPlayerMount.class, messageId++, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(S2CPlayerMount::encode).decoder(S2CPlayerMount::decode)
-				.consumerNetworkThread(S2CPlayerMount::handle).add();
-
-		CHANNEL.messageBuilder(S2CSyncAttacker.class, messageId++, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(S2CSyncAttacker::encode).decoder(S2CSyncAttacker::decode)
-				.consumerNetworkThread(S2CSyncAttacker::handle).add();
-
-		CHANNEL.messageBuilder(S2CCachedSpawnsPacket.class, messageId++, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(S2CCachedSpawnsPacket::encode).decoder(S2CCachedSpawnsPacket::decode)
-				.consumerNetworkThread(S2CCachedSpawnsPacket::handle).add();
-
-		CHANNEL.messageBuilder(S2CActiveSpawnPowerPacket.class, messageId++, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(S2CActiveSpawnPowerPacket::encode).decoder(S2CActiveSpawnPowerPacket::decode)
-				.consumerNetworkThread(S2CActiveSpawnPowerPacket::handle).add();
-
-		CHANNEL.messageBuilder(C2SFetchActiveSpawnPowerPacket.class, messageId++, NetworkDirection.PLAY_TO_SERVER)
-				.encoder(C2SFetchActiveSpawnPowerPacket::encode).decoder(C2SFetchActiveSpawnPowerPacket::decode)
-				.consumerNetworkThread(C2SFetchActiveSpawnPowerPacket::handle).add();
-
-		CHANNEL.messageBuilder(S2CResetSpawnCachePacket.class, messageId++, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(S2CResetSpawnCachePacket::encode).decoder(S2CResetSpawnCachePacket::decode)
-				.consumerNetworkThread(S2CResetSpawnCachePacket::handle).add();
-
-		Apoli.LOGGER.debug("Registered {} newtork messages.", messageId);
+	private static void initializeNetwork(RegisterPayloadHandlersEvent event) {
+		event.registrar(CalioAPI.MODID)
+				.versioned(NETWORK_VERSION)
+				.playToServer(C2SUseActivePowers.TYPE, C2SUseActivePowers.STREAM_CODEC, C2SUseActivePowers::handle)
+				.playToClient(S2CSynchronizePowerContainer.TYPE, S2CSynchronizePowerContainer.STREAM_CODEC, S2CSynchronizePowerContainer::handle)
+				.playToClient(S2CPlayerDismount.TYPE, S2CPlayerDismount.STREAM_CODEC, S2CPlayerDismount::handle)
+				.playToClient(S2CPlayerMount.TYPE, S2CPlayerMount.STREAM_CODEC, S2CPlayerMount::handle)
+				.playToClient(S2CSyncAttacker.TYPE, S2CSyncAttacker.STREAM_CODEC, S2CSyncAttacker::handle)
+				.playToClient(S2CCachedSpawnsPacket.TYPE, S2CCachedSpawnsPacket.STREAM_CODEC, S2CCachedSpawnsPacket::handle)
+				.playToClient(S2CActiveSpawnPowerPacket.TYPE, S2CActiveSpawnPowerPacket.STREAM_CODEC, S2CActiveSpawnPowerPacket::handle)
+				.playToServer(C2SFetchActiveSpawnPowerPacket.TYPE, C2SFetchActiveSpawnPowerPacket.STREAM_CODEC, C2SFetchActiveSpawnPowerPacket::handle)
+				.playToClient(S2CResetSpawnCachePacket.TYPE, S2CResetSpawnCachePacket.STREAM_CODEC, S2CResetSpawnCachePacket::handle);
 	}
 
 	public static void initialize(IEventBus bus) {
@@ -113,45 +73,22 @@ public class ApoliCommon {
 		ApoliModifierOperations.bootstrap();
 		ApoliAttachments.bootstrap();
 
-		//Dynamic registries
-		ApoliDefaultActions.bootstrap();
-		ApoliDefaultConditions.bootstrap();
+		ApoliArgumentTypes.initialize();
 
 		bus.addListener(ApoliCommon::commonSetup);
+		bus.addListener(ApoliCommon::initializeNetwork);
 		bus.addListener(ApoliCommon::initalizeDynamicRegistries);
 	}
 
 	public static void commonSetup(FMLCommonSetupEvent event) {
-		event.enqueueWork(ApoliArgumentTypes::initialize);
 		ApoliCompat.apply();
-		initializeNetwork();
-
-		CraftingHelper.register(AnyNamespacesLoadedCondition.Serializer.INSTANCE);
-		CraftingHelper.register(AllNamespacesLoadedCondition.Serializer.INSTANCE);
 	}
 
-	@SubscribeEvent
 	public static void initalizeDynamicRegistries(CalioDynamicRegistryEvent.Initialize event) {
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, ApoliBuiltinRegistries.CONFIGURED_POWERS, ConfiguredPower.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.GLOBAL_POWER_SET, ApoliBuiltinRegistries.GLOBAL_POWER_SET, GlobalPowerSet.CODEC);
-
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BIENTITY_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_BIENTITY_ACTIONS, ConfiguredBiEntityAction.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BLOCK_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_BLOCK_ACTIONS, ConfiguredBlockAction.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ENTITY_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_ENTITY_ACTIONS, ConfiguredEntityAction.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ITEM_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_ITEM_ACTIONS, ConfiguredItemAction.CODEC);
-
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BIENTITY_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_BIENTITY_CONDITIONS, ConfiguredBiEntityCondition.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BIOME_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_BIOME_CONDITIONS, ConfiguredBiomeCondition.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BLOCK_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_BLOCK_CONDITIONS, ConfiguredBlockCondition.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_DAMAGE_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_DAMAGE_CONDITIONS, ConfiguredDamageCondition.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ENTITY_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_ENTITY_CONDITIONS, ConfiguredEntityCondition.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_FLUID_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_FLUID_CONDITIONS, ConfiguredFluidCondition.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ITEM_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_ITEM_CONDITIONS, ConfiguredItemCondition.CODEC);
-
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_MODIFIER_KEY, ApoliBuiltinRegistries.CONFIGURED_MODIFIERS, ConfiguredModifier.CODEC);
+		event.getRegistryManager().add(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, ConfiguredPower.DIRECT_CODEC);
+		event.getRegistryManager().add(ApoliDynamicRegistries.GLOBAL_POWER_SET, GlobalPowerSet.DIRECT_CODEC);
 
 		event.getRegistryManager().addReload(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, "powers", PowerLoader.INSTANCE);
-		event.getRegistryManager().addValidation(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, PowerLoader.INSTANCE, ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);
 		event.getRegistryManager().addReload(ApoliDynamicRegistries.GLOBAL_POWER_SET, "global_powers", GlobalPowerSetLoader.INSTANCE);
 		event.getRegistryManager().addValidation(ApoliDynamicRegistries.GLOBAL_POWER_SET, GlobalPowerSetLoader.INSTANCE, ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
 	}

@@ -1,12 +1,12 @@
 package io.github.edwinmindcraft.apoli.common.condition.meta;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
 public record ConstantConfiguration<T>(boolean value) implements IDelegatedConditionConfiguration<T> {
 
-	public static <T> Codec<ConstantConfiguration<T>> codec() {
-		return CalioCodecHelper.BOOL.fieldOf("value").xmap(ConstantConfiguration<T>::new, ConstantConfiguration::value).codec();
+	public static <T> MapCodec<ConstantConfiguration<T>> codec() {
+		return CalioCodecHelper.BOOL.fieldOf("value").xmap(ConstantConfiguration<T>::new, ConstantConfiguration::value);
 	}
 
 	@Override

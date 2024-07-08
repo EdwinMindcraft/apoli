@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.api.power.factory;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.IFactory;
@@ -12,13 +13,13 @@ import net.neoforged.neoforge.common.util.Lazy;
 public abstract class EntityAction<T extends IDynamicFeatureConfiguration> implements IFactory<T, ConfiguredEntityAction<T, ?>, EntityAction<T>> {
 	public static final Codec<EntityAction<?>> CODEC = ApoliRegistries.ENTITY_ACTION.byNameCodec();
 
-	private final Codec<ConfiguredEntityAction<T, ?>> codec;
+	private final MapCodec<ConfiguredEntityAction<T, ?>> codec;
 
-	protected EntityAction(Codec<T> codec) {
-		this.codec = IFactory.singleCodec(IFactory.asMap(codec), this::configure, ConfiguredEntityAction::getConfiguration);
+	protected EntityAction(MapCodec<T> codec) {
+		this.codec = IFactory.singleCodec(codec, this::configure, ConfiguredEntityAction::getConfiguration);
 	}
 
-	public Codec<ConfiguredEntityAction<T, ?>> getCodec() {
+	public MapCodec<ConfiguredEntityAction<T, ?>> getCodec() {
 		return this.codec;
 	}
 

@@ -8,7 +8,6 @@ import io.github.apace100.calio.Calio;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
-import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import io.github.edwinmindcraft.apoli.common.network.C2SFetchActiveSpawnPowerPacket;
 import io.github.edwinmindcraft.apoli.common.power.ParticlePower;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
@@ -25,21 +24,24 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.*;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-@Mod.EventBusSubscriber(modid = Apoli.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Apoli.MODID, value = Dist.CLIENT)
 public class ApoliClientEventHandler {
 
 	public static void registerPowerKeybinding(String keyId, KeyMapping keyBinding) {
@@ -57,12 +59,13 @@ public class ApoliClientEventHandler {
 	}
 
 
+	// FIXME: Capability related code regarding the death screen.
 	@SubscribeEvent
 	public static void onInitScreen(ScreenEvent.Init event) {
 		if (event.getScreen() instanceof DeathScreen && Minecraft.getInstance().player != null) {
 			Minecraft.getInstance().player.reviveCaps();
 			if (ApoliAPI.getPowerContainer(Minecraft.getInstance().player).hasPower(ApoliPowers.MODIFY_PLAYER_SPAWN.get()))
-				ApoliCommon.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SFetchActiveSpawnPowerPacket());
+				PacketDistributor.sendToServer(new C2SFetchActiveSpawnPowerPacket());
 			Minecraft.getInstance().player.invalidateCaps();
 		}
 	}
@@ -73,7 +76,7 @@ public class ApoliClientEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void onLivingTick(LivingEvent.LivingTickEvent event) {
+	public static void onLivingTick(EntityTickEvent event) {
 		Player player = Minecraft.getInstance().player;
 		if (player != null) {
 			boolean firstPerson = Minecraft.getInstance().options.getCameraType().isFirstPerson();
@@ -97,41 +100,40 @@ public class ApoliClientEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void onClientTick(TickEvent.ClientTickEvent event) {
-		if (event.phase == TickEvent.Phase.START) {
-			Minecraft instance = Minecraft.getInstance();
-			if (ApoliClient.shouldReapplyShaders) {
-				ApoliClient.shouldReapplyShaders = false;
-				instance.gameRenderer.checkEntityPostEffect(instance.options.getCameraType().isFirstPerson() ? instance.getCameraEntity() : null);
-			}
-			LocalPlayer player = instance.player;
-			if (player != null) {
-				PowerContainer.get(player).ifPresent(container -> {
-					HashMap<String, Boolean> currentKeyBindingStates = new HashMap<>();
-					Set<ResourceLocation> pressedPowers = new HashSet<>();
-					Registry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers();
-					for (Holder<ConfiguredPower<?, ?>> holder : container.getPowers()) {
-                        if (!holder.isBound()) continue;
-						holder.value().getKey(player).ifPresent(key -> {
-							KeyMapping binding = getKeyBinding(key.key());
-							if (binding != null) {
-								if (!currentKeyBindingStates.containsKey(key.key()))
-									currentKeyBindingStates.put(key.key(), binding.isDown());
-								if (currentKeyBindingStates.get(key.key()) && (key.continuous() || !lastKeyBindingStates.getOrDefault(key.key(), false))) {
-                                    ResourceLocation keyValue = powers.getKey(holder.value());
-                                    if (keyValue != null)
-                                        pressedPowers.add(keyValue);
-                                }
-							} else if (Calio.isDebugMode())
-								Apoli.LOGGER.warn("No such key: {}", key.key());
-						});
-					}
-					lastKeyBindingStates.clear();
-					lastKeyBindingStates.putAll(currentKeyBindingStates);
-					if (pressedPowers.size() > 0) {
-						ApoliAPI.performPowers(pressedPowers);
-					}
-				});
+	public static void onClientTick(ClientTickEvent.Pre event) {
+		Minecraft instance = Minecraft.getInstance();
+		if (ApoliClient.shouldReapplyShaders) {
+			ApoliClient.shouldReapplyShaders = false;
+			instance.gameRenderer.checkEntityPostEffect(instance.options.getCameraType().isFirstPerson() ? instance.getCameraEntity() : null);
+		}
+		LocalPlayer player = instance.player;
+		if (player != null) {
+			PowerContainer container = PowerContainer.get(player);
+			if (container != null) {
+				HashMap<String, Boolean> currentKeyBindingStates = new HashMap<>();
+				Set<ResourceLocation> pressedPowers = new HashSet<>();
+				Registry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers();
+				for (Holder<ConfiguredPower<?, ?>> holder : container.getPowers()) {
+					if (!holder.isBound()) continue;
+					holder.value().getKey(player).ifPresent(key -> {
+						KeyMapping binding = getKeyBinding(key.key());
+						if (binding != null) {
+							if (!currentKeyBindingStates.containsKey(key.key()))
+								currentKeyBindingStates.put(key.key(), binding.isDown());
+							if (currentKeyBindingStates.get(key.key()) && (key.continuous() || !lastKeyBindingStates.getOrDefault(key.key(), false))) {
+								ResourceLocation keyValue = powers.getKey(holder.value());
+								if (keyValue != null)
+									pressedPowers.add(keyValue);
+							}
+						} else if (Calio.isDebugMode())
+							Apoli.LOGGER.warn("No such key: {}", key.key());
+					});
+				}
+				lastKeyBindingStates.clear();
+				lastKeyBindingStates.putAll(currentKeyBindingStates);
+				if (!pressedPowers.isEmpty()) {
+					ApoliAPI.performPowers(pressedPowers);
+				}
 			}
 		}
 	}

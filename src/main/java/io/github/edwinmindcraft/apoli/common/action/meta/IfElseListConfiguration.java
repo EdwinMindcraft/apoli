@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.common.action.meta;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.configuration.IStreamConfiguration;
@@ -19,12 +20,12 @@ public record IfElseListConfiguration<C, A, V>(List<Pair<Holder<C>, Holder<A>>> 
 											   BiPredicate<C, V> predicate,
 											   BiConsumer<A, V> consumer) implements IDelegatedActionConfiguration<V>, IStreamConfiguration<Pair<Holder<C>, Holder<A>>> {
 
-	public static <C, A, V> Codec<IfElseListConfiguration<C, A, V>> codec(CodecSet<C> condition, CodecSet<A> action, BiPredicate<C, V> predicate, BiConsumer<A, V> consumer) {
+	public static <C, A, V> MapCodec<IfElseListConfiguration<C, A, V>> codec(CodecSet<C> condition, CodecSet<A> action, BiPredicate<C, V> predicate, BiConsumer<A, V> consumer) {
 		Codec<Pair<Holder<C>, Holder<A>>> pairCodec = RecordCodecBuilder.create(instance -> instance.group(
 				condition.holder().fieldOf("condition").forGetter(Pair::getLeft),
 				action.holder().fieldOf("action").forGetter(Pair::getRight)
 		).apply(instance, Pair::of));
-		return CalioCodecHelper.listOf(pairCodec).fieldOf("actions").xmap(pairs -> new IfElseListConfiguration<>(pairs, predicate, consumer), IfElseListConfiguration::entries).codec();
+		return CalioCodecHelper.listOf(pairCodec).fieldOf("actions").xmap(pairs -> new IfElseListConfiguration<>(pairs, predicate, consumer), IfElseListConfiguration::entries);
 	}
 
 	@Override

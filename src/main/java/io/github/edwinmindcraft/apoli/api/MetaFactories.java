@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 
 public class MetaFactories {
 
-	public static <F, C, V> void defineMetaConditions(DeferredRegister<F> registry, Function<Codec<? extends IDelegatedConditionConfiguration<V>>, ? extends F> func, Codec<HolderSet<C>> conditionCodec, BiPredicate<C, V> predicate) {
+	public static <F, C, V> void defineMetaConditions(DeferredRegister<F> registry, Function<MapCodec<? extends IDelegatedConditionConfiguration<V>>, ? extends F> func, Codec<HolderSet<C>> conditionCodec, BiPredicate<C, V> predicate) {
 		registry.register("constant", () -> func.apply(ConstantConfiguration.codec()));
 		registry.register("and", () -> func.apply(ConditionStreamConfiguration.andCodec(conditionCodec, predicate)));
 		registry.register("or", () -> func.apply(ConditionStreamConfiguration.orCodec(conditionCodec, predicate)));
@@ -39,7 +39,7 @@ public class MetaFactories {
 	 * @param <C>            The type of the configured condition.
 	 * @param <V>            The intermediate type to reduce arguments to a single type.
 	 */
-	public static <F, A, C, V> void defineMetaActions(DeferredRegister<F> registry, Function<Codec<? extends IDelegatedActionConfiguration<V>>, ? extends F> func, CodecSet<A> actionCodec, CodecSet<C> conditionCodec, Function<String, MapCodec<Holder<A>>> optional, BiConsumer<A, V> executor, BiPredicate<C, V> predicate, Predicate<V> serverSidePredicate) {
+	public static <F, A, C, V> void defineMetaActions(DeferredRegister<F> registry, Function<MapCodec<? extends IDelegatedActionConfiguration<V>>, ? extends F> func, CodecSet<A> actionCodec, CodecSet<C> conditionCodec, Function<String, MapCodec<Holder<A>>> optional, BiConsumer<A, V> executor, BiPredicate<C, V> predicate, Predicate<V> serverSidePredicate) {
 		registry.register("and", () -> func.apply(ExecuteMultipleConfiguration.codec(actionCodec, executor)));
 		registry.register("chance", () -> func.apply(ChanceConfiguration.codec(actionCodec, executor)));
 		registry.register("if_else", () -> func.apply(IfElseConfiguration.codec(conditionCodec, actionCodec, optional, predicate, executor)));

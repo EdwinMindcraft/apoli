@@ -5,6 +5,7 @@ import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.DamageCondition;
 import net.minecraft.world.damagesource.DamageSource;
 
+@Deprecated
 public class NameCondition extends DamageCondition<FieldConfiguration<String>> {
 
 	public NameCondition() {

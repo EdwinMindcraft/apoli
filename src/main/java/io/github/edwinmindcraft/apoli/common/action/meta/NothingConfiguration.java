@@ -1,10 +1,10 @@
 package io.github.edwinmindcraft.apoli.common.action.meta;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 public record NothingConfiguration<T>() implements IDelegatedActionConfiguration<T> {
-	public static <T> Codec<NothingConfiguration<T>> codec() {
-		return Codec.unit(NothingConfiguration::new);
+	public static <T> MapCodec<NothingConfiguration<T>> codec() {
+		return MapCodec.unit(NothingConfiguration::new);
 	}
 
 	@Override

@@ -10,12 +10,10 @@ import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
 public record DoubleComparisonConfiguration(Comparison comparison,
 											double compareTo) implements IDynamicFeatureConfiguration {
-	public static final MapCodec<DoubleComparisonConfiguration> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<DoubleComparisonConfiguration> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			ApoliDataTypes.COMPARISON.fieldOf("comparison").forGetter(DoubleComparisonConfiguration::comparison),
 			CalioCodecHelper.DOUBLE.fieldOf("compare_to").forGetter(DoubleComparisonConfiguration::compareTo)
 	).apply(instance, DoubleComparisonConfiguration::new));
-
-	public static final Codec<DoubleComparisonConfiguration> CODEC = MAP_CODEC.codec();
 
 	public boolean check(double value) {
 		return this.comparison().compare(value, this.compareTo());

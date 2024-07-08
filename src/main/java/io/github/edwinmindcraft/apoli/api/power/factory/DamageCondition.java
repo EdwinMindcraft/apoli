@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.api.power.factory;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.ConditionData;
 import io.github.edwinmindcraft.apoli.api.power.IConditionFactory;
@@ -11,14 +12,14 @@ import net.minecraft.world.damagesource.DamageSource;
 public abstract class DamageCondition<T extends IDynamicFeatureConfiguration> implements IConditionFactory<T, ConfiguredDamageCondition<T, ?>, DamageCondition<T>> {
 	public static final Codec<DamageCondition<?>> CODEC = ApoliRegistries.DAMAGE_CONDITION.byNameCodec();
 
-	private final Codec<ConfiguredDamageCondition<T, ?>> codec;
+	private final MapCodec<ConfiguredDamageCondition<T, ?>> codec;
 
-	protected DamageCondition(Codec<T> codec) {
+	protected DamageCondition(MapCodec<T> codec) {
 		this.codec = IConditionFactory.conditionCodec(codec, this);
 	}
 
 	@Override
-	public Codec<ConfiguredDamageCondition<T, ?>> getConditionCodec() {
+	public MapCodec<ConfiguredDamageCondition<T, ?>> getConditionCodec() {
 		return this.codec;
 	}
 
